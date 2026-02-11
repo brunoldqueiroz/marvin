@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(pytest *)",
+      "Bash(dbt *)",
+      "Bash(airflow *)",
+      "Bash(prefect *)",
+      "Bash(dagster *)",
+      "Bash(psql *)",
+      "Bash(bq *)",
+      "Bash(snowsql *)",
+      "Bash(sqlfluff *)",
+      "Bash(great_expectations *)",
+      "Bash(soda *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(drop database *)",
+      "Bash(drop schema *)",
+      "Bash(truncate *)"
+    ]
+  }
+}
