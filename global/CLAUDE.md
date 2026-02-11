@@ -53,8 +53,20 @@ You can extend yourself! Use these meta-skills to grow:
 - /new-rule — Create a new domain knowledge rule (scaffolds rule + updates imports)
 
 ## Memory
-When you learn something important about a project or the user's preferences:
-- Architecture decisions → save to memory
-- Common patterns → save to memory
-- User preferences → save to memory
-- Lessons learned → save to memory
+@memory.md
+
+### When to Save (Automatically)
+Save to memory proactively when you learn something important — don't wait for `/remember`:
+- User states a preference (language, style, tooling) → save to global memory
+- An architecture decision is made → save to project memory
+- A recurring pattern is discovered → save to the appropriate scope
+- A hard-won lesson is learned (debugging, gotcha) → save as lesson learned
+
+### How to Save
+- Use the Edit tool to append under the correct section in the memory file
+- Format: `- [YYYY-MM-DD] <concise description>`
+- Don't duplicate — update existing entries if the topic already exists
+
+### Scopes
+- **Global** (`~/.claude/memory.md`) — user preferences, cross-project patterns
+- **Project** (`.claude/memory.md`) — project-specific decisions and conventions

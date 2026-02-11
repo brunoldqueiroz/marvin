@@ -25,6 +25,7 @@ If `$ARGUMENTS` is provided, use it directly.
 ```
 .claude/
 ├── CLAUDE.md              ← Project context
+├── memory.md              ← Project memory (persistent across sessions)
 ├── rules/                 ← Domain rules for this project
 ├── registry/
 │   ├── agents.md          ← Project-specific agent registry
@@ -32,7 +33,18 @@ If `$ARGUMENTS` is provided, use it directly.
 └── settings.json          ← Project permissions
 ```
 
-### 3. Write Project CLAUDE.md
+### 3. Create Project Memory
+
+Create `.claude/memory.md` using the project memory template (`~/.claude/templates/MEMORY.template.md`).
+
+Pre-populate the **Tech Stack & Conventions** section with what was detected:
+```markdown
+## Tech Stack & Conventions
+
+- [YYYY-MM-DD] Detected stack: <list of detected technologies>
+```
+
+### 4. Write Project CLAUDE.md
 
 Based on detected/specified project type:
 
@@ -50,6 +62,9 @@ This is a data pipeline project.
 
 ## Conventions
 - [Infer from existing code: naming, structure, patterns]
+
+## Memory
+@.claude/memory.md
 
 ## Project-Specific Agents
 @.claude/registry/agents.md
@@ -76,6 +91,9 @@ This is an AI/ML project.
 ## Conventions
 - [Infer from existing code]
 
+## Memory
+@.claude/memory.md
+
 ## Project-Specific Agents
 @.claude/registry/agents.md
 
@@ -99,6 +117,9 @@ This is an AI/ML project.
 ## Conventions
 - [Infer from existing code]
 
+## Memory
+@.claude/memory.md
+
 ## Project-Specific Agents
 @.claude/registry/agents.md
 
@@ -106,7 +127,7 @@ This is an AI/ML project.
 @.claude/registry/skills.md
 ```
 
-### 4. Write Project Registry Files
+### 5. Write Project Registry Files
 
 **`.claude/registry/agents.md`:**
 ```markdown
@@ -128,7 +149,7 @@ Project-specific skills (in addition to global skills):
 |-------|---------|
 ```
 
-### 5. Write Project Settings
+### 6. Write Project Settings
 
 **`.claude/settings.json`:**
 ```json
@@ -145,14 +166,14 @@ Add project-relevant permissions based on type:
 - **ai-ml**: allow `python *`, `jupyter *`, `tensorboard *`
 - **generic**: minimal defaults
 
-### 6. Copy Relevant Domain Rules
+### 7. Copy Relevant Domain Rules
 
 Based on project type, create domain rule files:
 - **data-pipeline** → create `.claude/rules/data-engineering.md` with SQL conventions, pipeline patterns, dbt standards, data quality rules
 - **ai-ml** → create `.claude/rules/ai-ml.md` with prompt engineering, model development, RAG, LLM application rules
 - **generic** → no extra rules (global coding-standards and security are sufficient)
 
-### 7. Create `.mcp.json` (if needed)
+### 8. Create `.mcp.json` (if needed)
 
 Based on project type, suggest MCP server configuration:
 - **data-pipeline** → suggest Postgres/BigQuery/Snowflake based on detected stack
@@ -161,7 +182,7 @@ Based on project type, suggest MCP server configuration:
 
 Only create `.mcp.json` if the project would benefit from it. Ask the user before adding database connections.
 
-### 8. Update `.gitignore`
+### 9. Update `.gitignore`
 
 Add these lines if not already present:
 ```
@@ -169,7 +190,7 @@ Add these lines if not already present:
 .claude/agent-memory/
 ```
 
-### 9. Confirm
+### 10. Confirm
 
 Show the user:
 - What project type was detected/used

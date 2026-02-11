@@ -109,32 +109,32 @@ if [ "$DRY_RUN" = false ]; then
 fi
 
 # 1. CLAUDE.md (the brain)
-echo "[1/7] CLAUDE.md (Marvin's brain)"
+echo "[1/8] CLAUDE.md (Marvin's brain)"
 backup_if_needed "$MARVIN_HOME/CLAUDE.md"
 install_item "$GLOBAL_DIR/CLAUDE.md" "$MARVIN_HOME/CLAUDE.md"
 
 # 2. Registry
-echo "[2/7] Registry (agents + skills)"
+echo "[2/8] Registry (agents + skills)"
 install_item "$GLOBAL_DIR/registry" "$MARVIN_HOME/registry"
 
 # 3. Templates
-echo "[3/7] Templates (for /new-agent, /new-skill, /new-rule)"
+echo "[3/8] Templates (for /new-agent, /new-skill, /new-rule)"
 install_item "$GLOBAL_DIR/templates" "$MARVIN_HOME/templates"
 
 # 4. Agents
-echo "[4/7] Universal agents (researcher, coder, verifier)"
+echo "[4/8] Universal agents (researcher, coder, verifier)"
 install_item "$GLOBAL_DIR/agents" "$MARVIN_HOME/agents"
 
 # 5. Skills
-echo "[5/7] Universal skills (/init, /new-agent, /research, etc.)"
+echo "[5/8] Universal skills (/init, /new-agent, /research, etc.)"
 install_item "$GLOBAL_DIR/skills" "$MARVIN_HOME/skills"
 
 # 6. Rules
-echo "[6/7] Universal rules (coding-standards, security)"
+echo "[6/8] Universal rules (coding-standards, security)"
 install_item "$GLOBAL_DIR/rules" "$MARVIN_HOME/rules"
 
 # 7. Hooks + Settings
-echo "[7/7] Settings + Hooks"
+echo "[7/8] Settings + Hooks"
 backup_if_needed "$MARVIN_HOME/settings.json"
 install_item "$GLOBAL_DIR/settings.json" "$MARVIN_HOME/settings.json"
 install_item "$GLOBAL_DIR/hooks" "$MARVIN_HOME/hooks"
@@ -142,6 +142,14 @@ install_item "$GLOBAL_DIR/hooks" "$MARVIN_HOME/hooks"
 # Make hooks executable
 if [ "$DRY_RUN" = false ]; then
   chmod +x "$MARVIN_HOME/hooks/"*.sh 2>/dev/null || true
+fi
+
+# 8. Memory (never overwrite existing)
+echo "[8/8] Memory (persistent across sessions)"
+if [ -f "$MARVIN_HOME/memory.md" ]; then
+  echo "  [SKIP] memory.md already exists (preserving your data)"
+else
+  install_item "$GLOBAL_DIR/memory.md" "$MARVIN_HOME/memory.md"
 fi
 
 echo ""

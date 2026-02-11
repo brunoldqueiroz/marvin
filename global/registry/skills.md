@@ -17,6 +17,7 @@ Available slash commands:
 | /review | Code review with focus on quality, security, and best practices |
 | /spec | Start an OpenSpec Spec-Driven Development workflow |
 | /ralph | Start a Ralph Loop for long-running autonomous tasks |
+| /remember | Save something to Marvin's persistent memory (global or project) |
 | /meta-prompt | Generate an optimized prompt for a specific task |
 
 ## Data Engineering Skills
