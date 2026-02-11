@@ -9,6 +9,7 @@ Available slash commands:
 | /new-agent | Scaffold a new specialized agent |
 | /new-skill | Scaffold a new skill/slash command |
 | /new-rule | Scaffold a new domain knowledge rule |
+| /audit-agents | Audit codebase technologies and identify gaps in agent coverage |
 
 ## Universal Skills
 | Skill | Purpose |
