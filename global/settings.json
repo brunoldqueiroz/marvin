@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/marvin-greeting.sh"
+            "command": "bash ~/.claude/hooks/marvin-greeting.sh"
           }
         ]
       }
