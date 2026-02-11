@@ -159,6 +159,81 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 5. **Body** (if needed) - Explain WHY, not just WHAT. Bullet points for multiple items
 6. **Footer** (if needed) - Issue references (`Closes #123`), breaking changes. **NEVER AI attribution**
 
+## Atomic Commits
+
+### What Is an Atomic Commit
+
+An atomic commit is a **single, complete, logical change**. It should:
+- Be self-contained — the codebase works before and after the commit
+- Have a single purpose — one reason to exist
+- Be revertable — `git revert` undoes exactly one thing cleanly
+
+### When to Split Into Multiple Commits
+
+Split when changes have **different purposes**, even if done at the same time:
+
+| Scenario | Commits |
+|----------|---------|
+| New feature + its tests | 1 commit (tests are part of the feature) |
+| New feature + refactor of existing code | 2 commits (refactor first, then feature) |
+| Bug fix + formatting cleanup | 2 commits (fix first, then style) |
+| New dependency + code that uses it | 1 commit (dependency enables the code) |
+| 3 unrelated bug fixes | 3 commits (each fix is independent) |
+| Migration + code that depends on it | 2 commits (migration first, then code) |
+| Config change + feature that needs it | 1 commit if tightly coupled, 2 if independent |
+
+### When to Keep as a Single Commit
+
+Keep together when changes are **tightly coupled**:
+- A function and its unit tests
+- A model and its schema.yml entry
+- A DAG and its configuration
+- An interface change and all callers updated together
+
+### Process for Atomic Commits
+
+1. **Run `git status`** — list all changed/untracked files
+2. **Group by purpose** — cluster files that belong to the same logical change
+3. **Order logically** — infrastructure before code, dependencies before dependents
+4. **Stage selectively** — `git add <specific files>`, never `git add -A` for multi-purpose changes
+5. **Commit each group** — one commit per logical change
+6. **Verify after each commit** — `git log --oneline` to confirm clean history
+
+### Grouping Strategy
+
+When analyzing a large set of changes, group by these layers (commit in this order):
+
+1. **Infrastructure / config** — settings, dependencies, CI/CD
+2. **Core / foundation** — base modules, shared utilities, schemas
+3. **Features / logic** — business logic, new capabilities
+4. **Tests** — if not bundled with their feature
+5. **Documentation** — docs, READMEs, comments
+
+Within each layer, group by **scope** (component, domain, module).
+
+### Examples
+
+**Good — atomic history:**
+```
+feat(core): add database connection module
+feat(models): add user and order schemas
+feat(api): add user registration endpoint
+test(api): add integration tests for registration
+docs: update API reference with registration endpoint
+```
+
+**Bad — monolithic dump:**
+```
+feat: add user registration with tests and docs and also fix a bug
+```
+
+**Bad — too granular:**
+```
+feat(api): create user_controller.py
+feat(api): add import for user_controller
+feat(api): add route for registration
+```
+
 ## Commit Execution
 
 When executing commits:
