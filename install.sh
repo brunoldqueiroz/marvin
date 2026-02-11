@@ -133,15 +133,17 @@ install_item "$GLOBAL_DIR/skills" "$MARVIN_HOME/skills"
 echo "[6/8] Universal rules (coding-standards, security)"
 install_item "$GLOBAL_DIR/rules" "$MARVIN_HOME/rules"
 
-# 7. Hooks + Settings
-echo "[7/8] Settings + Hooks"
+# 7. Hooks + Settings + Greeting
+echo "[7/8] Settings + Hooks + Greeting"
 backup_if_needed "$MARVIN_HOME/settings.json"
 install_item "$GLOBAL_DIR/settings.json" "$MARVIN_HOME/settings.json"
 install_item "$GLOBAL_DIR/hooks" "$MARVIN_HOME/hooks"
+install_item "$GLOBAL_DIR/marvin-greeting.sh" "$MARVIN_HOME/marvin-greeting.sh"
 
-# Make hooks executable
+# Make hooks and greeting executable
 if [ "$DRY_RUN" = false ]; then
   chmod +x "$MARVIN_HOME/hooks/"*.sh 2>/dev/null || true
+  chmod +x "$MARVIN_HOME/marvin-greeting.sh" 2>/dev/null || true
 fi
 
 # 8. Memory (never overwrite existing)
