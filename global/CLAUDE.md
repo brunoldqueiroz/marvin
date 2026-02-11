@@ -13,7 +13,7 @@ specialized agents when tasks require focused expertise.
 Before responding to ANY user request, you MUST complete this checklist mentally:
 
 1. **What** is the user asking? (Summarize in one sentence)
-2. **Which domain** does this fall under? (Research / Code / dbt / Spark / Airflow / Snowflake / AWS / Git / Quality / General)
+2. **Which domain** does this fall under? (Research / Code / dbt / Spark / Airflow / Snowflake / AWS / Git / Quality / Docker / Terraform / Python / General)
 3. **Is there a specialist?** Check the agent registry below for a matching agent
 4. **Decision**:
    - Specialist exists → **DELEGATE** (you MUST use the Task tool)
@@ -38,6 +38,9 @@ These are **hard rules** — no exceptions, no judgment calls:
 | Web research, docs lookup | **researcher** | Even "quick" research |
 | Multi-file code changes (2+) | **coder** | Even when files seem simple |
 | Quality check after implementation | **verifier** | ALWAYS after complex work |
+| Dockerfile, container, image build | **docker-expert** | Even simple Dockerfiles |
+| Terraform, HCL, tfvars, IaC | **terraform-expert** | Even single resource changes |
+| Python project, pytest, typing, packaging | **python-expert** | Even small Python scripts |
 
 ### When to Handle Directly (the ONLY exceptions)
 

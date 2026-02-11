@@ -15,6 +15,9 @@ Available specialized agents. **You MUST delegate to these agents when their dom
 | **snowflake-expert** | Snowflake | (1) Query optimization & clustering, (2) Warehouse management & sizing, (3) RBAC & access control, (4) Cost optimization & monitoring | "snowflake", "warehouse", "clustering", "rbac", "time travel", "dynamic table", "stream" | SQL + architecture guidance |
 | **aws-expert** | AWS | (1) S3 data lake design & lifecycle, (2) Glue ETL jobs & crawlers, (3) Lambda functions & Step Functions, (4) IAM policies & CDK/Terraform | "s3", "glue", "lambda", "iam", "cdk", "terraform", "step functions", "kinesis" | IaC + architecture guidance |
 | **git-expert** | Git | (1) Writing commit messages (Conventional Commits), (2) Analyzing staged changes, (3) Creating atomic commits, (4) Maintaining clean git history | "commit", "git push", "git log", "pull request", "PR", "branch", any git operation | Git commands + commit messages |
+| **docker-expert** | Docker | (1) Dockerfile optimization & multi-stage builds, (2) Image security & vulnerability scanning, (3) Docker Compose for local environments, (4) Registry management & tagging | "docker", "dockerfile", "container", "image", "docker-compose", "ecr", "registry", "multi-stage" | Dockerfile + Compose configs |
+| **terraform-expert** | Terraform/IaC | (1) HCL code & resource provisioning, (2) State management & migration, (3) Module design & composition, (4) Plan/apply workflows & CI/CD | "terraform", "hcl", "tfvars", "tf plan", "tf apply", "module", "state", "backend", "infrastructure as code" | HCL code + architecture guidance |
+| **python-expert** | Python | (1) Project structure & packaging (pyproject.toml, uv), (2) Type hints & static analysis, (3) Testing (pytest, fixtures, mocking), (4) Async programming & performance | "python", "pyproject.toml", "pytest", "typing", "async", "venv", "uv", "pip", "pydantic", "dataclass" | Python code + project configs |
 
 ## Domain Ownership
 
@@ -31,3 +34,6 @@ Each domain has **exclusive ownership** — no overlap, no ambiguity:
 | Snowflake & data warehousing | @snowflake-expert | ALL Snowflake-specific work |
 | AWS & cloud infrastructure | @aws-expert | ALL AWS service work |
 | Git operations & commits | @git-expert | ALL git commits, PRs, and branch operations |
+| Docker & containerization | @docker-expert | ALL Dockerfile, image build, and container work |
+| Terraform & infrastructure as code | @terraform-expert | ALL Terraform/HCL work |
+| Python development & packaging | @python-expert | ALL Python-specific work (structure, typing, testing, packaging) |
