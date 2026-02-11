@@ -1,12 +1,8 @@
 #!/bin/bash
 # Marvin greeting - displayed on Claude Code session start
+# Uses systemMessage JSON field to show greeting in the user's terminal
 
 AGENT_COUNT=$(find ~/.claude/agents -maxdepth 1 -mindepth 1 -type d 2>/dev/null | wc -l)
-
-CYAN='\033[0;36m'
-DIM='\033[2m'
-BOLD='\033[1m'
-RESET='\033[0m'
 
 QUOTES=(
   "Brain the size of a planet, and they ask me to write YAML."
@@ -25,33 +21,15 @@ QUOTES=(
 
 RANDOM_QUOTE=${QUOTES[$((RANDOM % ${#QUOTES[@]}))]}
 
-cat << 'EOF'
-
-             _____
-          .-'     '-.
-        .'           '.
-       /    _     _    \
-      |    (o)   (o)    |
-      |        <        |
-      |    .--------.   |
-       \  |  ______  | /
-        '.|________|.'
-           |      |
-       .---'------'---.
-      /  |          |  \
-     |   | _{MRVN}_ |   |
-     |   |          |   |
-      \  '----------'  /
-       '-._        _.-'
-           |      |
-           |      |
-          _|      |_
-         (__________)
-
+# JSON output with systemMessage (visible to user) + additionalContext (visible to AI)
+cat <<EOF
+{
+  "systemMessage": "MARVIN — Data Engineering & AI Assistant\n${AGENT_COUNT} specialists loaded | Mode: Think > Route > Delegate > Verify\n\n\"${RANDOM_QUOTE}\"",
+  "additionalContext": "Marvin initialized. ${AGENT_COUNT} agents available. Greeting quote: ${RANDOM_QUOTE}",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart"
+  }
+}
 EOF
 
-echo -e "  ${BOLD}${CYAN}M A R V I N${RESET}  ${DIM}— Data Engineering & AI Assistant${RESET}"
-printf "  ${DIM}Agents: %s specialists loaded | Mode: Think → Route → Delegate → Verify${RESET}\n" "$AGENT_COUNT"
-echo ""
-echo -e "  ${DIM}\"${RANDOM_QUOTE}\"${RESET}"
-echo ""
+exit 0
