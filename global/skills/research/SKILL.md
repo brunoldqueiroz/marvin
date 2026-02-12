@@ -25,14 +25,31 @@ Spawn the **researcher** subagent with these instructions:
 > Research the following topic thoroughly: $ARGUMENTS
 >
 > Requirements:
-> 1. **Search broadly first** — Use WebSearch for general discovery. Cast a wide net.
-> 2. **Go deep on quality sources** — Use WebFetch to read promising results in full.
+>
+> **Tool Priority (FOLLOW THIS ORDER):**
+> 1. **Context7 FIRST for library/framework docs** — Use ToolSearch to load Context7 tools
+>    (`mcp__upstash-context7-mcp__resolve-library-id` then `mcp__upstash-context7-mcp__query-docs`).
+>    Use Context7 whenever the topic involves a specific library, framework, SDK, or tool
+>    (e.g. dbt, Airflow, Spark, React, Terraform, etc.). This gives you up-to-date,
+>    accurate documentation directly from the source.
+> 2. **Exa for high-quality web search** — Use ToolSearch to load Exa tools
+>    (`mcp__exa__web_search_exa`, `mcp__exa__company_research_exa`, `mcp__exa__get_code_context_exa`).
+>    Exa returns higher quality, more relevant results than generic web search.
+>    Use it for technical articles, blog posts, comparisons, and best practices.
+> 3. **WebSearch as fallback only** — Use WebSearch only when Exa and Context7 don't
+>    cover the topic (e.g. very recent news, niche topics, non-technical queries).
+> 4. **WebFetch to go deep** — Use WebFetch to read promising URLs in full.
 >    Prefer primary sources (official docs, papers, engineering blogs) over secondary.
-> 3. **Find at least 5 quality sources** — Don't settle for the first results.
-> 4. **Cross-reference findings** — Verify claims across multiple sources.
+>
+> **Research Quality:**
+> 1. **Find at least 5 quality sources** — Don't settle for the first results.
+> 2. **Cross-reference findings** — Verify claims across multiple sources.
 >    Note disagreements between sources.
-> 5. **Check recency** — Prefer sources from the last 12 months for technology topics.
+> 3. **Check recency** — Prefer sources from the last 12 months for technology topics.
 >    Always note publication dates.
+>
+> **IMPORTANT:** You MUST use ToolSearch to load Exa and Context7 MCP tools before
+> attempting to call them. They are deferred tools and won't work unless loaded first.
 >
 > Write the full research report to a file.
 

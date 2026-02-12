@@ -19,6 +19,27 @@ Available specialized agents. **You MUST delegate to these agents when their dom
 | **terraform-expert** | Terraform/IaC | (1) HCL code & resource provisioning, (2) State management & migration, (3) Module design & composition, (4) Plan/apply workflows & CI/CD | "terraform", "hcl", "tfvars", "tf plan", "tf apply", "module", "state", "backend", "infrastructure as code" | HCL code + architecture guidance |
 | **python-expert** | Python | (1) Project structure & packaging (pyproject.toml, uv), (2) Type hints & static analysis, (3) Testing (pytest, fixtures, mocking), (4) Async programming & performance | "python", "pyproject.toml", "pytest", "typing", "async", "venv", "uv", "pip", "pydantic", "dataclass" | Python code + project configs |
 
+## Delegation Instructions
+
+### researcher — Tool Priority
+
+When delegating to the researcher agent, **ALWAYS** include these tool instructions in the prompt:
+
+> **Tool Priority (FOLLOW THIS ORDER):**
+> 1. **Context7 FIRST for library/framework docs** — Use ToolSearch to load Context7 tools
+>    (`mcp__upstash-context7-mcp__resolve-library-id` then `mcp__upstash-context7-mcp__query-docs`).
+>    Use Context7 whenever the topic involves a specific library, framework, SDK, or tool.
+> 2. **Exa for high-quality web search** — Use ToolSearch to load Exa tools
+>    (`mcp__exa__web_search_exa`, `mcp__exa__company_research_exa`, `mcp__exa__get_code_context_exa`).
+>    Exa returns higher quality results than generic web search. Use for technical articles,
+>    blog posts, comparisons, and best practices.
+> 3. **WebSearch as fallback only** — Use only when Exa and Context7 don't cover the topic
+>    (very recent news, niche topics, non-technical queries).
+> 4. **WebFetch to go deep** — Read promising URLs in full. Prefer primary sources.
+>
+> **IMPORTANT:** Use ToolSearch to load Exa and Context7 MCP tools before calling them.
+> They are deferred tools and won't work unless loaded first.
+
 ## Domain Ownership
 
 Each domain has **exclusive ownership** — no overlap, no ambiguity:
