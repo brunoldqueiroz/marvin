@@ -41,10 +41,10 @@ graph TB
     Delegate --> Other[... 5 more agents]
 
     Researcher --> Rules1[Load Rules]
-    DBT --> Rules2[rules/dbt.md]
-    Spark --> Rules3[rules/spark.md]
-    Airflow --> Rules4[rules/airflow.md]
-    AWS --> Rules5[rules/aws.md]
+    DBT --> Rules2[agents/dbt-expert/rules.md]
+    Spark --> Rules3[agents/spark-expert/rules.md]
+    Airflow --> Rules4[agents/airflow-expert/rules.md]
+    AWS --> Rules5[agents/aws-expert/rules.md]
 
     Rules1 --> Execute[Execute Task]
     Rules2 --> Execute
@@ -140,9 +140,9 @@ Marvin automatically delegates each request to the right specialist.
 marvin/
 ├── global/                 # Source of truth (deployed to ~/.claude/)
 │   ├── CLAUDE.md           # Marvin orchestrator system prompt
-│   ├── agents/             # Agent definitions (13 specialists)
+│   ├── agents/             # Agent definitions + domain rules (13 specialists)
 │   ├── skills/             # Slash command implementations
-│   ├── rules/              # Domain knowledge (dbt, spark, airflow, etc.)
+│   ├── rules/              # Universal rules (coding-standards, security)
 │   ├── registry/           # Agent and skill registries
 │   ├── templates/          # Scaffolding templates
 │   ├── hooks/              # Shell hooks
@@ -161,7 +161,7 @@ marvin/
 |----------------|-----------|----------|
 | Orchestrator logic | `global/CLAUDE.md` | `~/.claude/CLAUDE.md` |
 | Agent definitions | `global/agents/<name>/AGENT.md` | `~/.claude/agents/` |
-| Domain rules | `global/rules/<domain>.md` | `~/.claude/rules/` |
+| Domain rules | `global/agents/<domain>-expert/rules.md` | `~/.claude/agents/` |
 | Skills | `global/skills/<name>/SKILL.md` | `~/.claude/skills/` |
 
 After editing, run `./install.sh` to deploy changes to `~/.claude/`.

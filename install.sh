@@ -121,17 +121,29 @@ install_item "$GLOBAL_DIR/registry" "$MARVIN_HOME/registry"
 echo "[3/8] Templates (for /new-agent, /new-skill, /new-rule)"
 install_item "$GLOBAL_DIR/templates" "$MARVIN_HOME/templates"
 
-# 4. Agents
-echo "[4/8] Universal agents (researcher, coder, verifier)"
+# 4. Agents (includes domain-specific rules)
+echo "[4/8] Agents + domain rules (researcher, coder, dbt-expert, etc.)"
 install_item "$GLOBAL_DIR/agents" "$MARVIN_HOME/agents"
 
 # 5. Skills
 echo "[5/8] Universal skills (/init, /new-agent, /research, etc.)"
 install_item "$GLOBAL_DIR/skills" "$MARVIN_HOME/skills"
 
-# 6. Rules
-echo "[6/8] Universal rules (coding-standards, security)"
+# 6. Rules (universal only — domain rules live with agents)
+echo "[6/8] Universal rules (coding-standards, security, handoff-protocol)"
 install_item "$GLOBAL_DIR/rules" "$MARVIN_HOME/rules"
+
+# Clean up migrated domain rules (moved to agent directories)
+for old_rule in aws.md dbt.md spark.md snowflake.md airflow.md; do
+  if [ -f "$MARVIN_HOME/rules/$old_rule" ]; then
+    if [ "$DRY_RUN" = true ]; then
+      echo "  [CLEANUP] Would remove migrated rule: $old_rule"
+    else
+      rm "$MARVIN_HOME/rules/$old_rule"
+      echo "  [CLEANUP] Removed migrated rule: $old_rule"
+    fi
+  fi
+done
 
 # 7. Hooks + Settings + Greeting
 echo "[7/8] Settings + Hooks + Greeting"

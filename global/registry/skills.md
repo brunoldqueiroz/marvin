@@ -6,6 +6,7 @@
 - `/new-skill` — Scaffold a new skill/slash command
 - `/new-rule` — Scaffold a new domain knowledge rule
 - `/audit-agents` — Audit codebase for agent coverage gaps
+- `/handoff-reference` — Full handoff protocol reference with examples
 
 ## Universal
 - `/research` — Deep research (web search + Exa + Context7)
