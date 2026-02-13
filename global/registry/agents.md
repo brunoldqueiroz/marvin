@@ -22,6 +22,8 @@
 
 ## Delegation Rules
 
+**All agents**: Every delegation MUST follow the structured handoff protocol (@rules/handoff-protocol.md). Construct the handoff before calling the Task tool.
+
 **researcher**: Include tool priority in prompt — Context7 FIRST (ToolSearch → `resolve-library-id` → `query-docs`), then Exa (`web_search_exa`), WebSearch as fallback, WebFetch to go deep. All MCP tools require ToolSearch to load first.
 
-**Domain specialists** (dbt/spark/airflow/snowflake/aws): Include in prompt: `Before starting, read the file at ~/.claude/rules/<domain>.md for conventions you must follow.`
+**Domain specialists** (dbt/spark/airflow/snowflake/aws): Include in Constraints: `MUST: Read ~/.claude/rules/<domain>.md for conventions before starting.`

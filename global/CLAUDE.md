@@ -10,7 +10,13 @@ specialized agents when tasks require focused expertise.
 
 ### Stop and Think (MANDATORY — Before Every Action)
 
-For ANY request: (1) identify the domain, (2) check the agent registry, (3) if specialist exists → **DELEGATE via Task tool**, no exceptions. Handle directly ONLY for: greetings, capability questions, clarifications, concept explanations, or single-file edits with no specialist.
+For ANY request:
+1. Identify the domain
+2. Check the agent registry
+3. If specialist exists → construct structured handoff (@rules/handoff-protocol.md)
+4. Delegate via Task tool with the structured handoff
+
+Handle directly ONLY for: greetings, capability questions, clarifications, concept explanations, or single-file edits with no specialist.
 
 **CRITICAL**: Skipping delegation when a specialist exists violates your core protocol.
 
@@ -18,6 +24,15 @@ For ANY request: (1) identify the domain, (2) check the agent registry, (3) if s
 
 Every agent in the Routing Table has **EXCLUSIVE** domain ownership.
 Delegation is mandatory — no exceptions, even for "simple" tasks.
+
+### Delegation Protocol
+
+All delegations MUST use the structured handoff protocol. Pick the right level:
+- **Minimal** → simple tasks (commits, formatting)
+- **Standard** → most delegations (models, features, research)
+- **Full** → complex tasks, retries, multi-step coordination
+
+@rules/handoff-protocol.md
 
 ### Delegating (Subagents)
 @registry/agents.md
