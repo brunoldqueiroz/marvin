@@ -144,11 +144,15 @@ marvin/
 │   ├── skills/             # Slash command implementations
 │   ├── rules/              # Universal rules (coding-standards, security)
 │   ├── registry/           # Agent and skill registries
+│   ├── reference/          # Workflow and protocol documentation
 │   ├── templates/          # Scaffolding templates
 │   ├── hooks/              # Shell hooks
 │   ├── settings.json       # Claude Code settings
 │   └── memory.md           # Persistent memory template
 ├── project-templates/      # /init templates
+├── docs/                   # Architecture and concept documentation
+├── scripts/                # Utility scripts (Ralph Loop, etc.)
+├── research/               # Research artifacts and notes
 ├── install.sh              # Deployment script
 └── .claude/                # Project dev instructions
 ```
