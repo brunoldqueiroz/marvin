@@ -18,6 +18,7 @@
 | **docker-expert** | docker, dockerfile, container, image, docker-compose, ecr | Dockerfile + Compose configs |
 | **terraform-expert** | terraform, hcl, tfvars, tf plan/apply, module, state, backend | HCL code + guidance |
 | **python-expert** | python, pyproject.toml, pytest, typing, async, uv, pydantic | Python code + configs |
+| **docs-expert** | documentation, README, API docs, ADR, docstrings, technical guide, runbook | Markdown documentation |
 
 ## Delegation Rules
 
