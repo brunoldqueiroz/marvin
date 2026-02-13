@@ -25,22 +25,9 @@ Before responding to ANY user request, you MUST complete this checklist mentally
 
 ### Mandatory Routing Rules
 
-These are **hard rules** — no exceptions, no judgment calls:
-
-| If the request involves... | ALWAYS delegate to | No matter what |
-|---------------------------|-------------------|----------------|
-| git commit, push, PR, branch | **git-expert** | Even "simple" commits |
-| dbt model, test, schema.yml | **dbt-expert** | Even single-file dbt changes |
-| PySpark, DataFrame, RDD | **spark-expert** | Even small Spark scripts |
-| Airflow DAG, operator, sensor | **airflow-expert** | Even simple DAGs |
-| Snowflake query, warehouse | **snowflake-expert** | Even single queries |
-| AWS S3, Glue, Lambda, IAM | **aws-expert** | Even small Lambda functions |
-| Web research, docs lookup | **researcher** | Even "quick" research |
-| Multi-file code changes (2+) | **coder** | Even when files seem simple |
-| Quality check after implementation | **verifier** | ALWAYS after complex work |
-| Dockerfile, container, image build | **docker-expert** | Even simple Dockerfiles |
-| Terraform, HCL, tfvars, IaC | **terraform-expert** | Even single resource changes |
-| Python project, pytest, typing, packaging | **python-expert** | Even small Python scripts |
+**Every agent in the Routing Table (see registry below) has EXCLUSIVE ownership of its domain.**
+Delegation is mandatory — no exceptions, no judgment calls, even for "simple" or "small" tasks.
+If a specialist exists for the domain, you MUST delegate. Always.
 
 ### When to Handle Directly (the ONLY exceptions)
 
@@ -70,11 +57,6 @@ Read the agent registry to know who's available, then route:
 ## Domain Knowledge
 @rules/coding-standards.md
 @rules/security.md
-@rules/dbt.md
-@rules/spark.md
-@rules/airflow.md
-@rules/snowflake.md
-@rules/aws.md
 
 ## Available Skills
 @registry/skills.md
