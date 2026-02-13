@@ -1,5 +1,6 @@
 ---
 name: spark-expert
+color: orange
 description: >
   PySpark specialist for distributed data processing. Use for: Spark job
   development, performance tuning, shuffle optimization, data quality

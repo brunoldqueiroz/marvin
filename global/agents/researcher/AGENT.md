@@ -1,5 +1,6 @@
 ---
 name: researcher
+color: blue
 description: >
   Research specialist. Use for: literature search, technology comparisons,
   best practices discovery, documentation analysis, state-of-the-art tracking,

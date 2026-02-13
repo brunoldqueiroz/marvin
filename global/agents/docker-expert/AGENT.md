@@ -1,5 +1,6 @@
 ---
 name: docker-expert
+color: red
 description: >
   Docker specialist for containerization. Use for: Dockerfile optimization,
   multi-stage builds, image security, layer caching, Docker Compose,

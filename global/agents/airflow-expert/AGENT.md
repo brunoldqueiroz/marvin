@@ -1,5 +1,6 @@
 ---
 name: airflow-expert
+color: cyan
 description: >
   Apache Airflow specialist for pipeline orchestration. Use for: DAG
   development, scheduling, task dependencies, operator selection,

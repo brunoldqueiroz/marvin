@@ -1,5 +1,6 @@
 ---
 name: aws-expert
+color: orange
 description: >
   AWS specialist for cloud data engineering. Use for: S3 data lake design,
   Glue ETL jobs, Lambda functions, IAM policies, CDK/Terraform

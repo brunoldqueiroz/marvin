@@ -1,5 +1,6 @@
 ---
 name: verifier
+color: yellow
 description: >
   Quality verification specialist. Use AFTER other agents complete work to
   validate correctness. Runs test suites, checks code quality, validates

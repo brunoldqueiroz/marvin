@@ -1,5 +1,6 @@
 ---
 name: terraform-expert
+color: red
 description: >
   Terraform/IaC specialist for infrastructure provisioning. Use for: HCL code,
   state management, module design, provider configuration, plan/apply workflows,

@@ -1,5 +1,6 @@
 ---
 name: python-expert
+color: green
 description: >
   Python specialist for application development. Use for: project structure,
   packaging (pyproject.toml, uv, pip), async/await, type hints, testing

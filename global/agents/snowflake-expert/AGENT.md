@@ -1,5 +1,6 @@
 ---
 name: snowflake-expert
+color: blue
 description: >
   Snowflake specialist for data warehousing. Use for: query optimization,
   warehouse management, access control (RBAC), cost optimization, data

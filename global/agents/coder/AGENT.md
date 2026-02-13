@@ -1,5 +1,6 @@
 ---
 name: coder
+color: green
 description: >
   Code implementation specialist. Use for: implementing plans from other agents,
   writing code across multiple files, writing and running tests, refactoring,

@@ -1,5 +1,6 @@
 ---
 name: git-expert
+color: pink
 description: >
   Git commit specialist following Conventional Commits. Use for: writing
   commit messages, analyzing staged changes, creating atomic commits,

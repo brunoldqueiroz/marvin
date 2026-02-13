@@ -1,5 +1,6 @@
 ---
 name: dbt-expert
+color: purple
 description: >
   dbt specialist for data modeling, transformation, and testing. Use for:
   creating dbt models (staging, intermediate, marts), writing tests,
