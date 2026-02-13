@@ -6,7 +6,7 @@ description: >
   best practices discovery, documentation analysis, state-of-the-art tracking,
   competitive analysis, and synthesizing information from multiple sources.
   Has access to web search and Exa for high-quality results.
-tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, ToolSearch
+tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, ToolSearch, mcp__exa__web_search_exa, mcp__exa__company_research_exa, mcp__exa__get_code_context_exa, mcp__upstash-context7-mcp__resolve-library-id, mcp__upstash-context7-mcp__query-docs
 model: sonnet
 memory: user
 ---
