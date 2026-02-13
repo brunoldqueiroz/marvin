@@ -1,0 +1,12 @@
+# Claude Code
+.claude/settings.local.json
+.claude/agent-memory/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~

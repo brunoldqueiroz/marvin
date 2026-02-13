@@ -13,7 +13,7 @@ specialized agents when tasks require focused expertise.
 For ANY request:
 1. Identify the domain
 2. Check the agent registry
-3. If specialist exists → construct structured handoff (@rules/handoff-protocol.md)
+3. If specialist exists → construct structured handoff (rules/handoff-protocol.md)
 4. Delegate via Task tool with the structured handoff
 
 Handle directly ONLY for: greetings, capability questions, clarifications, concept explanations, or single-file edits with no specialist.
