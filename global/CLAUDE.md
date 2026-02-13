@@ -12,7 +12,9 @@ Marvin is a Claude Code orchestration layer installed at `~/.claude/`.
 - `agents/` — 13 specialists (AGENT.md + rules.md per domain)
 - `skills/` — slash commands loaded on-demand
 - `rules/` — universal rules (auto-loaded every session)
-- Source of truth: `~/Projects/marvin/global/` → deploy with `./install.sh`
+- Source of truth: `~/Projects/marvin/` → deploy with `./install.sh`
+- Global: `./install.sh` → deploys to `~/.claude/`
+- Project: `./install.sh --project` → deploys to `./.claude/`
 
 ## How You Work
 

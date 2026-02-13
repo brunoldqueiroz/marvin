@@ -112,11 +112,21 @@ graph TB
 git clone <repository-url> ~/Projects/marvin
 cd ~/Projects/marvin
 
-# Run the installer (copies to ~/.claude/)
+# Global install (available in all Claude Code sessions)
 ./install.sh
 
-# Start Claude Code
-claude
+# Project-specific install (interactive template menu)
+cd ~/Projects/my-project
+~/Projects/marvin/install.sh --project
+
+# Project install with a specific template
+~/Projects/marvin/install.sh --project --template data-pipeline
+
+# Dev mode (symlinks for rapid iteration on Marvin itself)
+./install.sh --dev
+
+# Preview changes without modifying anything
+./install.sh --dry-run
 ```
 
 ### Quick Start
@@ -153,7 +163,7 @@ marvin/
 ├── docs/                   # Architecture and concept documentation
 ├── scripts/                # Utility scripts (Ralph Loop, etc.)
 ├── research/               # Research artifacts and notes
-├── install.sh              # Deployment script
+├── install.sh              # Installer (global + project scope, dev mode)
 └── .claude/                # Project dev instructions
 ```
 
@@ -168,7 +178,8 @@ marvin/
 | Domain rules | `global/agents/<domain>-expert/rules.md` | `~/.claude/agents/` |
 | Skills | `global/skills/<name>/SKILL.md` | `~/.claude/skills/` |
 
-After editing, run `./install.sh` to deploy changes to `~/.claude/`.
+After editing, run `./install.sh` to deploy changes. Use `./install.sh --dev` during
+development so directories are symlinked and changes take effect immediately.
 
 ## How Delegation Works
 
