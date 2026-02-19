@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-MARVIN_REPO="$(cd "$(dirname "$0")" && pwd)"
+MARVIN_REPO="$(cd "$(dirname "$0")/.." && pwd)"
 CORE_DIR="$MARVIN_REPO/core"
 
 # Default values
