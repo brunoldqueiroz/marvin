@@ -161,9 +161,8 @@
         "matcher": "",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Output ONLY valid JSON, no other text. If stop_hook_active is true in the input, output {\"ok\":true}. Otherwise: check if last_assistant_message used the Task tool to delegate specialist work (code, git, docker, terraform, dbt, spark, airflow, snowflake, aws, python, docs, research). If delegation was clearly skipped for a specialist domain, output {\"ok\":false,\"reason\":\"Delegate to <agent> agent\"}. For greetings, clarifications, or simple edits, output {\"ok\":true}. Input: $ARGUMENTS",
-            "model": "haiku"
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-quality-gate.sh"
           }
         ]
       }
@@ -173,9 +172,8 @@
         "matcher": "",
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Output ONLY valid JSON, no other text. Check if last_assistant_message in the input contains a useful result. If the subagent clearly failed or returned empty output, output {\"ok\":false,\"reason\":\"Subagent failed: <brief reason>\"}. Otherwise output {\"ok\":true}. Be lenient. Input: $ARGUMENTS",
-            "model": "haiku"
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-quality-gate.sh"
           }
         ]
       }
