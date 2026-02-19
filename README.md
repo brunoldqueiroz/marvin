@@ -112,21 +112,14 @@ graph TB
 git clone <repository-url> ~/Projects/marvin
 cd ~/Projects/marvin
 
-# Global install (available in all Claude Code sessions)
-./install.sh
-
-# Project-specific install (interactive template menu)
-cd ~/Projects/my-project
-~/Projects/marvin/install.sh --project
-
-# Project install with a specific template
-~/Projects/marvin/install.sh --project --template data-pipeline
+# Install to a project
+./install.sh ~/Projects/my-project
 
 # Dev mode (symlinks for rapid iteration on Marvin itself)
-./install.sh --dev
+./install.sh --dev ~/Projects/my-project
 
 # Preview changes without modifying anything
-./install.sh --dry-run
+./install.sh --dry-run ~/Projects/my-project
 ```
 
 ### Quick Start
@@ -148,37 +141,36 @@ Marvin automatically delegates each request to the right specialist.
 
 ```
 marvin/
-├── global/                 # Source of truth (deployed to ~/.claude/)
-│   ├── CLAUDE.md           # Marvin orchestrator system prompt
-│   ├── agents/             # Agent definitions + domain rules (13 specialists)
-│   ├── skills/             # Slash command implementations
-│   ├── rules/              # Universal rules (coding-standards, security)
-│   ├── registry/           # Agent and skill registries
-│   ├── reference/          # Workflow and protocol documentation
-│   ├── templates/          # Scaffolding templates
-│   ├── hooks/              # Shell hooks
-│   ├── settings.json       # Claude Code settings
-│   └── memory.md           # Persistent memory template
-├── project-templates/      # /init templates
-├── docs/                   # Architecture and concept documentation
-├── scripts/                # Utility scripts (Ralph Loop, etc.)
-├── research/               # Research artifacts and notes
-├── install.sh              # Installer (global + project scope, dev mode)
-└── .claude/                # Project dev instructions
+├── core/                  # Source of truth (deployed to <project>/.claude/)
+│   ├── CLAUDE.md          # Marvin orchestrator system prompt
+│   ├── agents/            # Agent definitions + domain rules (13 specialists)
+│   ├── skills/            # Slash command implementations
+│   ├── rules/             # Universal rules (coding-standards, security)
+│   ├── registry/          # Agent and skill registries
+│   ├── reference/         # Workflow and protocol documentation
+│   ├── templates/         # Scaffolding templates
+│   ├── hooks/             # Shell hooks
+│   ├── settings.json      # Claude Code settings
+│   └── memory.md          # Persistent memory template
+├── docs/                  # Architecture and concept documentation
+├── scripts/               # Utility scripts (Ralph Loop, etc.)
+├── research/              # Research artifacts and notes
+├── install.sh             # Installer (project scope, dev mode)
+└── .claude/               # Project dev instructions
 ```
 
 ## Development Workflow
 
-**Critical Rule**: Always edit source files in `global/`, never in `~/.claude/` directly.
+**Critical Rule**: Always edit source files in `core/`, never in the deployed `.claude/` directly.
 
 | What to Change | Edit Here | NOT Here |
 |----------------|-----------|----------|
-| Orchestrator logic | `global/CLAUDE.md` | `~/.claude/CLAUDE.md` |
-| Agent definitions | `global/agents/<name>/AGENT.md` | `~/.claude/agents/` |
-| Domain rules | `global/agents/<domain>-expert/rules.md` | `~/.claude/agents/` |
-| Skills | `global/skills/<name>/SKILL.md` | `~/.claude/skills/` |
+| Orchestrator logic | `core/CLAUDE.md` | `<project>/.claude/CLAUDE.md` |
+| Agent definitions | `core/agents/<name>/AGENT.md` | `<project>/.claude/agents/` |
+| Domain rules | `core/agents/<domain>-expert/rules.md` | `<project>/.claude/agents/` |
+| Skills | `core/skills/<name>/SKILL.md` | `<project>/.claude/skills/` |
 
-After editing, run `./install.sh` to deploy changes. Use `./install.sh --dev` during
+After editing, run `./install.sh <project-path>` to deploy changes. Use `./install.sh --dev <project-path>` during
 development so directories are symlinked and changes take effect immediately.
 
 ## How Delegation Works
@@ -217,11 +209,11 @@ Contributions welcome! To contribute:
 
 1. Fork the repository
 2. Create a feature branch
-3. Edit files in `global/`
-4. Test with `./install.sh --dry-run`
+3. Edit files in `core/`
+4. Test with `./install.sh --dry-run <project-path>`
 5. Submit a pull request
 
-Ideas: new domain agents, additional skills, expanded rule patterns, project templates.
+Ideas: new domain agents, additional skills, expanded rule patterns.
 
 ## License
 
@@ -237,7 +229,8 @@ Built with Claude Opus 4.6 using the Claude Code CLI.
 
 ```bash
 cd ~/Projects/marvin
-./install.sh
+./install.sh ~/Projects/my-project
+cd ~/Projects/my-project
 claude
 > Hello Marvin!
 ```

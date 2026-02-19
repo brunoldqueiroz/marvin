@@ -28,7 +28,7 @@ This document explains all architectural concepts and patterns used in the Marvi
 
 ### What it is
 
-Marvin is not a direct assistant, but an **orchestration layer** that intercepts all requests and decides who should execute them. It functions as the system's "brain," living in `~/.claude/CLAUDE.md`, which is automatically loaded in every Claude Code session.
+Marvin is not a direct assistant, but an **orchestration layer** that intercepts all requests and decides who should execute them. It functions as the system's "brain," living in `.claude/CLAUDE.md`, which is automatically loaded in every Claude Code session.
 
 ### Why it exists
 
@@ -41,7 +41,7 @@ Claude Code, by default, responds to all requests directly. This works well for 
 
 ### How it works in Marvin
 
-1. **Automatic loading**: When you start `claude`, the file `~/.claude/CLAUDE.md` is loaded as system context
+1. **Automatic loading**: When you start `claude`, the file `.claude/CLAUDE.md` is loaded as system context
 2. **Request interception**: Every user request passes through the orchestrator first
 3. **Intelligent routing**: Marvin analyzes the request's domain and consults the agent registry
 4. **Delegation decision**:
@@ -56,7 +56,7 @@ Claude Code, by default, responds to all requests directly. This works well for 
 └──────────────────┬──────────────────────────────────────┘
                    ▼
 ┌─────────────────────────────────────────────────────────┐
-│  Marvin Orchestrator (~/.claude/CLAUDE.md)             │
+│  Marvin Orchestrator (.claude/CLAUDE.md)                │
 │  1. Stop and Think                                      │
 │  2. Identifies domain: "dbt"                            │
 │  3. Consults registry/agents.md                         │
@@ -167,7 +167,7 @@ With mandatory delegation:
 
 ### How it works in Marvin
 
-**Routing Table** (`~/.claude/registry/agents.md`):
+**Routing Table** (`.claude/registry/agents.md`):
 
 | Agent | Triggers | Loads |
 |--------|----------|---------|
@@ -268,7 +268,7 @@ Create staging model stg_salesforce__orders from raw Salesforce orders.
 - [ ] schema.yml documentation
 
 ### Constraints
-MUST: Follow ~/.claude/agents/dbt-expert/rules.md
+MUST: Follow .claude/agents/dbt-expert/rules.md
 MUST: Use source() function, never hardcode table names
 MUST NOT: Add business logic (staging is 1:1 with source)
 PREFER: Explicit column selection over SELECT *
@@ -618,7 +618,7 @@ Skills solve:
 
 ### How they work in Marvin
 
-**Skill structure** (`global/skills/<name>/SKILL.md`):
+**Skill structure** (`core/skills/<name>/SKILL.md`):
 
 ```yaml
 ---
@@ -674,12 +674,12 @@ Task: $ARGUMENTS
 User: /ralph refactor legacy pipeline
          ↓
 Marvin: 1. Detects skill "ralph"
-        2. Loads ~/.claude/skills/ralph/SKILL.md
+        2. Loads .claude/skills/ralph/SKILL.md
         3. Replaces $ARGUMENTS with "refactor legacy pipeline"
         4. Executes SKILL.md instructions
 ```
 
-**Registry** (`~/.claude/registry/skills.md`):
+**Registry** (`.claude/registry/skills.md`):
 Lists all available skills with short descriptions. User consults to discover capabilities.
 
 ---
@@ -706,7 +706,7 @@ Persistent memory solves:
 
 **Two scopes**:
 
-1. **Global Memory** (`~/.claude/memory.md`): Valid across all projects
+1. **Global Memory** (`.claude/memory.md`): Valid across all projects
    - User preferences
    - Cross-project patterns
    - General lessons
@@ -717,7 +717,7 @@ Persistent memory solves:
    - Patterns discovered in project
    - Project lessons
 
-**Template** (`global/memory.md`):
+**Template** (`core/memory.md`):
 
 ```markdown
 # Marvin Memory — Global
@@ -743,7 +743,7 @@ def choose_memory_scope(information):
     question = "Would this information be useful in other projects?"
 
     if answer_yes(question):
-        return "~/.claude/memory.md"  # Global
+        return ".claude/memory.md"  # Global
     else:
         return ".claude/memory.md"    # Project
 ```
@@ -768,7 +768,7 @@ Marvin: 1. Parse: "Parquet + Snappy compression"
         2. Choose scope: Global (useful in multiple projects)
         3. Classify: Patterns & Conventions
         4. Add entry: "- [2026-02-13] Use Parquet + Snappy for outputs"
-        5. Confirm: "Saved in ~/.claude/memory.md > Patterns & Conventions"
+        5. Confirm: "Saved in .claude/memory.md > Patterns & Conventions"
 ```
 
 **Proactive saving**:
@@ -802,7 +802,7 @@ A four-phase verification process that separates **facts (deterministic)** from 
 Traditional LLM verification is non-deterministic and expensive:
 - ❌ "I reviewed the code, looks good" (but didn't run tests)
 - ❌ False positives: LLM sees problem where there isn't one
-- ❌ False negatives: LLM doesn't see obvious bug that compiler would catch
+- ❌ False negatives: LLM doesn't see obvious bug that compiler would check
 
 Deterministic verification solves:
 - ✅ Facts first: compilation, tests, types — zero ambiguity
@@ -984,7 +984,7 @@ Loading dbt rules in a Docker session makes no sense. Separation enables:
 
 ### How they work in Marvin
 
-**Universal Rules** (`global/rules/`):
+**Universal Rules** (`core/rules/`):
 
 Auto-loaded in EVERY session (via CLAUDE.md):
 
@@ -1021,7 +1021,7 @@ Auto-loaded in EVERY session (via CLAUDE.md):
 3. **handoff-protocol.md**:
    Structured delegation template.
 
-**Domain Rules** (`global/agents/<domain>-expert/rules.md`):
+**Domain Rules** (`core/agents/<domain>-expert/rules.md`):
 
 Loaded ONLY when specialist agent is delegated:
 
@@ -1072,7 +1072,7 @@ Loaded ONLY when specialist agent is delegated:
 **Colocation**:
 
 ```
-global/
+core/
 ├── rules/                          # Universal (auto-load)
 │   ├── coding-standards.md
 │   ├── security.md
@@ -1095,7 +1095,7 @@ global/
 ## Handoff: dbt-expert
 
 ### Constraints
-MUST: Read ~/.claude/agents/dbt-expert/rules.md before starting
+MUST: Read .claude/agents/dbt-expert/rules.md before starting
 MUST: Follow naming conventions from rules
 ```
 
@@ -1138,7 +1138,7 @@ Creates complete structure for new agent:
 User: /new-agent kafka-expert "Kafka streaming specialist"
 
 Marvin creates:
-global/agents/kafka-expert/
+core/agents/kafka-expert/
 ├── AGENT.md           # Populated template
 └── rules.md           # Empty template to fill
 
@@ -1170,7 +1170,7 @@ Creates new skill/slash command:
 User: /new-skill schema-registry "Generate Avro schemas"
 
 Marvin creates:
-global/skills/schema-registry/
+core/skills/schema-registry/
 └── SKILL.md
 
 Contents:
@@ -1198,7 +1198,7 @@ Creates domain rules file:
 User: /new-rule kafka
 
 Marvin creates:
-global/agents/kafka-expert/rules.md
+core/agents/kafka-expert/rules.md
 
 Contents (template):
 # Kafka Expert Rules
@@ -1246,7 +1246,7 @@ Report:
   Suggestion: /new-agent flink-expert "Apache Flink specialist"
 ```
 
-**Templates** (`global/templates/`):
+**Templates** (`core/templates/`):
 
 ```
 templates/
@@ -1261,7 +1261,7 @@ templates/
 After creating new agents/skills:
 ```bash
 cd ~/Projects/marvin
-./install.sh  # Deploy to ~/.claude/
+./install.sh ~/Projects/my-project  # Deploy to project
 ```
 
 **Suggestion trigger**:
@@ -1280,17 +1280,17 @@ Note: Detected multiple Kafka requests. Consider creating an agent:
 
 ### What it is
 
-A deployment pattern where `global/` is the source of truth and `install.sh` deploys to `~/.claude/`. Edits ALWAYS in `global/`, NEVER in `~/.claude/`.
+A deployment pattern where `core/` is the source of truth and `install.sh` deploys to `<project>/.claude/`. Edits ALWAYS in `core/`, NEVER in the deployed `.claude/`.
 
 ### Why it exists
 
 Without source of truth:
-- ❌ Edit `~/.claude/CLAUDE.md` → changes lost on next install
-- ❌ Drift: version in ~/.claude different from global/
-- ❌ Not versioned: changes in ~/.claude not in git
+- ❌ Edit `.claude/CLAUDE.md` → changes lost on next install
+- ❌ Drift: version in .claude/ different from core/
+- ❌ Not versioned: changes in .claude/ not in git
 
 With source of truth:
-- ✅ Everything versioned: `global/` is in git
+- ✅ Everything versioned: `core/` is in git
 - ✅ Consistent deployment: `install.sh` guarantees parity
 - ✅ Rollback: `git checkout` + `install.sh` restores version
 
@@ -1300,7 +1300,7 @@ With source of truth:
 
 ```
 ~/Projects/marvin/           # Git repository
-├── global/                  # SOURCE OF TRUTH
+├── core/                   # SOURCE OF TRUTH
 │   ├── CLAUDE.md
 │   ├── agents/
 │   ├── skills/
@@ -1308,34 +1308,36 @@ With source of truth:
 ├── install.sh               # Deployment script
 └── .git/
 
-~/.claude/                   # DEPLOYED (don't edit)
-├── CLAUDE.md                # Copy of global/CLAUDE.md
+project/.claude/             # DEPLOYED (don't edit)
+├── CLAUDE.md                # Copy of core/CLAUDE.md
 ├── agents/
 ├── skills/
 └── rules/
 ```
 
-**Golden rule**: **NEVER edit `~/.claude/` directly.**
+**Golden rule**: **NEVER edit the deployed `.claude/` directly.**
 
 **Workflow**:
 
 ```bash
 # 1. Edit source of truth
 cd ~/Projects/marvin
-vim global/agents/dbt-expert/rules.md
+vim core/agents/dbt-expert/rules.md
 
 # 2. Test (optional)
-./install.sh --dry-run
+./install.sh --dry-run ~/Projects/my-project
 
 # 3. Deploy
-./install.sh
+./install.sh ~/Projects/my-project
 
 # 4. Verify
+cd ~/Projects/my-project
 claude
 > Test change...
 
 # 5. Commit
-git add global/agents/dbt-expert/rules.md
+cd ~/Projects/marvin
+git add core/agents/dbt-expert/rules.md
 git commit -m "feat(dbt): add incremental materialization guidance"
 ```
 
@@ -1343,32 +1345,33 @@ git commit -m "feat(dbt): add incremental materialization guidance"
 
 ```bash
 #!/bin/bash
-MARVIN_HOME="$HOME/.claude"
-GLOBAL_DIR="$(pwd)/global"
+MARVIN_REPO="$(cd "$(dirname "$0")" && pwd)"
+CORE_DIR="$MARVIN_REPO/core"
+TARGET="$PROJECT_PATH/.claude"
 
 # Backup existing (if not ours)
-backup_if_needed "$MARVIN_HOME/CLAUDE.md"
+backup_if_needed "$TARGET/CLAUDE.md"
 
 # Copy complete structure
-cp -r "$GLOBAL_DIR/CLAUDE.md" "$MARVIN_HOME/"
-cp -r "$GLOBAL_DIR/agents" "$MARVIN_HOME/"
-cp -r "$GLOBAL_DIR/skills" "$MARVIN_HOME/"
-cp -r "$GLOBAL_DIR/rules" "$MARVIN_HOME/"
-cp -r "$GLOBAL_DIR/registry" "$MARVIN_HOME/"
-cp -r "$GLOBAL_DIR/templates" "$MARVIN_HOME/"
+cp -r "$CORE_DIR/CLAUDE.md" "$TARGET/"
+cp -r "$CORE_DIR/agents" "$TARGET/"
+cp -r "$CORE_DIR/skills" "$TARGET/"
+cp -r "$CORE_DIR/rules" "$TARGET/"
+cp -r "$CORE_DIR/registry" "$TARGET/"
+cp -r "$CORE_DIR/templates" "$TARGET/"  # scaffolding templates
 
 # Memory.md: NEVER overwrite (preserves user data)
-if [ ! -f "$MARVIN_HOME/memory.md" ]; then
-  cp "$GLOBAL_DIR/memory.md" "$MARVIN_HOME/"
+if [ ! -f "$TARGET/memory.md" ]; then
+  cp "$CORE_DIR/memory.md" "$TARGET/"
 fi
 
-echo "Marvin installed to ~/.claude/"
+echo "Marvin installed to $TARGET"
 ```
 
 **Flags**:
-- `./install.sh`: Installs with backup
-- `./install.sh --force`: Installs without prompts
-- `./install.sh --dry-run`: Shows what would be copied (without executing)
+- `./install.sh <path>`: Installs with backup
+- `./install.sh --force <path>`: Installs without prompts
+- `./install.sh --dry-run <path>`: Shows what would be copied (without executing)
 
 **Project override** (`.claude/`):
 
@@ -1385,20 +1388,20 @@ project/
 ```
 
 **Loading order**:
-1. `~/.claude/CLAUDE.md` (global)
-2. `.claude/CLAUDE.md` (project, if exists)
-3. Global memory
-4. Project memory
+1. `.claude/CLAUDE.md` (Marvin core, installed by install.sh)
+2. Project-specific overrides (if any)
+3. Memory
+4. Domain rules (on delegation)
 
 **When to edit where**:
 
 | What to edit | Where to edit | Don't edit |
 |--------------|-------------|------------|
-| Orchestrator logic | `global/CLAUDE.md` | `~/.claude/CLAUDE.md` |
-| Agent definition | `global/agents/<name>/AGENT.md` | `~/.claude/agents/` |
-| Domain rules | `global/agents/<domain>/rules.md` | `~/.claude/agents/` |
-| Skills | `global/skills/<name>/SKILL.md` | `~/.claude/skills/` |
-| Global memory | `~/.claude/memory.md` | ✅ OK to edit (user data) |
+| Orchestrator logic | `core/CLAUDE.md` | `<project>/.claude/CLAUDE.md` |
+| Agent definition | `core/agents/<name>/AGENT.md` | `<project>/.claude/agents/` |
+| Domain rules | `core/agents/<domain>/rules.md` | `<project>/.claude/agents/` |
+| Skills | `core/skills/<name>/SKILL.md` | `<project>/.claude/skills/` |
+| Memory | `.claude/memory.md` | ✅ OK to edit (user data) |
 | Project context | `.claude/CLAUDE.md` | ✅ OK (project-specific) |
 
 ---
@@ -1574,7 +1577,7 @@ Created:
 Next steps:
 - Customize .claude/CLAUDE.md with project specifics
 - Use /remember to document decisions as they arise
-- Global agents (dbt-expert, airflow-expert, etc.) are available
+- Agents (dbt-expert, airflow-expert, etc.) are available
 ```
 
 ---
@@ -2043,7 +2046,7 @@ Hooks solve:
 
 ### How they work in Marvin
 
-**Location**: `~/.claude/hooks/`
+**Location**: `.claude/hooks/`
 
 **Hook types**:
 
@@ -2070,7 +2073,7 @@ exit 0
 Integration:
 ```bash
 # Before git commit
-~/.claude/hooks/block-secrets.sh || {
+.claude/hooks/block-secrets.sh || {
   echo "Commit blocked by security hook"
   exit 1
 }
@@ -2129,7 +2132,7 @@ fi
 Usage:
 ```bash
 # At end of Ralph Loop
-~/.claude/hooks/notify.sh "Task completed successfully"
+.claude/hooks/notify.sh "Task completed successfully"
 ```
 
 #### 5. `greeting.sh`
@@ -2149,7 +2152,7 @@ echo "Type '/help' for full list"
 echo ""
 ```
 
-**Settings integration** (`~/.claude/settings.json`):
+**Settings integration** (`.claude/settings.json`):
 
 ```json
 {
@@ -2158,9 +2161,9 @@ echo ""
     "deny": ["rm -rf *"]
   },
   "hooks": {
-    "pre-commit": "~/.claude/hooks/block-secrets.sh",
-    "pre-run": "~/.claude/hooks/validate-python.sh",
-    "post-task": "~/.claude/hooks/notify.sh"
+    "pre-commit": ".claude/hooks/block-secrets.sh",
+    "pre-run": ".claude/hooks/validate-python.sh",
+    "post-task": ".claude/hooks/notify.sh"
   }
 }
 ```
@@ -2169,7 +2172,7 @@ echo ""
 
 ```bash
 # Make executable
-chmod +x ~/.claude/hooks/*.sh
+chmod +x .claude/hooks/*.sh
 
 # Claude Code calls hooks automatically
 # (or manually via bash commands in agents)
@@ -2182,7 +2185,7 @@ chmod +x ~/.claude/hooks/*.sh
 
 Before running tests:
 1. Run pre-validation hook:
-   bash ~/.claude/hooks/validate-python.sh src/pipeline.py
+   bash .claude/hooks/validate-python.sh src/pipeline.py
 
 2. If exit code 0: proceed with tests
 3. If exit code 1: report validation error
@@ -2203,8 +2206,7 @@ project/
 **Execution order**:
 
 ```bash
-1. ~/.claude/hooks/<hook>.sh    # Global
-2. .claude/hooks/<hook>.sh       # Project (if exists, overrides global)
+1. .claude/hooks/<hook>.sh    # Project hooks
 ```
 
 ---
