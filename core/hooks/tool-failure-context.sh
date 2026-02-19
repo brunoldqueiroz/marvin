@@ -5,10 +5,12 @@
 # Cannot block (tool already failed). Injects helpful context so Claude
 # can recover instead of retrying blindly.
 
+source "$(dirname "$0")/_lib.sh"
+
 INPUT=$(cat)
 
-TOOL_NAME=$(echo "$INPUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null)
-ERROR=$(echo "$INPUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('error',''))" 2>/dev/null)
+TOOL_NAME=$(echo "$INPUT" | json_val '.tool_name')
+ERROR=$(echo "$INPUT" | json_val '.error')
 
 CONTEXT=""
 

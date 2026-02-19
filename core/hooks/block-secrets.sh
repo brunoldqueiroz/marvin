@@ -3,8 +3,10 @@
 # Hook: PreToolUse (matcher: Bash)
 # Exit 2 = block the action
 
+source "$(dirname "$0")/_lib.sh"
+
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+COMMAND=$(echo "$INPUT" | json_val '.tool_input.command')
 
 PATTERNS=(
   "cat.*\.env"

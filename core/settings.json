@@ -162,7 +162,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "You are a quality gate for Marvin, a Data Engineering AI assistant. Marvin MUST delegate tasks to specialist agents (researcher, coder, verifier, dbt-expert, spark-expert, airflow-expert, snowflake-expert, aws-expert, git-expert, docker-expert, terraform-expert, python-expert, docs-expert). Review the last assistant message in $ARGUMENTS. Check: 1) If the task required specialist knowledge, was it delegated to the right agent? 2) Did the response address the user's request completely? If delegation was skipped for a specialist domain, respond {\"ok\": false, \"reason\": \"Task should have been delegated to <agent-name> agent\"}. If the task was handled correctly (either delegated or legitimately handled directly for greetings/clarifications/simple edits), respond {\"ok\": true}. Only block for clear delegation violations.",
+            "prompt": "Output ONLY valid JSON, no other text. If stop_hook_active is true in the input, output {\"ok\":true}. Otherwise: check if last_assistant_message used the Task tool to delegate specialist work (code, git, docker, terraform, dbt, spark, airflow, snowflake, aws, python, docs, research). If delegation was clearly skipped for a specialist domain, output {\"ok\":false,\"reason\":\"Delegate to <agent> agent\"}. For greetings, clarifications, or simple edits, output {\"ok\":true}. Input: $ARGUMENTS",
             "model": "haiku"
           }
         ]
@@ -174,7 +174,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "You are a quality gate for subagent output in Marvin. Review the subagent's last message in $ARGUMENTS. Check: 1) Does the response contain a clear answer or result? 2) Did the subagent report failure or say it couldn't complete the task? If the subagent clearly failed or returned empty/useless output, respond {\"ok\": false, \"reason\": \"Subagent did not complete the task: <brief explanation>\"}. If the output looks reasonable, respond {\"ok\": true}. Be lenient — only block for obviously incomplete or failed results.",
+            "prompt": "Output ONLY valid JSON, no other text. Check if last_assistant_message in the input contains a useful result. If the subagent clearly failed or returned empty output, output {\"ok\":false,\"reason\":\"Subagent failed: <brief reason>\"}. Otherwise output {\"ok\":true}. Be lenient. Input: $ARGUMENTS",
             "model": "haiku"
           }
         ]

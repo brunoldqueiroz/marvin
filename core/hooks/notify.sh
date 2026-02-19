@@ -2,7 +2,10 @@
 # notify.sh — Desktop notification when Claude needs attention
 # Hook: Notification
 
-MESSAGE=$(cat | jq -r '.message // "Marvin needs your attention"')
+source "$(dirname "$0")/_lib.sh"
+
+MESSAGE=$(cat | json_val '.message')
+[ -z "$MESSAGE" ] && MESSAGE="Marvin needs your attention"
 
 if command -v notify-send &> /dev/null; then
   # Linux

@@ -3,8 +3,10 @@
 # Hook: PreToolUse (matcher: Edit|Write)
 # Exit 2 = block the action
 
+source "$(dirname "$0")/_lib.sh"
+
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH=$(echo "$INPUT" | json_val '.tool_input.file_path')
 
 PROTECTED=(
   ".env"

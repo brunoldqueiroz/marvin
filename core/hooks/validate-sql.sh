@@ -2,8 +2,10 @@
 # validate-sql.sh — Auto-lint and fix SQL files on write/edit
 # Hook: PostToolUse (matcher: Write|Edit)
 
+source "$(dirname "$0")/_lib.sh"
+
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH=$(echo "$INPUT" | json_val '.tool_input.file_path')
 
 if [[ "$FILE_PATH" == *.sql ]]; then
   if command -v sqlfluff &> /dev/null; then
