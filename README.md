@@ -93,6 +93,8 @@ graph TB
 | | `/new-agent` | Scaffold a new specialized agent |
 | | `/new-skill` | Create a new slash command |
 | | `/new-rule` | Add domain knowledge rules |
+| | `/audit-agents` | Audit codebase for agent coverage gaps |
+| | `/handoff-reference` | Full handoff protocol reference |
 | **Research** | `/research` | Deep web research with Context7 and Exa |
 | | `/review` | Code review for quality and security |
 | **Data Engineering** | `/pipeline` | Design complete data pipelines |
@@ -102,6 +104,7 @@ graph TB
 | **Workflow** | `/spec` | OpenSpec Spec-Driven Development |
 | | `/ralph` | Ralph Loop for autonomous tasks |
 | | `/remember` | Save to persistent memory |
+| | `/meta-prompt` | Generate optimized prompts |
 
 ## Getting Started
 
@@ -113,14 +116,31 @@ git clone <repository-url> ~/Projects/marvin
 cd ~/Projects/marvin
 
 # Install to a project
-./install.sh ~/Projects/my-project
+make install PROJECT=~/Projects/my-project
 
 # Dev mode (symlinks for rapid iteration on Marvin itself)
-./install.sh --dev ~/Projects/my-project
+make install-dev PROJECT=~/Projects/my-project
 
 # Preview changes without modifying anything
-./install.sh --dry-run ~/Projects/my-project
+make dry-run PROJECT=~/Projects/my-project
 ```
+
+#### Makefile Targets
+
+| Target | Description |
+|--------|-------------|
+| `make install` | Install Marvin to a project |
+| `make install-dev` | Install in dev mode (symlinks) |
+| `make dry-run` | Preview installation without changes |
+| `make uninstall` | Remove Marvin from a project |
+| `make test` | Run all checks (lint + hook tests) |
+| `make lint` | Run all linters (JSON + shellcheck) |
+| `make hooks-chmod` | Ensure all hooks are executable |
+| `make list-hooks` | List all hook scripts |
+| `make list-agents` | List all specialist agents |
+| `make help` | Show all available targets |
+
+All project-targeting commands require `PROJECT=<path>`.
 
 ### Quick Start
 
@@ -153,9 +173,9 @@ marvin/
 │   ├── settings.json      # Claude Code settings
 │   └── memory.md          # Persistent memory template
 ├── docs/                  # Architecture and concept documentation
-├── scripts/               # Utility scripts (Ralph Loop, etc.)
+├── scripts/               # Utility scripts (install.sh, etc.)
 ├── research/              # Research artifacts and notes
-├── install.sh             # Installer (project scope, dev mode)
+├── Makefile               # Build targets (install, test, lint)
 └── .claude/               # Project dev instructions
 ```
 
@@ -170,8 +190,8 @@ marvin/
 | Domain rules | `core/agents/<domain>-expert/rules.md` | `<project>/.claude/agents/` |
 | Skills | `core/skills/<name>/SKILL.md` | `<project>/.claude/skills/` |
 
-After editing, run `./install.sh <project-path>` to deploy changes. Use `./install.sh --dev <project-path>` during
-development so directories are symlinked and changes take effect immediately.
+After editing, run `make install PROJECT=<path>` to deploy changes. Use `make install-dev PROJECT=<path>` during
+development so directories are symlinked and changes take effect immediately. Run `make test` and `make lint` to validate before committing.
 
 ## How Delegation Works
 
@@ -186,6 +206,47 @@ development so directories are symlinked and changes take effect immediately.
 4. **Delegate**: Sends handoff to specialist via Task tool
 5. **Execute**: Agent loads domain rules and completes task
 6. **Memory**: Updates persistent memory with learnings
+
+## Hooks & Quality Gates
+
+Marvin uses 13 shell hooks across 8 event types to enforce quality automatically:
+
+| Event | Script | Purpose |
+|-------|--------|---------|
+| PreToolUse | `block-secrets.sh` | Block commands exposing secrets |
+| PreToolUse | `protect-files.sh` | Block edits to sensitive/lock files |
+| PostToolUse | `validate-python.sh` | Auto-format Python (ruff/black) |
+| PostToolUse | `validate-sql.sh` | Auto-lint SQL (sqlfluff/sqlfmt) |
+| PostToolUse | `validate-dockerfile.sh` | Lint Dockerfiles (hadolint) |
+| PostToolUse | `validate-terraform.sh` | Auto-format Terraform |
+| PostToolUseFailure | `tool-failure-context.sh` | Inject remediation hints on failures |
+| SessionStart | `compact-reinject.sh` | Restore identity + memory after compaction |
+| SessionStart | `session-context.sh` | Inject git state on startup |
+| PreCompact | `pre-compact-save.sh` | Save state before compaction |
+| Stop | `stop-quality-gate.sh` | Enforce delegation protocol |
+| SubagentStop | `subagent-quality-gate.sh` | Validate subagent output quality |
+| Notification | `notify.sh` | Desktop notification (Linux/macOS/WSL) |
+
+Additionally, `status-line.sh` provides a dynamic status bar and `_lib.sh` is a shared helper with `json_val()` (jq with python3 fallback) used by all hooks.
+
+## Settings
+
+Marvin ships a `settings.json` with a 3-tier permission model:
+
+| Tier | Behavior | Examples |
+|------|----------|---------|
+| `allow` | Run without asking | `Bash(git status*)`, `Read`, `Edit`, `Write` |
+| `ask` | Prompt for confirmation | `Bash(git push*)`, `Bash(terraform apply*)` |
+| `deny` | Block entirely | `Bash(rm -rf /)`, `Bash(git push --force*)`, `Read(.env)` |
+
+Other key settings:
+
+- **`$schema`** — JSON Schema validation for settings structure
+- **`env`** — Environment variables injected into sessions (`MARVIN_ENABLED=1`)
+- **`statusLine`** — Dynamic status bar via `status-line.sh`
+- **`respectGitignore`** — Honor `.gitignore` patterns in file operations
+- **`cleanupPeriodDays`** — Auto-cleanup period for old session data (default: 30)
+- **`attribution`** — Suppress AI attribution in commits and PRs
 
 ## Extending Marvin
 
@@ -210,7 +271,7 @@ Contributions welcome! To contribute:
 1. Fork the repository
 2. Create a feature branch
 3. Edit files in `core/`
-4. Test with `./install.sh --dry-run <project-path>`
+4. Validate with `make dry-run PROJECT=<path>` and `make test`
 5. Submit a pull request
 
 Ideas: new domain agents, additional skills, expanded rule patterns.
@@ -229,7 +290,7 @@ Built with Claude Opus 4.6 using the Claude Code CLI.
 
 ```bash
 cd ~/Projects/marvin
-./install.sh ~/Projects/my-project
+make install PROJECT=~/Projects/my-project
 cd ~/Projects/my-project
 claude
 > Hello Marvin!
