@@ -9,6 +9,13 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 memory: user
 permissionMode: acceptEdits
+maxTurns: 25
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "~/.claude/hooks/validate-dockerfile.sh"
 ---
 
 # Docker Expert Agent

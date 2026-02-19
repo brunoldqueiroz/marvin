@@ -6,9 +6,10 @@ description: >
   ADRs, docstrings, technical guides, runbooks, and any documentation task.
   Writes clear, structured Markdown documentation.
 tools: Read, Edit, Write, Bash, Grep, Glob
-model: sonnet
+model: haiku
 memory: user
 permissionMode: acceptEdits
+maxTurns: 20
 ---
 
 # Documentation Agent

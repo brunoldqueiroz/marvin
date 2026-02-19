@@ -1,29 +1,39 @@
 # Agent Registry
 
-**You MUST delegate to these agents when their domain is involved.**
+Marvin has 13 specialist agents. Delegate to the matching specialist for any task
+in their domain — even "simple" ones. Every delegation MUST use the structured
+handoff protocol (@rules/handoff-protocol.md).
 
-## Routing Table
+## Specialists
 
-| Agent | Triggers | Loads |
-|-------|----------|-------|
-| **researcher** | research, compare, find docs, how do I, what's the best | Context7 → Exa → WebSearch → WebFetch |
-| **coder** | implement, refactor, write tests, fix bug, debug, 2+ files | Code changes with tests |
-| **verifier** | verify, validate, check quality, run tests, after complex work | Pass/fail report |
-| **dbt-expert** | dbt, data model, fact/dim table, staging, incremental, schema.yml | `~/.claude/agents/dbt-expert/rules.md` |
-| **spark-expert** | spark, pyspark, dataframe, rdd, shuffle, partition, broadcast | `~/.claude/agents/spark-expert/rules.md` |
-| **airflow-expert** | airflow, dag, operator, sensor, schedule, xcom | `~/.claude/agents/airflow-expert/rules.md` |
-| **snowflake-expert** | snowflake, warehouse, clustering, rbac, time travel, stream | `~/.claude/agents/snowflake-expert/rules.md` |
-| **aws-expert** | s3, glue, lambda, iam, cdk, step functions, kinesis | `~/.claude/agents/aws-expert/rules.md` |
-| **git-expert** | commit, git push, pull request, PR, branch, any git operation | Git commands + commit messages |
-| **docker-expert** | docker, dockerfile, container, image, docker-compose, ecr | Dockerfile + Compose configs |
-| **terraform-expert** | terraform, hcl, tfvars, tf plan/apply, module, state, backend | HCL code + guidance |
-| **python-expert** | python, pyproject.toml, pytest, typing, async, uv, pydantic | Python code + configs |
-| **docs-expert** | documentation, README, API docs, ADR, docstrings, technical guide, runbook | Markdown documentation |
+| Agent | Domain | Model |
+|-------|--------|-------|
+| **researcher** | Research, comparisons, documentation lookup, technology evaluation | sonnet |
+| **coder** | Code implementation, refactoring, tests, debugging, multi-file changes | sonnet |
+| **verifier** | Quality verification, test execution, lint, security scan | haiku |
+| **dbt-expert** | dbt models, data transformation, SQL optimization, schema.yml, testing | sonnet |
+| **spark-expert** | PySpark jobs, performance tuning, shuffle optimization, ETL pipelines | sonnet |
+| **airflow-expert** | DAG development, scheduling, operators, TaskFlow API, error handling | sonnet |
+| **snowflake-expert** | Query optimization, RBAC, cost optimization, streams, tasks, data loading | sonnet |
+| **aws-expert** | S3, Glue, Lambda, IAM, CDK/Terraform, cost optimization | sonnet |
+| **git-expert** | Commits, branches, PRs, git history, Conventional Commits | haiku |
+| **docker-expert** | Dockerfiles, multi-stage builds, Compose, image security, registries | sonnet |
+| **terraform-expert** | HCL code, state management, modules, plan/apply, workspaces | sonnet |
+| **python-expert** | Python packaging, typing, pytest, async, uv, pydantic, design patterns | sonnet |
+| **docs-expert** | READMEs, API docs, ADRs, docstrings, technical guides, runbooks | haiku |
+
+## How to Route
+
+Read the user's request and match it to the agent whose **domain** best fits.
+When multiple domains are involved, delegate to the primary one first.
+
+**Cross-domain tasks**: Delegate sequentially to each relevant specialist.
+Example: "create a dbt model and deploy with Terraform" → dbt-expert first, then terraform-expert.
 
 ## Delegation Rules
 
-**All agents**: Every delegation MUST follow the structured handoff protocol (@rules/handoff-protocol.md). Construct the handoff before calling the Task tool.
+**researcher**: Include MCP tool priority — Context7 first (`resolve-library-id` → `query-docs`),
+then Exa (`web_search_exa`), WebSearch as fallback, WebFetch for deep reads.
 
-**researcher**: Include tool priority in prompt — Context7 FIRST (ToolSearch → `resolve-library-id` → `query-docs`), then Exa (`web_search_exa`), WebSearch as fallback, WebFetch to go deep. All MCP tools require ToolSearch to load first.
-
-**Domain specialists** (dbt/spark/airflow/snowflake/aws): Include in Constraints: `MUST: Read ~/.claude/agents/<domain>-expert/rules.md for conventions before starting.`
+**Domain specialists** (dbt/spark/airflow/snowflake/aws): Include in Constraints:
+`MUST: Read ~/.claude/agents/<domain>-expert/rules.md for conventions before starting.`

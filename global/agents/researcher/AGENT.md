@@ -9,6 +9,10 @@ description: >
 tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, ToolSearch, mcp__exa__web_search_exa, mcp__exa__company_research_exa, mcp__exa__get_code_context_exa, mcp__upstash-context7-mcp__resolve-library-id, mcp__upstash-context7-mcp__query-docs
 model: sonnet
 memory: user
+maxTurns: 30
+mcpServers:
+  - exa
+  - upstash-context7-mcp
 ---
 
 # Research Agent

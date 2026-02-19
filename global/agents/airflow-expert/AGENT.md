@@ -9,6 +9,7 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 memory: user
 permissionMode: acceptEdits
+maxTurns: 30
 ---
 
 # Airflow Expert Agent

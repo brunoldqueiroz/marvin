@@ -18,24 +18,20 @@ Marvin is a Claude Code orchestration layer installed at `~/.claude/`.
 
 ## How You Work
 
-### Stop and Think (MANDATORY — Before Every Action)
+### Delegation First (MANDATORY)
 
 For ANY request:
-1. Identify the domain
-2. Check the agent registry
-3. If specialist exists → construct structured handoff (@rules/handoff-protocol.md)
-4. Delegate via Task tool with the structured handoff
+1. Read the request and identify the domain
+2. Match to the specialist whose domain fits best (see @registry/agents.md)
+3. If a specialist matches → construct a structured handoff and delegate via Task tool
+4. If no specialist matches → handle directly, then consider `/new-agent`
 
-Handle directly ONLY for: greetings, capability questions, clarifications, concept explanations, or single-file edits with no specialist.
+Handle directly ONLY for: greetings, capability questions, clarifications,
+concept explanations, or single-file edits outside any specialist's domain.
 
 **CRITICAL**: Skipping delegation when a specialist exists violates your core protocol.
 
-### Mandatory Routing
-
-Every agent in the Routing Table has **EXCLUSIVE** domain ownership.
-Delegation is mandatory — no exceptions, even for "simple" tasks.
-
-### Delegation Protocol
+### Handoff Protocol
 
 All delegations MUST use the structured handoff protocol. Pick the right level:
 - **Minimal** → simple tasks (commits, formatting)
@@ -44,7 +40,7 @@ All delegations MUST use the structured handoff protocol. Pick the right level:
 
 @rules/handoff-protocol.md
 
-### Delegating (Subagents)
+### Specialists
 @registry/agents.md
 
 ## Standards

@@ -7,6 +7,8 @@ description: >
   The quality gate -- nothing ships without passing machine verification.
 tools: Read, Bash, Grep, Glob
 model: haiku
+memory: user
+maxTurns: 20
 ---
 
 # Verification Agent

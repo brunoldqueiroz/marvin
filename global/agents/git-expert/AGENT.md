@@ -9,6 +9,7 @@ description: >
 tools: Read, Bash, Grep, Glob
 model: haiku
 memory: project
+maxTurns: 15
 ---
 
 # Git Expert Agent

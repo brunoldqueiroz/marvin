@@ -9,6 +9,13 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 model: sonnet
 memory: user
 permissionMode: acceptEdits
+maxTurns: 30
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      hooks:
+        - type: command
+          command: "~/.claude/hooks/validate-terraform.sh"
 ---
 
 # Terraform Expert Agent
