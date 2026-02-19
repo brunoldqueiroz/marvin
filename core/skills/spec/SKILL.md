@@ -1,6 +1,6 @@
 ---
 name: spec
-description: Start an OpenSpec Spec-Driven Development workflow
+description: "Plan, specify, implement, and verify features through structured phases with atomic commits. Use when building non-trivial features that benefit from upfront design."
 disable-model-invocation: true
 argument-hint: "[feature or change description]"
 ---
@@ -255,6 +255,22 @@ Once verification passes:
 2. Update `changes/proposal.md` status to `DONE`
 3. Clean up `changes/` directory (or keep for reference)
 4. Summarize what was built and any deviations from the original proposal
+
+---
+
+## Workflow Graph (Standard + Comprehensive Tiers)
+
+| Node | Agent | Depends On | Output |
+|------|-------|-----------|--------|
+| research | researcher | — | changes/research.md |
+| proposal | (direct) | research | changes/proposal.md + changes/tasks.md |
+| spec_write | (direct) | proposal | changes/specs/*.spec.md |
+| implement | coder (per task) | spec_write | Code changes + atomic commits |
+| verify | verifier | implement | Verification report |
+| archive | (direct) | verify | specs/ + DONE status |
+
+Notes: Comprehensive Phase 0 spawns parallel researcher subagents. Implement
+nodes are sequential (one task at a time, each committed atomically).
 
 ---
 

@@ -1,22 +1,57 @@
 ---
 name: {{NAME}}
-description: {{DESCRIPTION}}
+description: "{{DESCRIPTION}} Use when {{WHEN_TO_USE}}."
 disable-model-invocation: true
 argument-hint: "[{{ARGUMENT_HINT}}]"
 ---
 
-# {{DISPLAY_NAME}} Skill
+# {{DISPLAY_NAME}}
 
-$ARGUMENTS
+{{CONTEXT_LABEL}}: $ARGUMENTS
 
 ## Process
-1. **Understand** - What is being asked?
-2. **Plan** - What's the best approach?
-3. **Execute** - Do the work step by step
-4. **Verify** - Check the results
-5. **Document** - Record what was done
+
+### 1. Understand
+
+Analyze $ARGUMENTS to determine what is being asked. If requirements are
+ambiguous, ask the user before proceeding.
+
+### 2. Plan
+
+Determine the approach and identify which agents to delegate to.
+
+### 3. Execute
+
+Delegate to the **{{AGENT}}** agent:
+- {{INSTRUCTION_1}}
+- {{INSTRUCTION_2}}
+
+### 4. Verify
+
+Delegate to the **verifier** agent:
+- Run tests and lint checks
+- Validate output against requirements
+- Check for security issues
+
+### 5. Summary
+
+Present to the user:
+- What was done
+- Files created or modified
+- Next steps
+
+<!-- ## Workflow Graph
+Uncomment for orchestration skills with 3+ agent delegations.
+
+| Node | Agent | Depends On | Output |
+|------|-------|-----------|--------|
+| understand | (direct) | — | Requirements clarified |
+| execute | {{AGENT}} | understand | Implementation |
+| verify | verifier | execute | Verification report |
+| summary | (direct) | verify | User-facing summary |
+-->
 
 ## Notes
-- Delegate to a subagent if the task is complex
 - Follow project conventions
-- Write to appropriate output location
+- Delegate to specialized agents for domain-specific work
+- Write output to appropriate location

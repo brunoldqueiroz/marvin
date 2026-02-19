@@ -1,6 +1,6 @@
 ---
 name: audit-agents
-description: Audit codebase technologies and identify gaps in agent coverage
+description: "Scan a codebase for technologies in use and identify gaps in agent coverage. Use when setting up Marvin on a new project or after the tech stack has grown."
 disable-model-invocation: true
 argument-hint: "[--scope global|project]"
 ---

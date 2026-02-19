@@ -99,6 +99,22 @@ Present to the user:
 - Next steps (connections to configure, credentials to set up, testing plan)
 - Any assumptions made
 
+## Workflow Graph
+
+| Node | Agent | Depends On | Output |
+|------|-------|-----------|--------|
+| requirements | (direct) | — | Requirements clarified |
+| design | (direct) | requirements | changes/pipeline-design.md |
+| airflow_dag | airflow-expert | design | DAG file |
+| dbt_models | dbt-expert | design | dbt models + schema.yml |
+| ingestion | coder | design | Ingestion script |
+| snowflake | snowflake-expert | design | DDL + RBAC |
+| verify | verifier | airflow_dag, dbt_models, ingestion, snowflake | Verification report |
+| summary | (direct) | verify | User-facing summary |
+
+`airflow_dag`, `dbt_models`, `ingestion`, and `snowflake` all depend only on
+`design` — delegate all four in parallel using multiple Task calls.
+
 ## Notes
 - Always use the user's existing project structure
 - Follow existing patterns and conventions

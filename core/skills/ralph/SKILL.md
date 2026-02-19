@@ -1,6 +1,6 @@
 ---
 name: ralph
-description: Start a Ralph Loop for long-running autonomous tasks
+description: "Run a long autonomous task across multiple context windows using filesystem checkpointing. Use when a task has 10+ subtasks or would exceed a single context window."
 disable-model-invocation: true
 argument-hint: "[task description]"
 ---

@@ -1,6 +1,6 @@
 ---
 name: init
-description: Initialize Marvin project config in the current directory
+description: "Bootstrap a .claude/ directory with CLAUDE.md, memory, registry, rules, and settings for a new project. Use when starting to use Marvin on an existing codebase."
 disable-model-invocation: true
 argument-hint: "[project-type: data-pipeline | ai-ml | generic]"
 ---

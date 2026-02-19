@@ -1,6 +1,6 @@
 ---
 name: meta-prompt
-description: Generate an optimized prompt for a specific task using meta-prompting techniques
+description: "Generate an optimized prompt for any task, agent, or skill using meta-prompting techniques. Use when crafting system prompts, agent instructions, or complex prompts."
 disable-model-invocation: true
 argument-hint: "[task description or goal for the prompt]"
 ---
