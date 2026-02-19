@@ -23,7 +23,7 @@ If requirements are ambiguous, ask the user before proceeding.
 
 ### 2. RED — Write Failing Tests
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Write test cases that describe the desired behavior
 - Cover the happy path, edge cases, and error conditions
 - Follow existing test conventions and naming patterns
@@ -38,7 +38,7 @@ Do not proceed until the verifier confirms red state.
 
 ### 3. GREEN — Minimum Implementation
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Write the minimum code to make all failing tests pass
 - No extra features, no premature optimization
 - Focus on correctness, not elegance
@@ -46,13 +46,13 @@ Delegate to the **coder** agent:
 Then delegate to the **verifier** agent:
 - Run the full test suite (not just new tests)
 - Confirm ALL tests pass (green state)
-- If any test fails, return to coder to fix
+- If any test fails, return to python-expert to fix
 
 Do not proceed until the verifier confirms green state.
 
 ### 4. REFACTOR — Improve the Code
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Improve code quality: reduce duplication, clarify naming, simplify logic
 - Improve test quality: reduce duplication, improve assertions, add clarity
 - Do NOT change behavior — tests must continue to pass unchanged
@@ -75,11 +75,11 @@ Present to the user:
 | Node | Agent | Depends On | Output |
 |------|-------|-----------|--------|
 | understand | (direct) | — | Requirements + framework detected |
-| red_write | coder | understand | Failing test files |
+| red_write | python-expert | understand | Failing test files |
 | red_verify | verifier | red_write | Confirmed red state |
-| green_impl | coder | red_verify | Minimum implementation |
+| green_impl | python-expert | red_verify | Minimum implementation |
 | green_verify | verifier | green_impl | Confirmed green state |
-| refactor | coder | green_verify | Improved code + tests |
+| refactor | python-expert | green_verify | Improved code + tests |
 | refactor_verify | verifier | refactor | Confirmed still green |
 | summary | (direct) | refactor_verify | User-facing summary |
 

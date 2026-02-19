@@ -1,6 +1,6 @@
 # Agent Registry
 
-Marvin has 13 specialist agents. Delegate to the matching specialist for any task
+Marvin has 12 specialist agents. Delegate to the matching specialist for any task
 in their domain — even "simple" ones. Every delegation MUST use the structured
 handoff protocol (@rules/handoff-protocol.md).
 
@@ -9,7 +9,7 @@ handoff protocol (@rules/handoff-protocol.md).
 | Agent | Domain | Model |
 |-------|--------|-------|
 | **researcher** | Research, comparisons, documentation lookup, technology evaluation | sonnet |
-| **coder** | Code implementation, refactoring, tests, debugging, multi-file changes | sonnet |
+| **python-expert** | Python implementation, refactoring, tests, debugging, multi-file changes, packaging, typing, design patterns | sonnet |
 | **verifier** | Quality verification, test execution, lint, security scan | haiku |
 | **dbt-expert** | dbt models, data transformation, SQL optimization, schema.yml, testing | sonnet |
 | **spark-expert** | PySpark jobs, performance tuning, shuffle optimization, ETL pipelines | sonnet |
@@ -19,7 +19,6 @@ handoff protocol (@rules/handoff-protocol.md).
 | **git-expert** | Commits, branches, PRs, git history, Conventional Commits | haiku |
 | **docker-expert** | Dockerfiles, multi-stage builds, Compose, image security, registries | sonnet |
 | **terraform-expert** | HCL code, state management, modules, plan/apply, workspaces | sonnet |
-| **python-expert** | Python packaging, typing, pytest, async, uv, pydantic, design patterns | sonnet |
 | **docs-expert** | READMEs, API docs, ADRs, docstrings, technical guides, runbooks | haiku |
 
 ## How to Route

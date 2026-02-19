@@ -56,7 +56,7 @@ Think about what this skill needs to do, then write clear step-by-step instructi
 5. **Document** — What should be recorded?
 
 **Agent delegation:**
-- If the skill involves complex code → instruct to delegate to the **coder** agent
+- If the skill involves complex code → instruct to delegate to the **python-expert** agent
 - If the skill involves research → instruct to delegate to the **researcher** agent
 - If the skill involves domain work → reference the appropriate domain agent
 - Simple skills can execute directly without delegation

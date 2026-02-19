@@ -22,7 +22,7 @@ case "$FILE_PATH" in
     fi
 
     # Extract frontmatter (between first and second ---)
-    FRONTMATTER=$(sed -n '1,/^---$/{ /^---$/d; p; }' "$FILE_PATH" | sed '1d')
+    FRONTMATTER=$(sed -n '2,/^---$/{ /^---$/d; p; }' "$FILE_PATH")
 
     if ! echo "$FRONTMATTER" | grep -q '^name:'; then
       echo "SKILL.md frontmatter missing 'name' field" >&2
@@ -47,7 +47,7 @@ case "$FILE_PATH" in
       exit 2
     fi
 
-    FRONTMATTER=$(sed -n '1,/^---$/{ /^---$/d; p; }' "$FILE_PATH" | sed '1d')
+    FRONTMATTER=$(sed -n '2,/^---$/{ /^---$/d; p; }' "$FILE_PATH")
 
     for FIELD in name description tools model; do
       if ! echo "$FRONTMATTER" | grep -q "^${FIELD}:"; then

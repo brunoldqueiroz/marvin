@@ -197,7 +197,7 @@ Update `changes/proposal.md` status to `IMPLEMENTING` (Standard/Comprehensive).
 Execute each task from `changes/tasks.md`:
 
 1. Pick the next unchecked task
-2. Delegate to the **coder** agent for implementation
+2. Delegate to the **python-expert** agent for implementation
 3. After implementation, delegate to the **verifier** agent for task-level checks
 4. If verification passes:
    a. Check off the task in `changes/tasks.md`
@@ -265,7 +265,7 @@ Once verification passes:
 | research | researcher | — | changes/research.md |
 | proposal | (direct) | research | changes/proposal.md + changes/tasks.md |
 | spec_write | (direct) | proposal | changes/specs/*.spec.md |
-| implement | coder (per task) | spec_write | Code changes + atomic commits |
+| implement | python-expert (per task) | spec_write | Code changes + atomic commits |
 | verify | verifier | implement | Verification report |
 | archive | (direct) | verify | specs/ + DONE status |
 

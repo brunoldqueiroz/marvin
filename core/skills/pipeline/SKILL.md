@@ -74,7 +74,7 @@ Delegate to specialized agents based on components:
   - Create staging, intermediate, and mart models
   - Include schema.yml with tests and documentation
 
-- **Ingestion Script** → delegate to **coder** agent
+- **Ingestion Script** → delegate to **python-expert** agent
   - Python script for extraction
   - Include error handling and logging
 
@@ -107,7 +107,7 @@ Present to the user:
 | design | (direct) | requirements | changes/pipeline-design.md |
 | airflow_dag | airflow-expert | design | DAG file |
 | dbt_models | dbt-expert | design | dbt models + schema.yml |
-| ingestion | coder | design | Ingestion script |
+| ingestion | python-expert | design | Ingestion script |
 | snowflake | snowflake-expert | design | DDL + RBAC |
 | verify | verifier | airflow_dag, dbt_models, ingestion, snowflake | Verification report |
 | summary | (direct) | verify | User-facing summary |

@@ -104,5 +104,5 @@ Present the review as:
 
 After presenting the review, ask the user:
 - "Want me to fix the critical/important issues?"
-- If yes, delegate to the **coder** agent with the specific fixes needed
+- If yes, delegate to the **python-expert** agent with the specific fixes needed
 - Then run the **verifier** agent to confirm the fixes

@@ -13,7 +13,7 @@ Bug report: $ARGUMENTS
 
 ### 1. Reproduce
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Parse the bug report from $ARGUMENTS
 - Find the relevant code and understand the expected vs actual behavior
 - Create a minimal reproduction (test case, script, or steps)
@@ -42,7 +42,7 @@ proceeding.
 
 ### 2. Isolate
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Use binary search, log instrumentation, or test isolation to narrow the cause
 - Identify the specific file, function, and line(s) responsible
 - State a clear hypothesis: "The bug occurs because X when Y"
@@ -59,7 +59,7 @@ Delegate to the **coder** agent:
 
 ### 3. Fix
 
-Delegate to the **coder** agent:
+Delegate to the **python-expert** agent:
 - Fix the root cause (not just the symptom)
 - Write a regression test that fails without the fix and passes with it
 - Keep the fix minimal — do not refactor surrounding code
@@ -84,9 +84,9 @@ Present to the user:
 
 | Node | Agent | Depends On | Output |
 |------|-------|-----------|--------|
-| reproduce | coder | — | changes/debug-repro.md + reproduction |
-| isolate | coder | reproduce | Root cause hypothesis |
-| fix | coder | isolate | Fix + regression test |
+| reproduce | python-expert | — | changes/debug-repro.md + reproduction |
+| isolate | python-expert | reproduce | Root cause hypothesis |
+| fix | python-expert | isolate | Fix + regression test |
 | verify | verifier | fix | Verification report |
 | summary | (direct) | verify | User-facing summary |
 

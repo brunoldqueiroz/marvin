@@ -89,7 +89,7 @@ Use these known mappings for the existing global agents:
 | Agent | Covers |
 |-------|--------|
 | researcher | Web research, documentation, comparisons |
-| coder | Multi-file code changes, refactoring, tests |
+| python-expert | Python implementation, multi-file changes, refactoring, tests |
 | verifier | Quality verification, test suites |
 | dbt-expert | dbt, dimensional modeling, SQL in dbt context |
 | spark-expert | PySpark, distributed processing |
