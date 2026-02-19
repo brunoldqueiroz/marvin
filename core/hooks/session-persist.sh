@@ -4,7 +4,7 @@
 #
 # Reads the session transcript JSONL to extract a structured summary:
 # user prompts, tools used, files modified, git commits.
-# Writes to changes/session-log.md for the next session's Orient phase.
+# Writes to .claude/dev/session-log.md for the next session's Orient phase.
 
 source "$(dirname "$0")/_lib.sh"
 
@@ -13,8 +13,8 @@ INPUT=$(cat)
 # Skip if no project directory
 [ -z "$CLAUDE_PROJECT_DIR" ] && exit 0
 
-CHANGES_DIR="$CLAUDE_PROJECT_DIR/changes"
-LOG_FILE="$CHANGES_DIR/session-log.md"
+LOG_DIR="$CLAUDE_PROJECT_DIR/.claude/dev"
+LOG_FILE="$LOG_DIR/session-log.md"
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
 
 # Extract transcript path and session ID from hook input
@@ -161,8 +161,8 @@ fi
 ENTRY="${ENTRY}---
 "
 
-# Write to log (create changes/ dir if needed)
-mkdir -p "$CHANGES_DIR"
+# Write to log (create .claude/dev/ dir if needed)
+mkdir -p "$LOG_DIR"
 
 if [ -f "$LOG_FILE" ]; then
   # Prepend new entry (most recent first)
