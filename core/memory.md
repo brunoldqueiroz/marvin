@@ -10,6 +10,10 @@
 - [2026-02-19] Workflow Graph convention: skills with 3+ agent delegations document their DAG as a ## Workflow Graph table. Independent nodes are delegated in parallel.
 - [2026-02-19] Skill description format standardized: "What it does. Use when [trigger]." Applied to all skills and the template.
 - [2026-02-19] Skill authoring standards documented at core/reference/skill-standards.md.
+- [2026-02-19] Session lifecycle: Orient→Work→Persist. session-context.sh handles Orient, session-persist.sh handles Persist (Stop hook). Inspired by Ars Contexta.
+- [2026-02-19] Project Invariants: /init generates rules/invariants.md with architecture style, non-negotiable/forbidden patterns, and terminology. Inspired by AgentSpec.
+- [2026-02-19] Friction Log: /remember supports "friction" type entries under ## Friction Log. 5+ entries triggers self-evolution review suggestion.
+- [2026-02-19] Verifier severity levels: CRITICAL (blocking), WARNING (should fix), NOTE (optional). Replaces binary pass/fail in Issues Summary.
 
 ## Patterns & Conventions
 
@@ -19,4 +23,6 @@
 ## Lessons Learned
 
 - [2026-02-15] Subagent researcher/coder types cannot access MCP tools (Exa, Context7) unless permissions are pre-approved — web search must be done from the main session or with explicit permission grants.
+
+## Friction Log
 

@@ -11,3 +11,6 @@
 
 ## Lessons Learned
 
+
+## Friction Log
+

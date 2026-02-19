@@ -17,7 +17,29 @@ Extract the key information from `$ARGUMENTS`. Identify:
 - **What** is being remembered (the fact, preference, decision, or lesson)
 - **Why** it matters (context, if provided)
 
-### 2. Determine Scope
+### 2. Determine Type
+
+Classify the information:
+
+- **Memory** (default) — facts, preferences, decisions, lessons
+- **Friction** — something that was harder than it should be, a recurring annoyance, a process gap, or a tool limitation. Indicators: "this was annoying", "I keep having to", "it would be nice if", "why doesn't", or any pain point.
+
+If the input describes friction, go to Step 2b. Otherwise continue to Step 3.
+
+### 2b. Record Friction (friction type only)
+
+Append to the **Friction Log** section of the appropriate memory file:
+
+```
+- [YYYY-MM-DD] **<short title>** — <description of the friction and context>
+```
+
+After recording, check if there are 5+ unresolved friction entries. If so, suggest:
+> "You have N friction entries. Consider reviewing them — some may warrant a `/new-rule`, `/new-agent`, or `/new-skill` to address the underlying issue."
+
+Skip to Step 5.
+
+### 3. Determine Scope
 
 Choose where to save based on context:
 
@@ -26,7 +48,7 @@ Choose where to save based on context:
 
 **Heuristic:** If in doubt, ask: "Would this be useful in a different project?" If yes → global. If no → project.
 
-### 3. Classify Category
+### 4. Classify Category
 
 Place the entry under the correct section:
 
@@ -35,14 +57,16 @@ Place the entry under the correct section:
 - **Architecture Decisions** — cross-project architectural choices
 - **Patterns & Conventions** — coding patterns, naming conventions, preferred approaches
 - **Lessons Learned** — mistakes to avoid, insights, best practices discovered
+- **Friction Log** — pain points and process gaps (for self-evolution review)
 
 **Project memory sections:**
 - **Architecture Decisions** — project-specific design choices
 - **Tech Stack & Conventions** — frameworks, versions, project standards
 - **Patterns Discovered** — project-specific patterns and idioms
 - **Lessons Learned** — project-specific gotchas and insights
+- **Friction Log** — project-specific pain points
 
-### 4. Write to Memory File
+### 5. Write to Memory File
 
 Use the Edit tool to append the entry under the correct section.
 
@@ -57,7 +81,7 @@ Use the Edit tool to append the entry under the correct section.
 - Don't duplicate existing entries — if a similar entry exists, update it instead
 - If the memory file doesn't exist, create it using the appropriate template
 
-### 5. Confirm
+### 6. Confirm
 
 Tell the user:
 - What was saved

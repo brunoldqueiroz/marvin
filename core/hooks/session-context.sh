@@ -15,6 +15,19 @@ Recent commits:
 ${RECENT}"
 fi
 
+# Previous session context (Orient phase of Orient→Work→Persist)
+SESSION_LOG="$CLAUDE_PROJECT_DIR/changes/session-log.md"
+if [ -f "$SESSION_LOG" ]; then
+  # Extract the most recent session entry (between first and second ## Session:)
+  LAST_SESSION=$(sed -n '/^## Session:/,/^## Session:/{ /^## Session:/!{/^## Session:/!p}; }' "$SESSION_LOG" | head -20)
+  if [ -n "$LAST_SESSION" ]; then
+    CONTEXT="${CONTEXT}
+
+Previous session:
+${LAST_SESSION}"
+  fi
+fi
+
 if [ -n "$CONTEXT" ]; then
   # Output JSON (jq preferred, python fallback)
   if command -v jq &> /dev/null; then

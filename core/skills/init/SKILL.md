@@ -26,7 +26,8 @@ If `$ARGUMENTS` is provided, use it directly.
 .claude/
 ├── CLAUDE.md              ← Project context
 ├── memory.md              ← Project memory (persistent across sessions)
-├── rules/                 ← Domain rules for this project
+├── rules/
+│   └── invariants.md      ← Drift prevention (patterns, forbidden, terminology)
 ├── registry/
 │   ├── agents.md          ← Project-specific agent registry
 │   └── skills.md          ← Project-specific skill registry
@@ -166,14 +167,27 @@ Add project-relevant permissions based on type:
 - **ai-ml**: allow `python *`, `jupyter *`, `tensorboard *`
 - **generic**: minimal defaults
 
-### 7. Copy Relevant Domain Rules
+### 7. Generate Project Invariants
+
+Create `.claude/rules/invariants.md` using the template at `~/.claude/templates/INVARIANTS.template.md`.
+
+Populate it by analyzing the codebase:
+
+- **Architecture Style** — infer from project structure (e.g., "Layered dbt project with staging → intermediate → marts" or "FastAPI microservice with domain-driven design")
+- **Non-Negotiable Patterns** — detect from existing code (e.g., "All SQL uses lowercase keywords", "All API endpoints use Pydantic models", "All dbt models have schema.yml tests")
+- **Forbidden Patterns** — infer from linter configs, existing rules, and common anti-patterns for the stack (e.g., "No `SELECT *` in production queries", "No hardcoded connection strings")
+- **Terminology** — extract domain terms from code, docs, and config (e.g., "order = a customer purchase, never 'transaction'" or "pipeline = end-to-end data flow, never 'job'")
+
+If the codebase is too new to infer patterns, create the file with placeholder sections and tell the user to fill them in.
+
+### 8. Copy Relevant Domain Rules
 
 Based on project type, create domain rule files:
 - **data-pipeline** → create `.claude/rules/data-engineering.md` with SQL conventions, pipeline patterns, dbt standards, data quality rules
 - **ai-ml** → create `.claude/rules/ai-ml.md` with prompt engineering, model development, RAG, LLM application rules
 - **generic** → no extra rules (global coding-standards and security are sufficient)
 
-### 8. Create `.mcp.json` (if needed)
+### 9. Create `.mcp.json` (if needed)
 
 Based on project type, suggest MCP server configuration:
 - **data-pipeline** → suggest Postgres/BigQuery/Snowflake based on detected stack
@@ -182,7 +196,7 @@ Based on project type, suggest MCP server configuration:
 
 Only create `.mcp.json` if the project would benefit from it. Ask the user before adding database connections.
 
-### 9. Update `.gitignore`
+### 10. Update `.gitignore`
 
 Add these lines if not already present:
 ```
@@ -190,7 +204,7 @@ Add these lines if not already present:
 .claude/agent-memory/
 ```
 
-### 10. Confirm
+### 11. Confirm
 
 Show the user:
 - What project type was detected/used

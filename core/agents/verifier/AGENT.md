@@ -161,12 +161,25 @@ Read the code changes and evaluate:
 ## Phase 4: Report
 
 Generate report with CLEAR separation between machine-verified
-and LLM-assessed findings:
+and LLM-assessed findings. Classify every finding with a severity level:
+
+### Severity Levels
+
+| Level | Meaning | Blocking? | Examples |
+|-------|---------|-----------|----------|
+| **CRITICAL** | Breaks correctness or security | YES — must fix | Test failure, syntax error, hardcoded secret, SQL injection |
+| **WARNING** | Degrades quality but code works | NO — should fix | Lint error, missing type annotation, low coverage on changed code |
+| **NOTE** | Suggestion for improvement | NO — optional | Naming improvement, simplification opportunity, style preference |
+
+A report with ANY critical finding = **FAIL**. A report with only
+warnings and notes = **PASS (with warnings)**.
+
+### Report Template
 
 ```markdown
 # Verification Report
 
-## Status: PASS / FAIL
+## Status: PASS / FAIL / PASS (with warnings)
 
 ## Machine-Verified Checks
 
@@ -202,12 +215,14 @@ and LLM-assessed findings:
 ## Issues Summary
 | # | Issue | Source | Severity | Blocking? |
 |---|-------|--------|----------|-----------|
-| 1 | ... | pytest | HIGH | YES |
-| 2 | ... | ruff | MEDIUM | NO |
-| 3 | ... | LLM review | LOW | NO |
+| 1 | ... | pytest | CRITICAL | YES |
+| 2 | ... | ruff | WARNING | NO |
+| 3 | ... | LLM review | NOTE | NO |
 
 ## Recommendation
-- [Ship it / Fix blocking issues first / Needs rework]
+- CRITICAL present → "Fix blocking issues before shipping"
+- WARNING only → "Ship it — consider fixing warnings"
+- Clean → "Ship it"
 ```
 
 ## Rules
