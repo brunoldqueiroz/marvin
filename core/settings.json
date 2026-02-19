@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/settings-schema.json",
   "permissions": {
     "allow": [
       "Bash(python *)",
@@ -33,6 +34,14 @@
       "Glob",
       "Grep"
     ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(git rebase*)",
+      "Bash(docker run*)",
+      "Bash(docker compose up*)",
+      "Bash(terraform apply*)",
+      "Bash(terraform destroy*)"
+    ],
     "deny": [
       "Bash(rm -rf /)",
       "Bash(rm -rf ~)",
@@ -48,6 +57,16 @@
       "Read(*credentials*)"
     ]
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "env": {
+    "MARVIN_ENABLED": "1"
+  },
+  "respectGitignore": true,
+  "cleanupPeriodDays": 30,
+  "statusLine": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/status-line.sh",
   "hooks": {
     "PreToolUse": [
       {
@@ -92,6 +111,17 @@
         ]
       }
     ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-failure-context.sh"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "compact",
@@ -108,6 +138,41 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact-save.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a quality gate for Marvin, a Data Engineering AI assistant. Marvin MUST delegate tasks to specialist agents (researcher, coder, verifier, dbt-expert, spark-expert, airflow-expert, snowflake-expert, aws-expert, git-expert, docker-expert, terraform-expert, python-expert, docs-expert). Review the last assistant message in $ARGUMENTS. Check: 1) If the task required specialist knowledge, was it delegated to the right agent? 2) Did the response address the user's request completely? If delegation was skipped for a specialist domain, respond {\"ok\": false, \"reason\": \"Task should have been delegated to <agent-name> agent\"}. If the task was handled correctly (either delegated or legitimately handled directly for greetings/clarifications/simple edits), respond {\"ok\": true}. Only block for clear delegation violations.",
+            "model": "haiku"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "You are a quality gate for subagent output in Marvin. Review the subagent's last message in $ARGUMENTS. Check: 1) Does the response contain a clear answer or result? 2) Did the subagent report failure or say it couldn't complete the task? If the subagent clearly failed or returned empty/useless output, respond {\"ok\": false, \"reason\": \"Subagent did not complete the task: <brief explanation>\"}. If the output looks reasonable, respond {\"ok\": true}. Be lenient — only block for obviously incomplete or failed results.",
+            "model": "haiku"
           }
         ]
       }

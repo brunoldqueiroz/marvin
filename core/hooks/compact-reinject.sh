@@ -27,6 +27,14 @@ AGENT REGISTRY (delegate to these):
 $(cat "$CLAUDE_DIR/registry/agents.md")"
 fi
 
+# Append pre-compaction state if saved by pre-compact-save.sh
+if [ -f "$CLAUDE_DIR/.pre-compact-state.json" ]; then
+  CONTEXT="${CONTEXT}
+
+PRE-COMPACTION STATE (saved before compaction):
+$(cat "$CLAUDE_DIR/.pre-compact-state.json")"
+fi
+
 # Output JSON (jq preferred, python fallback)
 json_output() {
   if command -v jq &> /dev/null; then
