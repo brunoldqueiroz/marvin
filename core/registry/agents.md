@@ -36,3 +36,21 @@ then Exa (`web_search_exa`), WebSearch as fallback, WebFetch for deep reads.
 
 **Domain specialists** (dbt/spark/airflow/snowflake/aws): Include in Constraints:
 `MUST: Read ~/.claude/agents/<domain>-expert/rules.md for conventions before starting.`
+
+## Knowledge Base Access
+
+Agents with access to the shared Qdrant knowledge base:
+
+| Agent | Access | Tools |
+|-------|--------|-------|
+| **researcher** | Read + Write | `qdrant-find`, `qdrant-store` |
+| **python-expert** | Read only | `qdrant-find` |
+| **dbt-expert** | Read only | `qdrant-find` |
+| **spark-expert** | Read only | `qdrant-find` |
+| **airflow-expert** | Read only | `qdrant-find` |
+| **snowflake-expert** | Read only | `qdrant-find` |
+| **aws-expert** | Read only | `qdrant-find` |
+| **docker-expert** | Read only | `qdrant-find` |
+| **terraform-expert** | Read only | `qdrant-find` |
+
+**Not included:** verifier (deterministic checks), git-expert (commits), docs-expert (documentation).

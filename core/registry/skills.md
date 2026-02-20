@@ -14,6 +14,7 @@
 - `/spec` — Plan, specify, implement, and verify features through structured phases with atomic commits
 - `/ralph` — Run a long autonomous task across multiple context windows using filesystem checkpointing
 - `/remember` — Save to Marvin's persistent memory
+- `/kb` — Save to or search the shared knowledge base (Qdrant Cloud)
 - `/meta-prompt` — Generate an optimized prompt for any task, agent, or skill using meta-prompting techniques
 - `/tdd` — RED-GREEN-REFACTOR test-driven development cycle
 - `/debug` — Systematic root cause analysis: reproduce, isolate, fix, verify

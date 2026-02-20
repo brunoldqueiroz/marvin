@@ -60,3 +60,12 @@ No specialist for a domain? Handle the task, then suggest `/new-agent` if the do
 Save proactively: architecture decisions → project memory, lessons learned → appropriate scope.
 Format: `- [YYYY-MM-DD] <description>`. Don't duplicate — update existing entries.
 Cap: ~30 entries. When full, remove oldest low-value entries before adding new ones.
+
+## Knowledge Base
+
+Shared team knowledge base powered by Qdrant Cloud. Stores patterns, architectural
+decisions, and lessons learned — searchable by all team members across projects.
+
+- `/kb save <knowledge>` — Save to shared KB
+- `/kb search <query>` — Search shared KB
+- Setup: `scripts/setup_kb.py` (run once per machine)
