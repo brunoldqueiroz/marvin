@@ -39,9 +39,10 @@ graph TB
 - [uv](https://docs.astral.sh/uv/) — Python package manager (runs the install script)
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — Anthropic's CLI
 
-**Optional:** API keys for MCP servers that power the `researcher` agent:
-- [Context7](https://context7.com) — official library documentation
-- [Exa](https://exa.ai) — web search
+**Optional:** API keys for MCP servers:
+- [Context7](https://context7.com) — official library documentation (researcher agent)
+- [Exa](https://exa.ai) — web search (researcher agent)
+- [Qdrant Cloud](https://qdrant.tech/cloud/) — shared knowledge base across projects and sessions
 
 ## Installation
 
@@ -62,7 +63,13 @@ The installer copies Marvin's `core/` layer into `<project>/.claude/` and deploy
 
 ### MCP API Keys (Optional)
 
-The `researcher` agent uses [Context7](https://context7.com) and [Exa](https://exa.ai) via MCP servers. Set the API keys as environment variables so Claude Code can resolve them at runtime.
+Marvin uses three MCP servers. Set the API keys as environment variables so Claude Code can resolve them at runtime.
+
+| MCP Server | Variables | Purpose |
+|------------|-----------|---------|
+| [Context7](https://context7.com) | `CONTEXT7_API_KEY` | Library documentation lookup |
+| [Exa](https://exa.ai) | `EXA_API_KEY` | Web search and deep research |
+| [Qdrant Cloud](https://qdrant.tech/cloud/) | `QDRANT_URL`, `QDRANT_API_KEY` | Shared knowledge base (patterns, decisions, lessons) |
 
 **Option A — direnv (recommended, per-project)**
 
@@ -70,6 +77,8 @@ The `researcher` agent uses [Context7](https://context7.com) and [Exa](https://e
 # Install direnv: https://direnv.net
 echo 'export CONTEXT7_API_KEY="your-key"' >> ~/Projects/my-project/.envrc
 echo 'export EXA_API_KEY="your-key"' >> ~/Projects/my-project/.envrc
+echo 'export QDRANT_URL="https://your-cluster.qdrant.tech"' >> ~/Projects/my-project/.envrc
+echo 'export QDRANT_API_KEY="your-key"' >> ~/Projects/my-project/.envrc
 direnv allow ~/Projects/my-project
 ```
 
@@ -79,12 +88,20 @@ direnv allow ~/Projects/my-project
 # Add to ~/.zshrc or ~/.bashrc
 export CONTEXT7_API_KEY="your-key"
 export EXA_API_KEY="your-key"
+export QDRANT_URL="https://your-cluster.qdrant.tech"
+export QDRANT_API_KEY="your-key"
 ```
 
 **Option C — inline (temporary, current session only)**
 
 ```bash
-CONTEXT7_API_KEY="your-key" EXA_API_KEY="your-key" claude
+CONTEXT7_API_KEY="your-key" EXA_API_KEY="your-key" QDRANT_URL="https://..." QDRANT_API_KEY="your-key" claude
+```
+
+**Qdrant setup helper** (interactive, writes env vars to your shell rc):
+
+```bash
+python scripts/setup_kb.py
 ```
 
 **Dev mode** (symlinks instead of copies — changes to `core/` take effect immediately):
