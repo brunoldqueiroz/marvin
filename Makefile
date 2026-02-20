@@ -11,15 +11,15 @@ PROJECT ?=
 
 .PHONY: install
 install: _require-project ## Install Marvin to a project
-	python3 scripts/install.py --force "$(PROJECT)"
+	uv run scripts/install.py --force "$(PROJECT)"
 
 .PHONY: install-dev
 install-dev: _require-project ## Install in dev mode (symlinks)
-	python3 scripts/install.py --dev --force "$(PROJECT)"
+	uv run scripts/install.py --dev --force "$(PROJECT)"
 
 .PHONY: dry-run
 dry-run: _require-project ## Preview installation without changes
-	python3 scripts/install.py --dry-run "$(PROJECT)"
+	uv run scripts/install.py --dry-run "$(PROJECT)"
 
 .PHONY: uninstall
 uninstall: _require-project ## Remove Marvin from a project
