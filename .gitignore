@@ -4,7 +4,6 @@
 # Secrets
 .env
 .env.local
-.mcp.json
 
 # OS
 .DS_Store
@@ -14,3 +13,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# MCP file
+.mcp.json

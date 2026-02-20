@@ -50,19 +50,42 @@ graph TB
 git clone <repository-url> ~/Projects/marvin
 cd ~/Projects/marvin
 
-# 2. (Optional) Set up MCP API keys
-cp .env.example .env
-# Edit .env and replace the placeholder values with your real keys
-
-# 3. Install Marvin to a project
+# 2. Install Marvin to a project
 make install PROJECT=~/Projects/my-project
 
-# 4. Start Claude Code in your project
+# 3. Start Claude Code in your project
 cd ~/Projects/my-project
 claude
 ```
 
-The installer copies Marvin's `core/` layer into `<project>/.claude/`, resolves MCP API keys from `.env`, and marks hooks as executable.
+The installer copies Marvin's `core/` layer into `<project>/.claude/` and deploys `.mcp.json` with `${VAR}` references that Claude Code resolves at runtime from your environment.
+
+### MCP API Keys (Optional)
+
+The `researcher` agent uses [Context7](https://context7.com) and [Exa](https://exa.ai) via MCP servers. Set the API keys as environment variables so Claude Code can resolve them at runtime.
+
+**Option A — direnv (recommended, per-project)**
+
+```bash
+# Install direnv: https://direnv.net
+echo 'export CONTEXT7_API_KEY="your-key"' >> ~/Projects/my-project/.envrc
+echo 'export EXA_API_KEY="your-key"' >> ~/Projects/my-project/.envrc
+direnv allow ~/Projects/my-project
+```
+
+**Option B — shell profile (global, all projects)**
+
+```bash
+# Add to ~/.zshrc or ~/.bashrc
+export CONTEXT7_API_KEY="your-key"
+export EXA_API_KEY="your-key"
+```
+
+**Option C — inline (temporary, current session only)**
+
+```bash
+CONTEXT7_API_KEY="your-key" EXA_API_KEY="your-key" claude
+```
 
 **Dev mode** (symlinks instead of copies — changes to `core/` take effect immediately):
 

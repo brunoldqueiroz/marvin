@@ -3,14 +3,14 @@
 # requires-python = ">=3.10"
 # dependencies = [
 #     "typer>=0.12",
-#     "python-dotenv>=1.0",
 #     "rich>=13.0",
 # ]
 # ///
 """install.py — Install Marvin to a project's .claude/ directory.
 
-Copies/links Marvin's core layer to <project-path>/.claude/ and resolves
-MCP server API keys from a .env file.
+Copies/links Marvin's core layer to <project-path>/.claude/.
+MCP server env vars (CONTEXT7_API_KEY, EXA_API_KEY) are resolved at runtime
+by Claude Code — no build-time substitution needed.
 
 Usage:
   uv run scripts/install.py <project-path>
@@ -21,7 +21,6 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import re
 import shutil
 import stat
@@ -31,7 +30,6 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from dotenv import dotenv_values
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -70,38 +68,6 @@ class StepResult:
 
     def add(self, name: str, action: str, status: str, detail: str = "") -> None:
         self.records.append(InstallRecord(name, action, status, detail))
-
-
-# ---------------------------------------------------------------------------
-# Key utilities
-# ---------------------------------------------------------------------------
-
-
-def mask_key(value: str) -> str:
-    """Mask an API key for display, showing first 3 and last 5 chars."""
-    if len(value) <= 8:
-        return "****"
-    return f"{value[:3]}****{value[-5:]}"
-
-
-def is_placeholder(value: str) -> bool:
-    """Return True if value looks like a template placeholder rather than a real key."""
-    markers = {"your-", "placeholder", "xxx", "change-me", "insert-", "todo"}
-    lower = value.lower()
-    return any(m in lower for m in markers)
-
-
-def resolve_template(template: str, env_vars: dict[str, str]) -> str:
-    """Replace ${VAR} patterns in template with values from env_vars.
-
-    Variables not present in env_vars are left as-is.
-    """
-
-    def replacer(match: re.Match) -> str:  # type: ignore[type-arg]
-        var_name = match.group(1)
-        return env_vars.get(var_name, match.group(0))
-
-    return re.sub(r"\$\{(\w+)\}", replacer, template)
 
 
 # ---------------------------------------------------------------------------
@@ -289,66 +255,19 @@ def step_7_settings_hooks_memory(cfg: Config, target: Path) -> StepResult:
     return result
 
 
-@dataclass
-class McpKeyStatus:
-    name: str
-    status: str  # ok, placeholder, missing
-    masked_value: str = ""
-
-
-def step_8_mcp(cfg: Config) -> tuple[StepResult, list[McpKeyStatus]]:
-    """[8/8] MCP servers — resolve .env vars in template and deploy."""
+def step_8_mcp(cfg: Config) -> StepResult:
+    """[8/8] MCP servers — copy .mcp.json (env vars resolved at runtime by Claude Code)."""
     result = StepResult()
-    key_statuses: list[McpKeyStatus] = []
 
     env_path = cfg.project_path / ".env"
-    mcp_template_path = cfg.core_dir / ".mcp.json"
+    mcp_src = cfg.core_dir / ".mcp.json"
     mcp_dst = cfg.project_path / ".mcp.json"
 
-    # Load template text (needed for both branches)
-    template_text = mcp_template_path.read_text(encoding="utf-8")
-    needed = set(re.findall(r"\$\{(\w+)\}", template_text))
-
-    # Parse .env
-    env_vars: dict[str, str] = {}
-    if env_path.is_file():
-        raw = dotenv_values(env_path)
-        env_vars = {k: v for k, v in raw.items() if v is not None}
-        for var in sorted(needed):
-            if var not in env_vars:
-                key_statuses.append(McpKeyStatus(name=var, status="missing"))
-                result.add(f".env:{var}", "MISS", "warn", "not found in .env")
-            elif is_placeholder(env_vars[var]):
-                key_statuses.append(McpKeyStatus(name=var, status="placeholder"))
-                result.add(f".env:{var}", "WARN", "warn", "placeholder value detected")
-            else:
-                key_statuses.append(
-                    McpKeyStatus(
-                        name=var, status="ok", masked_value=mask_key(env_vars[var])
-                    )
-                )
-    else:
-        result.add(".env", "MISS", "warn", "not found — deploying unresolved template")
-        for var in sorted(needed):
-            key_statuses.append(McpKeyStatus(name=var, status="missing"))
-
-    # Resolve and write .mcp.json
     backup_name = backup_if_needed(mcp_dst, cfg.dry_run)
     if backup_name:
         result.add(backup_name, "BACKUP", "warn", "previous version saved")
-    resolved = resolve_template(template_text, env_vars)
-
-    if not cfg.dry_run:
-        try:
-            json.loads(resolved)
-        except json.JSONDecodeError as exc:
-            console.print(
-                f"[red]ERROR[/red] Resolved .mcp.json is not valid JSON: {exc}"
-            )
-            raise typer.Exit(code=1)
-        mcp_dst.write_text(resolved, encoding="utf-8")
-
-    result.add(".mcp.json", "COPY", "ok", "env vars resolved")
+    install_file(mcp_src, mcp_dst, cfg.dry_run)
+    result.add(".mcp.json", "COPY", "ok", "env vars resolved at runtime by Claude Code")
 
     # .env.example — deploy only if .env doesn't exist
     env_example_src = cfg.repo_dir / ".env.example"
@@ -372,7 +291,7 @@ def step_8_mcp(cfg: Config) -> tuple[StepResult, list[McpKeyStatus]]:
                     fh.write("\n# Secrets\n.env\n.env.local\n")
             result.add(".gitignore", "UPDATE", "ok", "added .env entries")
 
-    return result, key_statuses
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -432,27 +351,6 @@ def build_summary_table(all_records: list[InstallRecord]) -> Table:
     return table
 
 
-def build_mcp_table(key_statuses: list[McpKeyStatus]) -> Table:
-    table = Table(title="MCP API Keys", show_header=True, header_style="bold")
-    table.add_column("Key", style="cyan", no_wrap=True)
-    table.add_column("Status", justify="center")
-    table.add_column("Value", style="dim")
-
-    for ks in key_statuses:
-        if ks.status == "ok":
-            status_cell = "[green]READY[/green]"
-            value_cell = ks.masked_value
-        elif ks.status == "placeholder":
-            status_cell = "[yellow]PLACEHOLDER[/yellow]"
-            value_cell = "edit .env with a real key"
-        else:
-            status_cell = "[red]MISSING[/red]"
-            value_cell = "not found in .env"
-        table.add_row(ks.name, status_cell, value_cell)
-
-    return table
-
-
 # ---------------------------------------------------------------------------
 # Orchestration
 # ---------------------------------------------------------------------------
@@ -499,7 +397,6 @@ def install_project(cfg: Config) -> None:
         target.mkdir(parents=True, exist_ok=True)
 
     all_records: list[InstallRecord] = []
-    key_statuses: list[McpKeyStatus] = []
 
     steps = [
         (1, STEP_LABELS[0], lambda: step_1_claude_md(cfg, target)),
@@ -509,6 +406,7 @@ def install_project(cfg: Config) -> None:
         (5, STEP_LABELS[4], lambda: step_5_skills(cfg, target)),
         (6, STEP_LABELS[5], lambda: step_6_rules(cfg, target)),
         (7, STEP_LABELS[6], lambda: step_7_settings_hooks_memory(cfg, target)),
+        (8, STEP_LABELS[7], lambda: step_8_mcp(cfg)),
     ]
 
     for n, label, fn in steps:
@@ -517,19 +415,6 @@ def install_project(cfg: Config) -> None:
         for rec in step_result.records:
             print_record(rec)
         all_records.extend(step_result.records)
-        console.print()
-
-    # Step 8 returns key statuses too
-    print_step(8, STEP_LABELS[7])
-    mcp_result, key_statuses = step_8_mcp(cfg)
-    for rec in mcp_result.records:
-        print_record(rec)
-    all_records.extend(mcp_result.records)
-    console.print()
-
-    # MCP key summary table
-    if key_statuses:
-        console.print(build_mcp_table(key_statuses))
         console.print()
 
     # Installation summary table
@@ -546,8 +431,9 @@ def install_project(cfg: Config) -> None:
     env_hint = ""
     if not env_path.is_file():
         env_hint = (
-            "\n[dim]  cp .env.example .env   # Add your API keys[/dim]"
-            "\n[dim]  source .env            # Or add to ~/.zshrc[/dim]"
+            "\n[dim]  cp .env.example .env        # Fill in your API keys[/dim]"
+            "\n[dim]  export CONTEXT7_API_KEY=... # Or use direnv / ~/.zshrc[/dim]"
+            "\n[dim]  export EXA_API_KEY=...[/dim]"
         )
 
     quickstart = (
