@@ -30,7 +30,7 @@ uninstall: _require-project ## Remove Marvin from a project
 # ─── Validation ─────────────────────────────────────────────────
 
 .PHONY: lint
-lint: lint-json lint-bash ## Run all linters
+lint: lint-json lint-bash lint-python ## Run all linters
 
 .PHONY: lint-json
 lint-json: ## Validate settings.json and .mcp.json
@@ -49,6 +49,11 @@ lint-bash: ## Lint hook scripts with shellcheck (if available)
 			bash -n "$$f" && echo "  $$f: ok"; \
 		done; \
 	fi
+
+.PHONY: lint-python
+lint-python: ## Syntax-check Python scripts
+	@echo "Checking Python scripts..."
+	@python3 -c "import py_compile; py_compile.compile('scripts/ralph.py', doraise=True); print('  scripts/ralph.py: ok')"
 
 .PHONY: test
 test: lint test-hooks ## Run all checks

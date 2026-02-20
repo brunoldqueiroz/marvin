@@ -354,7 +354,7 @@ def construct_handoff(agent, task, level="standard"):
 
 ### What it is
 
-A pattern for autonomous execution of long-running tasks that exceed a single context window. Works by executing Claude in a bash loop with `--continue`, using the **filesystem as API**.
+A two-phase pattern for autonomous execution of long-running tasks that exceed a single context window. Phase 1 (Initializer) creates a structured JSON task plan; Phase 2 (Coder Loop) executes one task per iteration with **fresh context** every time. The **filesystem is the API** — all state lives in `.ralph/`.
 
 ### Why it exists
 
@@ -362,12 +362,15 @@ LLMs have context limitations. For large tasks (refactoring 50 files, implementi
 - ❌ Context exhausts before completion
 - ❌ Lose progress when context overflows
 - ❌ Requires constant manual supervision
+- ❌ `--continue` causes context rot (stale information accumulates)
 
 Ralph Loop solves:
-- ✅ Progress persists in filesystem (tasks.md)
-- ✅ Auto-resume: each iteration reads current state
-- ✅ Auto-termination: creates `.ralph-complete` when done
-- ✅ Auditable: incremental commits show progress
+- ✅ Progress persists in `.ralph/tasks.json` (structured JSON, not markdown)
+- ✅ Fresh context every iteration (no `--continue`)
+- ✅ Auto-termination via dual exit gate (EXIT_SIGNAL + zero pending tasks)
+- ✅ Circuit breaker prevents runaway loops
+- ✅ Rate limiting prevents API abuse
+- ✅ Auditable: git commits after each iteration
 
 ### How it works in Marvin
 
@@ -381,91 +384,93 @@ Ralph Loop solves:
 Update all dbt models, tests, and configs to dbt 1.x syntax.
 
 ## Completion Criteria
-- [ ] All models use new config syntax
-- [ ] ref() and source() updated
-- [ ] Tests pass in dbt 1.x
-- [ ] Documentation updated
-
-## Current State
-[Read changes/tasks.md for progress]
-
-## Instructions
-1. Read changes/tasks.md
-2. Pick next unchecked task
-3. Implement it
-4. Run tests
-5. Check off task
-6. If all done AND all criteria met: create .ralph-complete
+- All models use new config syntax
+- ref() and source() updated
+- Tests pass in dbt 1.x
+- Documentation updated
 ```
 
-2. **`changes/tasks.md`**: Atomic checklist
-```markdown
-# Tasks: dbt 1.x Migration
-
-- [x] Update dbt_project.yml to version 1.x
-- [x] Migrate model configs ({{ config(...) }})
-- [ ] Update macro syntax
-- [ ] Fix deprecated functions
-- [ ] Run full test suite
-- [ ] Update documentation
+2. **`.ralph/tasks.json`**: Structured task list (created by Initializer)
+```json
+{
+  "schema_version": "1",
+  "task": "dbt 1.x Migration",
+  "created_at": "2026-02-20T14:30:00Z",
+  "completion_criteria": ["dbt test passes", "all models compile"],
+  "features": [
+    {"id": "T001", "title": "Update dbt_project.yml", "priority": 1, "status": "complete", "completed_at": "2026-02-20T14:45:00Z"},
+    {"id": "T002", "title": "Migrate model configs", "priority": 2, "status": "complete", "completed_at": "2026-02-20T15:00:00Z"},
+    {"id": "T003", "title": "Update macro syntax", "priority": 3, "status": "pending", "completed_at": null},
+    {"id": "T004", "title": "Fix deprecated functions", "priority": 4, "status": "pending", "completed_at": null}
+  ]
+}
 ```
 
-3. **Loop script** (`scripts/ralph.sh`):
+3. **Runner script** (`scripts/ralph.py`):
 ```bash
-while :; do
-  claude -p "$(cat prompts/PROMPT.md)" \
-    --continue \
-    --allowedTools "Read,Edit,Write,Bash(pytest *)" \
-    --max-turns 30
+# Basic usage
+uv run scripts/ralph.py prompts/PROMPT.md
 
-  # Check for completion signal
-  if [ -f ".ralph-complete" ]; then
-    rm -f .ralph-complete
-    echo "Task completed!"
-    break
-  fi
+# With options
+uv run scripts/ralph.py -n 15 --monitor prompts/my-task.md
 
-  sleep 2
-done
+# Initialize only (plan without executing)
+uv run scripts/ralph.py --init-only prompts/PROMPT.md
+
+# Resume from existing plan
+uv run scripts/ralph.py --skip-init prompts/PROMPT.md
 ```
 
 **Execution flow**:
 
 ```
-Iteration 1:
-  1. Claude reads PROMPT.md and tasks.md
-  2. Sees first two tasks are checked
-  3. Picks next: "Update macro syntax"
-  4. Implements changes
-  5. Tests: pytest models/
-  6. Marks as [x] in tasks.md
-  7. Context exhausts → terminates
+Phase 1 — Initializer (1 session, fresh context):
+  1. Claude reads PROMPT.md
+  2. Creates .ralph/tasks.json (structured plan)
+  3. Creates .ralph/progress.md, .ralph/init.sh
+  4. Git commit: "chore(ralph): initialize task list"
+  5. Does NOT implement anything
 
-Loop restarts:
+Phase 2 — Coder Loop (N iterations, ALWAYS fresh context):
 
-Iteration 2:
-  1. Claude reads PROMPT.md and tasks.md (fresh context)
-  2. Sees three tasks are checked
-  3. Picks next: "Fix deprecated functions"
-  4. ... repeats process
+  Iteration 1:
+    1. Claude reads tasks.json + progress.md (fresh context)
+    2. Picks highest-priority pending: T003 "Update macro syntax"
+    3. Implements, tests
+    4. Updates tasks.json: T003 status → "complete"
+    5. Git commit
+    6. Loop checks exit conditions → not done, continue
 
-Iteration N:
-  1. Sees all tasks are [x]
-  2. Runs full test suite
-  3. Everything passes
-  4. Creates .ralph-complete file
-  5. Loop detects file → terminates
+  Iteration 2:
+    1. Claude reads tasks.json + progress.md (fresh context)
+    2. Picks next pending: T004 "Fix deprecated functions"
+    3. Implements, tests
+    4. Updates tasks.json: T004 status → "complete"
+    5. Writes .ralph/STATUS with EXIT_SIGNAL: true
+    6. Git commit
+    7. Loop checks exit conditions → all done, exits
 ```
 
+**Exit gate** (dual condition):
+Both must be true for the loop to stop:
+1. `.ralph/STATUS` contains `EXIT_SIGNAL: true`
+2. `.ralph/tasks.json` has zero pending tasks
+
+**Circuit breaker**:
+- 3 consecutive iterations with no file changes → loop stops
+- 5 iterations with the same error → loop stops
+- State tracked in `.ralph/state.json`
+
 **Control signals**:
-- `.ralph-complete`: Terminate loop (success)
-- `.ralph-status`: Warnings/status (e.g., "WARN: test failing")
+- `.ralph/STATUS`: Written by Claude with RALPH_STATUS block when all tasks complete
+- `.ralph/STOP`: Create manually to gracefully halt the loop
 
 **Principles**:
-- **Filesystem is the API**: All state in files, not in context
-- **Atomic tasks**: Each item completable independently
-- **Frequent git**: Commit after each task (rollback if necessary)
-- **Scoped tools**: Allow only necessary tools
+- **Filesystem is the API**: All state in `.ralph/` files, not in context
+- **Fresh context always**: No `--continue` — each iteration starts clean
+- **Atomic tasks**: Each task independently implementable in one session
+- **Frequent git**: Commit after each iteration (rollback if necessary)
+- **Scoped tools**: Auto-detected by project type, overridable
 
 ---
 

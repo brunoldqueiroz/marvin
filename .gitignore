@@ -4,6 +4,14 @@
 # Secrets
 .env
 .env.local
+.envrc
+
+# Python
+__pycache__/
+*.pyc
+
+# Ralph Loop runtime
+.ralph/
 
 # OS
 .DS_Store

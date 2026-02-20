@@ -24,7 +24,7 @@ General-purpose workflows applicable to any project.
 | `/research` | Deep research using Context7, Exa, and web search |
 | `/review` | Code review for quality, security, and best practices |
 | `/spec` | Spec-Driven Development: plan → specify → implement → verify with atomic commits |
-| `/ralph` | Run a long autonomous task across multiple context windows using filesystem checkpointing |
+| `/ralph` | Two-phase autonomous loop: initializer plans tasks as JSON, coder executes one per iteration with fresh context, circuit breaker, and git commits |
 | `/remember` | Save a preference, decision, or lesson to Marvin's persistent memory |
 | `/meta-prompt` | Generate an optimized prompt for any task, agent, or skill |
 | `/tdd` | RED-GREEN-REFACTOR test-driven development cycle |
