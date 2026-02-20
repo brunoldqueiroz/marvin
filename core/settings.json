@@ -32,7 +32,17 @@
       "Edit",
       "Write",
       "Glob",
-      "Grep"
+      "Grep",
+      "mcp__exa__web_search_exa",
+      "mcp__exa__web_search_advanced_exa",
+      "mcp__exa__company_research_exa",
+      "mcp__exa__crawling_exa",
+      "mcp__exa__people_search_exa",
+      "mcp__exa__deep_researcher_start",
+      "mcp__exa__deep_researcher_check",
+      "mcp__exa__get_code_context_exa",
+      "mcp__upstash-context7-mcp__resolve-library-id",
+      "mcp__upstash-context7-mcp__query-docs"
     ],
     "ask": [
       "Bash(git push*)",

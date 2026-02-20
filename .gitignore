@@ -1,6 +1,11 @@
 # Claude Code
 .claude/
 
+# Secrets
+.env
+.env.local
+.mcp.json
+
 # OS
 .DS_Store
 Thumbs.db

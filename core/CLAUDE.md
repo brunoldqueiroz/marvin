@@ -34,11 +34,11 @@ concept explanations, or single-file edits outside any specialist's domain.
 ### Handoff Protocol
 
 All delegations MUST use the structured handoff protocol. Pick the right level:
-- **Minimal** → simple tasks (commits, formatting)
-- **Standard** → most delegations (models, features, research)
-- **Full** → complex tasks, retries, multi-step coordination
+- **Minimal** → simple tasks (commits, formatting): Objective, Acceptance Criteria, Constraints
+- **Standard** → most delegations: + Context, Return Protocol
+- **Full** → complex tasks, retries: + Error History, Detailed Background
 
-@rules/handoff-protocol.md
+Full template reference: `/handoff-reference`
 
 ### Specialists
 @registry/agents.md
@@ -57,5 +57,6 @@ No specialist for a domain? Handle the task, then suggest `/new-agent` if the do
 ## Memory
 @memory.md
 
-Save proactively: preferences → global memory, architecture decisions → project memory, lessons learned → appropriate scope.
+Save proactively: architecture decisions → project memory, lessons learned → appropriate scope.
 Format: `- [YYYY-MM-DD] <description>`. Don't duplicate — update existing entries.
+Cap: ~30 entries. When full, remove oldest low-value entries before adding new ones.

@@ -11,15 +11,15 @@ PROJECT ?=
 
 .PHONY: install
 install: _require-project ## Install Marvin to a project
-	./scripts/install.sh --force "$(PROJECT)"
+	python3 scripts/install.py --force "$(PROJECT)"
 
 .PHONY: install-dev
 install-dev: _require-project ## Install in dev mode (symlinks)
-	./scripts/install.sh --dev --force "$(PROJECT)"
+	python3 scripts/install.py --dev --force "$(PROJECT)"
 
 .PHONY: dry-run
 dry-run: _require-project ## Preview installation without changes
-	./scripts/install.sh --dry-run "$(PROJECT)"
+	python3 scripts/install.py --dry-run "$(PROJECT)"
 
 .PHONY: uninstall
 uninstall: _require-project ## Remove Marvin from a project
@@ -33,9 +33,10 @@ uninstall: _require-project ## Remove Marvin from a project
 lint: lint-json lint-bash ## Run all linters
 
 .PHONY: lint-json
-lint-json: ## Validate settings.json
+lint-json: ## Validate settings.json and .mcp.json
 	@echo "Validating JSON..."
 	@python3 -c "import json; json.load(open('core/settings.json')); print('  core/settings.json: ok')"
+	@python3 -c "import json; json.load(open('core/.mcp.json')); print('  core/.mcp.json: ok')"
 
 .PHONY: lint-bash
 lint-bash: ## Lint hook scripts with shellcheck (if available)

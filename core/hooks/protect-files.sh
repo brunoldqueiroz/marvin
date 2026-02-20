@@ -23,6 +23,10 @@ PROTECTED=(
 
 for pattern in "${PROTECTED[@]}"; do
   if [[ "$FILE_PATH" == *"$pattern"* ]]; then
+    # Allow .example template files (they contain placeholders, not real secrets)
+    if [[ "$FILE_PATH" == *.example ]]; then
+      continue
+    fi
     echo "BLOCKED: Cannot edit protected file '$FILE_PATH' (matched '$pattern')" >&2
     exit 2
   fi
