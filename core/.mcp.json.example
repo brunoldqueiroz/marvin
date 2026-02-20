@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
+    },
+    "exa": {
+      "type": "http",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa,company_research_exa,people_search_exa,deep_researcher_start,deep_researcher_check&exaApiKey=${EXA_API_KEY}"
+    },
+    "qdrant": {
+      "command": "uvx",
+      "args": ["mcp-server-qdrant"],
+      "env": {
+        "QDRANT_URL": "${QDRANT_URL}",
+        "QDRANT_API_KEY": "${QDRANT_API_KEY}",
+        "COLLECTION_NAME": "marvin-kb",
+        "EMBEDDING_MODEL": "sentence-transformers/all-MiniLM-L6-v2",
+        "TOOL_STORE_DESCRIPTION": "Store knowledge (patterns, decisions, lessons) in Marvin's shared KB. The 'information' param should be prefixed with [domain/type], e.g. '[dbt/pattern] Use incremental models with merge...'. The 'metadata' param should be a dict with keys: domain, type, project, author, date, tags.",
+        "TOOL_FIND_DESCRIPTION": "Search Marvin's shared KB for patterns, decisions, and lessons. Use natural language. Results include metadata with domain, type, project, and author."
+      }
+    }
+  }
+}

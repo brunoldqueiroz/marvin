@@ -42,7 +42,9 @@
       "mcp__exa__deep_researcher_check",
       "mcp__exa__get_code_context_exa",
       "mcp__upstash-context7-mcp__resolve-library-id",
-      "mcp__upstash-context7-mcp__query-docs"
+      "mcp__upstash-context7-mcp__query-docs",
+      "mcp__qdrant__qdrant-store",
+      "mcp__qdrant__qdrant-find"
     ],
     "ask": [
       "Bash(git push*)",
