@@ -6,7 +6,7 @@ description: >
   warehouse management, access control (RBAC), cost optimization, data
   loading patterns, and Snowflake-specific features (streams, tasks,
   dynamic tables, time travel).
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

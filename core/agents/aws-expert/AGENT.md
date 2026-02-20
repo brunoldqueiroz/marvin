@@ -6,7 +6,7 @@ description: >
   Glue ETL jobs, Lambda functions, IAM policies, CDK/Terraform
   infrastructure, cost optimization, and AWS architecture for data
   pipelines.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

@@ -5,7 +5,7 @@ description: >
   dbt specialist for data modeling, transformation, and testing. Use for:
   creating dbt models (staging, intermediate, marts), writing tests,
   documentation, SQL optimization for Snowflake, and dbt project structure.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

@@ -5,7 +5,7 @@ description: >
   Apache Airflow specialist for pipeline orchestration. Use for: DAG
   development, scheduling, task dependencies, operator selection,
   TaskFlow API, error handling, and troubleshooting failed DAGs.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

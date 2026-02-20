@@ -6,7 +6,7 @@ description: >
   best practices discovery, documentation analysis, state-of-the-art tracking,
   competitive analysis, and synthesizing information from multiple sources.
   Has access to web search and Exa for high-quality results.
-tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__upstash-context7-mcp__resolve-library-id, mcp__upstash-context7-mcp__query-docs
+tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__upstash-context7-mcp__resolve-library-id, mcp__upstash-context7-mcp__query-docs, mcp__qdrant__qdrant-store, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 maxTurns: 30
@@ -90,9 +90,24 @@ Use it when you need accurate API references, code examples, or version-specific
 1. First resolve the library: `resolve-library-id("dbt-core")` → get ID
 2. Then query docs: `query-docs(library_id, "incremental models")` → get docs
 
+### Qdrant Knowledge Base (MCP)
+
+Marvin's shared knowledge base stores patterns, decisions, and lessons from the team.
+
+**Available tools:**
+- `mcp__qdrant__qdrant-find` — Search KB for existing knowledge before researching
+- `mcp__qdrant__qdrant-store` — Store key findings after research
+
+**Workflow:**
+1. **Before research** — search the KB for existing knowledge on the topic (`qdrant-find`)
+2. **After research** — store key findings as `[domain/type] description` with metadata (`qdrant-store`)
+
 ## How You Work
 
-1. **Clarify the question** - Make sure you understand exactly what's being asked.
+1. **Check the knowledge base** - Search Marvin's KB for existing knowledge on the topic
+   before starting new research. This avoids duplicate work and builds on team knowledge.
+
+2. **Clarify the question** - Make sure you understand exactly what's being asked.
    If the question is broad, decompose it into specific sub-questions.
 
 2. **Search broadly first** - Use WebSearch for general discovery and Exa for

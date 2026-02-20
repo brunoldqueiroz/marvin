@@ -6,7 +6,7 @@ description: >
   projects. Use for: implementing features, refactoring, multi-file changes,
   writing tests, debugging, project structure, packaging, async, typing,
   and Pythonic design patterns.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

@@ -5,7 +5,7 @@ description: >
   Terraform/IaC specialist for infrastructure provisioning. Use for: HCL code,
   state management, module design, provider configuration, plan/apply workflows,
   workspace management, and infrastructure architecture.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

@@ -5,7 +5,7 @@ description: >
   Docker specialist for containerization. Use for: Dockerfile optimization,
   multi-stage builds, image security, layer caching, Docker Compose,
   container debugging, and registry management.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits

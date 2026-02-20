@@ -6,7 +6,7 @@ description: >
   development, performance tuning, shuffle optimization, data quality
   validation, and large-scale ETL pipelines. Knows how to debug and
   optimize Spark jobs for production workloads.
-tools: Read, Edit, Write, Bash, Grep, Glob
+tools: Read, Edit, Write, Bash, Grep, Glob, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
 permissionMode: acceptEdits
