@@ -19,6 +19,9 @@
 - `/debug` — Systematic root cause analysis: reproduce, isolate, fix, verify
 - `/adr` — Document architecture decisions in standard ADR format
 
+## Utility
+- `/worktree` — Manage git worktrees for parallel isolated development
+
 ## Data Engineering
 - `/pipeline` — Design and scaffold a complete data pipeline
 - `/dbt-model` — Generate dbt models with tests and docs

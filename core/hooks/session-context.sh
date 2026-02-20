@@ -13,6 +13,27 @@ if command -v git &> /dev/null && git -C "$CLAUDE_PROJECT_DIR" rev-parse --is-in
   CONTEXT="Git: branch=${BRANCH}, ${DIRTY} uncommitted files
 Recent commits:
 ${RECENT}"
+
+  # Worktree detection
+  GIT_DIR=$(git -C "$CLAUDE_PROJECT_DIR" rev-parse --git-dir 2>/dev/null)
+  GIT_COMMON=$(git -C "$CLAUDE_PROJECT_DIR" rev-parse --git-common-dir 2>/dev/null)
+  if [ "$GIT_DIR" != "$GIT_COMMON" ]; then
+    # We are inside a linked worktree
+    MAIN_WORKTREE=$(git -C "$CLAUDE_PROJECT_DIR" worktree list --porcelain | head -1 | sed 's/^worktree //')
+    WORKTREE_COUNT=$(git -C "$CLAUDE_PROJECT_DIR" worktree list --porcelain | grep -c '^worktree ')
+    SIBLING_LIST=$(git -C "$CLAUDE_PROJECT_DIR" worktree list --porcelain | grep '^worktree ' | sed 's/^worktree //' | grep -v "^${CLAUDE_PROJECT_DIR}$" | grep -v "^${MAIN_WORKTREE}$")
+
+    CONTEXT="${CONTEXT}
+
+Worktree: ${CLAUDE_PROJECT_DIR} (branch: ${BRANCH})
+Main worktree: ${MAIN_WORKTREE}
+Active worktrees: ${WORKTREE_COUNT}"
+    if [ -n "$SIBLING_LIST" ]; then
+      CONTEXT="${CONTEXT}
+Sibling worktrees:
+${SIBLING_LIST}"
+    fi
+  fi
 fi
 
 # Previous session context (Orient phase of Orient→Work→Persist)

@@ -24,6 +24,30 @@ commit messages following the Conventional Commits specification.
 - Multi-commit squashing and message consolidation
 - Git history analysis and project-specific patterns
 
+## Worktree Operations
+- Create, list, remove, and prune worktrees
+- Worktree naming conventions (`worktree/<name>` branch namespace)
+- Cross-worktree commit awareness (same repo, different working dirs)
+- Safe worktree cleanup (always check uncommitted changes first)
+- Merge strategies for worktree branches back into main
+
+## Worktree Commands
+
+Quick reference for worktree operations:
+
+| Command | Description |
+|---------|-------------|
+| `git worktree add -b worktree/<name> ../<project>-<name>` | Create new worktree with branch |
+| `git worktree list` | List all worktrees |
+| `git worktree remove <path>` | Remove a worktree (safe) |
+| `git worktree prune` | Clean up stale worktree references |
+
+**Conventions:**
+- Branch namespace: `worktree/<name>` for worktree-created branches
+- Directory pattern: `../<project>-<name>` (sibling to main project)
+- **NEVER** use `git worktree remove --force` without explicit user confirmation
+- Always check for uncommitted changes before removing a worktree
+
 ## CRITICAL RULES
 
 **NEVER include ANY of the following in commit messages:**
