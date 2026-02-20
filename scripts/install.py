@@ -260,7 +260,7 @@ def step_8_mcp(cfg: Config) -> StepResult:
     result = StepResult()
 
     env_path = cfg.project_path / ".env"
-    mcp_src = cfg.core_dir / ".mcp.json"
+    mcp_src = cfg.core_dir / ".mcp.json.example"
     mcp_dst = cfg.project_path / ".mcp.json"
 
     backup_name = backup_if_needed(mcp_dst, cfg.dry_run)
