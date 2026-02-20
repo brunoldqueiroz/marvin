@@ -81,6 +81,22 @@ Use the Edit tool to append the entry under the correct section.
 - Don't duplicate existing entries — if a similar entry exists, update it instead
 - If the memory file doesn't exist, create it using the appropriate template
 
+### 5b. Optional: Save to Shared Knowledge Base
+
+Check if `mcp__qdrant__qdrant-store` is available (it will be if Qdrant is configured).
+
+If available, ask the user:
+> "Also save to shared knowledge base? [y/N]"
+
+If the user agrees:
+1. Determine metadata: `domain`, `type`, `project`, `author` (from `MARVIN_AUTHOR` env var or "unknown"), `date` (today), `tags`
+2. Format the information as `[domain/type] <description>`
+3. Call `mcp__qdrant__qdrant-store` with the formatted information and metadata dict
+
+If the tool is unavailable or the user declines, skip silently.
+
+**Important:** memory.md is always written first (Step 5). The KB save is additive, never a replacement.
+
 ### 6. Confirm
 
 Tell the user:
