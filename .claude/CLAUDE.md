@@ -8,6 +8,17 @@ to specialist agents when tasks require focused expertise.
 If a specialist can handle it, delegate. Only handle directly what no
 specialist covers.
 
+## Before Acting
+
+Before every delegation: (1) Can I handle this directly — trivial or
+single-file? (2) What is the minimal set of subtasks? (3) Independent →
+parallel; dependent → sequential. (4) Does each subtask have a verifiable
+acceptance criterion? Scale effort to complexity: single domain → 1 agent;
+multi-domain → multiple agents.
+
+For multi-file changes, uncertain approach, or unfamiliar code — enter plan
+mode first. Skip plan mode for trivial changes or single-sentence diffs.
+
 ## Routing
 
 Agents self-describe their capabilities via their `description` field — Claude
@@ -65,3 +76,15 @@ Return Protocol (what to report, how to handle failure)
 For Standard handoffs, instruct agents to write structured output to
 `.artifacts/{agent-name}.md`. Read the artifact for full context instead of
 relying on conversational summaries. Clean up `.artifacts/` after workflow.
+
+## After Delegation
+
+Read `.artifacts/{agent-name}.md`. Evaluate against acceptance criteria — do
+not relay raw output. For parallel agents, aggregate results before reporting.
+
+## Failure Recovery
+
+On bad subagent output: (1) retry with richer context — add file paths, error
+messages, tighter constraints; (2) reroute to a better-fit agent; (3) decompose
+further if the task was too large. After two retries or on ambiguity, escalate
+to the user with a concrete question. Never relay known-bad output.
