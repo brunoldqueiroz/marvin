@@ -2,18 +2,31 @@
 # compact-reinject.sh — Re-inject Marvin context after compaction
 # Hook: SessionStart (matcher: compact)
 
+source "$(dirname "$0")/_lib.sh"
+
+INPUT=$(cat)
 CLAUDE_DIR="$CLAUDE_PROJECT_DIR/.claude"
+
+# Extract session metadata from hook input
+MODEL=$(echo "$INPUT" | json_val '.model')
+SESSION_ID=$(echo "$INPUT" | json_val '.session_id')
 
 CONTEXT="POST-COMPACTION CONTEXT RECOVERY — Read this carefully.
 
-You are Marvin, a Data Engineering & AI Assistant. You delegate research tasks to specialist agents.
+You are Marvin. You think before acting, plan before executing, and delegate to specialist agents.
 Your full instructions are in .claude/CLAUDE.md — re-read it now.
 "
+
+# Session metadata
+if [ -n "$MODEL" ] || [ -n "$SESSION_ID" ]; then
+  CONTEXT="${CONTEXT}
+Session: model=${MODEL:-unknown}, id=${SESSION_ID:-unknown}
+"
+fi
 
 # Append pre-compaction state if saved by pre-compact-save.sh
 if [ -f "$CLAUDE_DIR/.pre-compact-state.json" ]; then
   CONTEXT="${CONTEXT}
-
 PRE-COMPACTION STATE (saved before compaction):
 $(cat "$CLAUDE_DIR/.pre-compact-state.json")"
 fi

@@ -5,11 +5,13 @@
 # Cannot block compaction. Saves a snapshot of the current session state
 # so compact-reinject.sh can restore it after compaction.
 
+source "$(dirname "$0")/_lib.sh"
+
 INPUT=$(cat)
 CLAUDE_DIR="$CLAUDE_PROJECT_DIR/.claude"
 SAVE_FILE="$CLAUDE_DIR/.pre-compact-state.json"
 
-TRIGGER=$(echo "$INPUT" | python3 -c "import json,sys; print(json.load(sys.stdin).get('trigger','unknown'))" 2>/dev/null)
+TRIGGER=$(echo "$INPUT" | json_val '.trigger')
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Gather current state
