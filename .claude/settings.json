@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(python3 *)",
+      "Bash(pip *)",
+      "Bash(pip3 *)",
+      "Bash(uv *)",
+      "Bash(pytest *)",
+      "Bash(ruff *)",
+      "Bash(mypy *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git show*)",
+      "Bash(git stash*)",
+      "Bash(ls *)",
+      "Bash(wc *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(mkdir *)",
+      "Bash(which *)",
+      "Bash(gh *)",
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "mcp__exa__web_search_exa",
+      "mcp__exa__web_search_advanced_exa",
+      "mcp__exa__company_research_exa",
+      "mcp__exa__crawling_exa",
+      "mcp__exa__people_search_exa",
+      "mcp__exa__deep_researcher_start",
+      "mcp__exa__deep_researcher_check",
+      "mcp__exa__get_code_context_exa",
+      "mcp__upstash-context7-mcp__resolve-library-id",
+      "mcp__upstash-context7-mcp__query-docs",
+      "mcp__qdrant__qdrant-store",
+      "mcp__qdrant__qdrant-find"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf .)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(curl * | bash)",
+      "Bash(wget * | bash)",
+      "Bash(curl * | sh)",
+      "Read(.env)",
+      "Read(*.pem)",
+      "Read(*credentials*)"
+    ]
+  },
+  "env": {
+    "MARVIN_ENABLED": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/compact-reinject.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact-save.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-persist.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-quality-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
