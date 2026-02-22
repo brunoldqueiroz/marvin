@@ -1,15 +1,19 @@
 # Marvin
 
-Data Engineering & AI Assistant — a Claude Code orchestration layer.
+A Claude Code orchestration layer that thinks before acting, plans before
+executing, and delegates to specialist agents.
 
 Marvin adds session memory, agent delegation, and observability to Claude Code
 through hooks, a structured brain, and specialist agents.
 
 ## What's Included (v0.1.0)
 
-- **Brain** — Generalist orchestrator that routes tasks and delegates to specialists
-- **Researcher agent** — Deep research with Context7, Exa, and Qdrant KB
-- **5 hooks** — Session context, persistence, compaction resilience, agent quality gate
+- **Brain** — Topology-based routing (trivial/focused/multi-domain/architectural)
+  and structured handoff protocol for agent delegation
+- **Researcher agent** — Proactive research specialist with Context7, Exa,
+  and Qdrant KB access
+- **5 hooks** — Session context (model, source, git state), persistence,
+  compaction resilience, agent quality gate with metrics
 - **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
 
 ## Setup
@@ -18,10 +22,8 @@ through hooks, a structured brain, and specialist agents.
 # Clone the repository
 git clone <repo-url> && cd marvin
 
-# Create .env with your API keys
-cp .env.example .env  # then edit with your keys
-
-# Required environment variables:
+# Create .env with your API keys (or .envrc for direnv)
+# Required:
 #   CONTEXT7_API_KEY  — Context7 MCP access
 #   EXA_API_KEY       — Exa search access
 #   QDRANT_URL        — Qdrant Cloud endpoint
@@ -35,16 +37,16 @@ claude
 
 ```
 .claude/
-  CLAUDE.md                      # Brain — orchestrator instructions
+  CLAUDE.md                      # Brain — routing + handoff protocol
   settings.json                  # Hooks + permissions
   agents/researcher/AGENT.md     # Research specialist
   hooks/
     _lib.sh                      # Shared utilities (json_val)
-    session-context.sh           # SessionStart: git + previous session
+    session-context.sh           # SessionStart: model, source, git, previous session
     compact-reinject.sh          # SessionStart(compact): recover after compaction
     pre-compact-save.sh          # PreCompact: snapshot before compaction
-    session-persist.sh           # Stop: transcript → session log
-    subagent-quality-gate.sh     # SubagentStop: validate + metrics
+    session-persist.sh           # Stop: transcript → session log (model, mode, tools)
+    subagent-quality-gate.sh     # SubagentStop: validate + metrics (agent_id, transcript)
 .mcp.json                        # MCP server configuration
 ```
 
@@ -52,9 +54,20 @@ claude
 
 Marvin operates on an **Orient → Work → Persist** cycle:
 
-1. **Orient** — On session start, hooks inject git context and the previous
-   session summary so Claude knows where it left off
-2. **Work** — The brain routes tasks: research goes to the researcher agent,
-   everything else is handled directly
-3. **Persist** — On session end, hooks parse the transcript and write a
-   structured summary for the next session
+1. **Orient** — On session start, hooks inject session metadata (model, source),
+   git context, and the previous session summary
+2. **Work** — The brain chooses a topology for the task: handle directly if no
+   specialist covers it, or delegate with a structured handoff (objective, key
+   files, constraints, output format)
+3. **Persist** — On session end, hooks parse the transcript and write a structured
+   summary (model, permission mode, prompts, tools, files, commits) for the next
+   session
+
+## Observability
+
+Two files in `.claude/dev/` (gitignored) provide session-level telemetry:
+
+- **`session-log.md`** — Per-session summaries: user prompts, tools used, files
+  modified, git commits, agent usage, model, and permission mode
+- **`metrics.jsonl`** — Per-agent-invocation metrics: agent_id, status,
+  output length, artifact detection, transcript path, permission mode
