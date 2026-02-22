@@ -8,8 +8,8 @@ through hooks, a structured brain, and specialist agents.
 
 ## What's Included (v0.1.0)
 
-- **Brain** — Topology-based routing (trivial/focused/multi-domain/architectural)
-  and structured handoff protocol for agent delegation
+- **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
+  topology-based routing, structured handoff protocol, and failure recovery
 - **Researcher agent** — Proactive research specialist with Context7, Exa,
   and Qdrant KB access
 - **5 hooks** — Session context (model, source, git state), persistence,
@@ -37,7 +37,7 @@ claude
 
 ```
 .claude/
-  CLAUDE.md                      # Brain — routing + handoff protocol
+  CLAUDE.md                      # Brain — reasoning, routing, handoff, recovery
   settings.json                  # Hooks + permissions
   agents/researcher/AGENT.md     # Research specialist
   hooks/
@@ -52,14 +52,15 @@ claude
 
 ## How It Works
 
-Marvin operates on an **Orient → Work → Persist** cycle:
+Marvin operates on an **Orient → Think → Work → Persist** cycle:
 
 1. **Orient** — On session start, hooks inject session metadata (model, source),
    git context, and the previous session summary
-2. **Work** — The brain chooses a topology for the task: handle directly if no
-   specialist covers it, or delegate with a structured handoff (objective, key
-   files, constraints, output format)
-3. **Persist** — On session end, hooks parse the transcript and write a structured
+2. **Think** — The brain reasons about the task: can I handle it directly? What
+   subtasks? Parallel or sequential? Plan mode for uncertain approaches
+3. **Work** — Route to the right topology, delegate with structured handoffs,
+   evaluate output against acceptance criteria, recover from failures
+4. **Persist** — On session end, hooks parse the transcript and write a structured
    summary (model, permission mode, prompts, tools, files, commits) for the next
    session
 

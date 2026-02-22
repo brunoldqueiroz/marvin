@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Brain (`.claude/CLAUDE.md`) — topology-based routing and structured handoff
-  protocol with 4 essential components (objective, key files, constraints,
-  output format)
+- Brain (`.claude/CLAUDE.md`) — Think → Route → Delegate → Evaluate → Recover
+  cycle with topology-based routing, structured handoff protocol (objective,
+  key files, constraints, output format), pre-delegation reasoning checklist,
+  post-delegation synthesis, and failure recovery ladder
 - Researcher agent — research specialist with proactive routing, Context7,
   Exa, and Qdrant KB access
 - Session lifecycle hooks: startup context injection (model, source, git state,
