@@ -17,9 +17,17 @@ LOG_DIR="$CLAUDE_PROJECT_DIR/.claude/dev"
 LOG_FILE="$LOG_DIR/session-log.md"
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
 
-# Extract transcript path and session ID from hook input
+# Extract fields from hook input
 TRANSCRIPT_PATH=$(echo "$INPUT" | json_val '.transcript_path')
 SESSION_ID=$(echo "$INPUT" | json_val '.session_id')
+PERM_MODE=$(echo "$INPUT" | json_val '.permission_mode')
+
+# Read model from shared state (saved by session-context.sh at startup)
+MODEL_FILE="$LOG_DIR/.session-model"
+MODEL=""
+if [ -f "$MODEL_FILE" ]; then
+  MODEL=$(cat "$MODEL_FILE")
+fi
 
 # Git state
 BRANCH=$(git -C "$CLAUDE_PROJECT_DIR" branch --show-current 2>/dev/null || echo "unknown")
@@ -139,9 +147,14 @@ fi
 ENTRY="## Session: $TIMESTAMP (branch: $BRANCH)
 "
 
-if [ -n "$SESSION_ID" ]; then
+# Session metadata line
+META_PARTS=""
+[ -n "$SESSION_ID" ] && META_PARTS="id: \`${SESSION_ID}\`"
+[ -n "$MODEL" ] && META_PARTS="${META_PARTS:+${META_PARTS} | }model: ${MODEL}"
+[ -n "$PERM_MODE" ] && META_PARTS="${META_PARTS:+${META_PARTS} | }mode: ${PERM_MODE}"
+if [ -n "$META_PARTS" ]; then
   ENTRY="${ENTRY}
-Session ID: \`${SESSION_ID}\`
+${META_PARTS}
 "
 fi
 

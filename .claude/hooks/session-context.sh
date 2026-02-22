@@ -2,7 +2,21 @@
 # session-context.sh — Inject project context on session start
 # Hook: SessionStart (matcher: startup)
 
+source "$(dirname "$0")/_lib.sh"
+
+INPUT=$(cat)
+
+# Extract session metadata from hook input
+MODEL=$(echo "$INPUT" | json_val '.model')
+SOURCE=$(echo "$INPUT" | json_val '.source')
+SESSION_ID=$(echo "$INPUT" | json_val '.session_id')
+
 CONTEXT=""
+
+# Session metadata
+if [ -n "$MODEL" ] || [ -n "$SOURCE" ]; then
+  CONTEXT="Session: source=${SOURCE:-startup}, model=${MODEL:-unknown}"
+fi
 
 # Git context
 if command -v git &> /dev/null && git -C "$CLAUDE_PROJECT_DIR" rev-parse --is-inside-work-tree &> /dev/null; then
@@ -10,7 +24,8 @@ if command -v git &> /dev/null && git -C "$CLAUDE_PROJECT_DIR" rev-parse --is-in
   RECENT=$(git -C "$CLAUDE_PROJECT_DIR" log --oneline -5 2>/dev/null)
   DIRTY=$(git -C "$CLAUDE_PROJECT_DIR" status --porcelain 2>/dev/null | wc -l | tr -d ' ')
 
-  CONTEXT="Git: branch=${BRANCH}, ${DIRTY} uncommitted files
+  CONTEXT="${CONTEXT}
+Git: branch=${BRANCH}, ${DIRTY} uncommitted files
 Recent commits:
 ${RECENT}"
 fi
@@ -26,6 +41,12 @@ if [ -f "$SESSION_LOG" ]; then
 Previous session:
 ${LAST_SESSION}"
   fi
+fi
+
+# Save model to shared state for session-persist.sh to read at Stop
+if [ -n "$MODEL" ] && [ -n "$CLAUDE_PROJECT_DIR" ]; then
+  mkdir -p "$CLAUDE_PROJECT_DIR/.claude/dev" 2>/dev/null
+  echo "$MODEL" > "$CLAUDE_PROJECT_DIR/.claude/dev/.session-model" 2>/dev/null
 fi
 
 if [ -n "$CONTEXT" ]; then

@@ -9,6 +9,9 @@ INPUT=$(cat)
 
 LAST_MSG=$(echo "$INPUT" | json_val '.last_assistant_message')
 AGENT_NAME=$(echo "$INPUT" | json_val '.agent_type' 2>/dev/null || echo "unknown")
+AGENT_ID=$(echo "$INPUT" | json_val '.agent_id')
+AGENT_TRANSCRIPT=$(echo "$INPUT" | json_val '.agent_transcript_path')
+PERM_MODE=$(echo "$INPUT" | json_val '.permission_mode')
 
 # --- Check for .artifacts/ output (filesystem handoff protocol) ---
 HAS_ARTIFACT=false
@@ -39,8 +42,8 @@ fi
   mkdir -p "$METRICS_DIR" 2>/dev/null
   SESSION=$(echo "$INPUT" | json_val '.session_id' 2>/dev/null || echo "")
   OUTPUT_LEN=${#LAST_MSG}
-  printf '{"ts":"%s","event":"subagent_stop","agent":"%s","session":"%s","status":"%s","output_len":%d,"has_artifact":%s}\n' \
-    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$AGENT_NAME" "$SESSION" "$STATUS" "$OUTPUT_LEN" "$HAS_ARTIFACT" \
+  printf '{"ts":"%s","event":"subagent_stop","agent":"%s","agent_id":"%s","session":"%s","status":"%s","output_len":%d,"has_artifact":%s,"permission_mode":"%s","transcript":"%s"}\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$AGENT_NAME" "$AGENT_ID" "$SESSION" "$STATUS" "$OUTPUT_LEN" "$HAS_ARTIFACT" "$PERM_MODE" "$AGENT_TRANSCRIPT" \
     >> "$METRICS_DIR/metrics.jsonl"
 
   # Rotate: keep last 500 lines when exceeding 1000
