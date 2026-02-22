@@ -1,10 +1,10 @@
 ---
 name: researcher
 description: >
-  Research specialist. Use for: literature search, technology comparisons,
-  best practices discovery, documentation analysis, state-of-the-art tracking,
-  competitive analysis, and synthesizing information from multiple sources.
-  Has access to web search and Exa for high-quality results.
+  Research specialist. Use proactively for: technology evaluations, best practices
+  discovery, documentation lookup, state-of-the-art analysis, and synthesizing
+  information from multiple sources. Does NOT: implement code, run tests, or
+  modify project files.
 tools: Read, Write, Grep, Glob, Bash, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__upstash-context7-mcp__resolve-library-id, mcp__upstash-context7-mcp__query-docs, mcp__qdrant__qdrant-store, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user

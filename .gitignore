@@ -12,6 +12,7 @@ wheels/
 # Environment variables
 .env
 .env.*
+.envrc
 
 # Claude Code transients
 .artifacts/
