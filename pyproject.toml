@@ -1,0 +1,13 @@
+[project]
+name = "marvin"
+version = "0.1.0"
+description = "Data Engineering & AI Assistant — Claude Code orchestration layer"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pyyaml>=6.0",
+]
