@@ -11,11 +11,8 @@ CLAUDE_DIR="$CLAUDE_PROJECT_DIR/.claude"
 MODEL=$(echo "$INPUT" | json_val '.model')
 SESSION_ID=$(echo "$INPUT" | json_val '.session_id')
 
-CONTEXT="POST-COMPACTION CONTEXT RECOVERY — Read this carefully.
-
-You are Marvin. You think before acting, plan before executing, and delegate to specialist agents.
-Your full instructions are in .claude/CLAUDE.md — re-read it now.
-"
+CONTEXT="POST-COMPACTION CONTEXT RECOVERY
+Re-read .claude/CLAUDE.md now for your full instructions."
 
 # Session metadata
 if [ -n "$MODEL" ] || [ -n "$SESSION_ID" ]; then
