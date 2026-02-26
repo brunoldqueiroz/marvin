@@ -56,6 +56,10 @@
       "Read(*credentials*)"
     ]
   },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
   "env": {
     "MARVIN_ENABLED": "1"
   },
