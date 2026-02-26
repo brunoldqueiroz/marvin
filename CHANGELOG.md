@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-02-26
+
 ### Added
 
 - MCP error monitor hook (`mcp-error-monitor.sh`) — PostToolUse hook that
   detects HTTP 4xx/5xx, connection errors, and auth failures on MCP tools;
   logs to `.claude/dev/tool-errors.log` and surfaces via exit 2 (hard gate)
+- Brain: reasoning cycle, synthesis, and failure recovery
 - `/status` skill — haiku-powered read-only status report (git state, session
   history, agent metrics). First user-invocable skill.
 - Development standard (`docs/development-standard.md`) and specs v0.2.0,
@@ -31,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   compaction recovery)
 - Researcher agent v2: compact tool routing table, decompose step, confidence
   output, KB write discipline, maxTurns 30→20
+- Hooks: standardized all hooks to use `_lib.sh` for JSON parsing
 
 ### Fixed
 
