@@ -7,20 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- MCP error monitor hook (`mcp-error-monitor.sh`) — PostToolUse hook that
+  detects HTTP 4xx/5xx, connection errors, and auth failures on MCP tools;
+  logs to `.claude/dev/tool-errors.log` and surfaces via exit 2 (hard gate)
+- `/status` skill — haiku-powered read-only status report (git state, session
+  history, agent metrics). First user-invocable skill.
+- Development standard (`docs/development-standard.md`) and specs v0.2.0,
+  v0.3.0
+- Tool usage log hook (`tool-usage-log.sh`) — PostToolUse hook for tracking
+  tool invocations
+
 ### Changed
 
 - Brain: added delegation token constraint (PREFER under 500 tokens) to
   Handoff Protocol, reducing context waste on agent prompts
 - Brain: added Verify section with quick-check commands for hooks, settings,
   and agent/skill frontmatter
+- Brain: added MUST/MUST NOT rules at top per development standard §3.1
 - Compaction hook: removed hardcoded identity from `compact-reinject.sh`,
   deferring to CLAUDE.md as single source of truth (~30 tokens saved per
   compaction recovery)
+- Researcher agent v2: compact tool routing table, decompose step, confidence
+  output, KB write discipline, maxTurns 30→20
 
-### Added
+### Fixed
 
-- `/status` skill — haiku-powered read-only status report (git state, session
-  history, agent metrics). First user-invocable skill.
+- Context7 tool names: `mcp__upstash-context7-mcp__*` →
+  `mcp__context7__*` in settings.json allow list and researcher AGENT.md
 
 ## [0.1.0] - 2026-02-22
 

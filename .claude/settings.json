@@ -36,8 +36,8 @@
       "mcp__exa__deep_researcher_start",
       "mcp__exa__deep_researcher_check",
       "mcp__exa__get_code_context_exa",
-      "mcp__upstash-context7-mcp__resolve-library-id",
-      "mcp__upstash-context7-mcp__query-docs",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
       "mcp__qdrant__qdrant-store",
       "mcp__qdrant__qdrant-find"
     ],
@@ -120,6 +120,15 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-usage-log.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/mcp-error-monitor.sh"
           }
         ]
       }
