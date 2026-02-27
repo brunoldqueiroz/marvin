@@ -66,13 +66,13 @@ Observe (metrics.jsonl)
 
 ### 2.2 Spec Discipline
 
-- Every non-trivial change starts with a spec in `docs/spec-vX.Y.md`.
+- Every non-trivial change starts with a spec in `docs/spec/spec-vX.Y.md`.
 - Spec is committed **before** implementation begins.
 - Specs are **frozen after shipping** — never update a shipped spec. Write a
   new one instead.
 - Reference specs in artifact headers:
   ```bash
-  # Spec: docs/spec-v0.2.0.md §4.1
+  # Spec: docs/spec/spec-v0.2.0.md §4.1
   ```
 
 ### 2.3 Spec Structure
@@ -315,7 +315,7 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 
 ### 6.3 Spec Immutability
 
-- Shipped specs are frozen. Never retroactively update `docs/spec-v0.1.0.md`.
+- Shipped specs are frozen. Never retroactively update `docs/spec/spec-v0.1.0.md`.
 - Corrections go in the next spec version.
 - Link implementations back to specs via header comments.
 
