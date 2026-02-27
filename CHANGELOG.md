@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reason; pairs with session_start for duration tracking
 - `hooks/tool-failure.sh` — new PostToolUseFailure hook, logs `tool_failure`
   event with tool, error, is_interrupt
+- `hooks/block-secrets.sh` — PreToolUse hook that blocks Bash commands matching
+  secret exposure patterns (.env, credentials, .pem, API keys, tokens)
 - `settings.json`: registered SessionEnd and PostToolUseFailure hook entries
 
 ### Changed
