@@ -5,8 +5,7 @@
 > AI-augmented development projects.
 
 **Version:** 1.0 — February 2026
-**Applies to:** all files under `.claude/`, `docs/spec-*.md`, and project-level
-configuration.
+**Applies to:** all files under `.claude/` and project-level configuration.
 
 ---
 
@@ -58,33 +57,10 @@ their purposes causes failures.
 Observe (metrics.jsonl)
     → Identify pattern (what's failing?)
     → Hypothesize (why? instruction decay? bad routing? wrong rubric?)
-    → Write spec (docs/spec-vX.Y.md)
     → Implement
     → Validate (hooks + evals)
     → Observe
 ```
-
-### 2.2 Spec Discipline
-
-- Every non-trivial change starts with a spec in `docs/spec/spec-vX.Y.md`.
-- Spec is committed **before** implementation begins.
-- Specs are **frozen after shipping** — never update a shipped spec. Write a
-  new one instead.
-- Reference specs in artifact headers:
-  ```bash
-  # Spec: docs/spec/spec-v0.2.0.md §4.1
-  ```
-
-### 2.3 Spec Structure
-
-A spec MUST include:
-
-1. **Context** — research citations that motivated the change
-2. **Guiding principle** — one memorable statement
-3. **Change table** — files to create / modify / NOT create, with rationale
-4. **Design rules** — `| Rule | Rationale |` format
-5. **Necessity tests** — answers to §4 tests for every new artifact
-6. **Implementation order** — phased rollout
 
 ---
 
@@ -216,7 +192,6 @@ tools: <allowlist>
 ## §4 Necessity Tests
 
 Before creating any new artifact, answer these questions **in order**.
-Document the answers in the spec.
 
 ### 4.1 For any artifact
 
@@ -313,12 +288,6 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 - `hooks/subagent-quality-gate.sh`: add Exa usage verification
 ```
 
-### 6.3 Spec Immutability
-
-- Shipped specs are frozen. Never retroactively update `docs/spec/spec-v0.1.0.md`.
-- Corrections go in the next spec version.
-- Link implementations back to specs via header comments.
-
 ---
 
 ## §7 Anti-Patterns
@@ -354,7 +323,7 @@ measurable quality improvement.
 
 ## §9 Pre-Commit Checklist
 
-Before committing changes to any `.claude/` file or `docs/spec-*.md`:
+Before committing changes to any `.claude/` file:
 
 - [ ] `bash -n .claude/hooks/*.sh` — all hooks parse
 - [ ] `python3 -c "import json; json.load(open('.claude/settings.json'))"` — valid JSON
@@ -363,7 +332,7 @@ Before committing changes to any `.claude/` file or `docs/spec-*.md`:
 - [ ] Changed `description` → no conflicts with other agents' routing
 - [ ] Changed hook → `echo '{}' | bash hook.sh` does not block (exit 0)
 - [ ] CHANGELOG.md entry added with affected file paths
-- [ ] If new artifact → §4 necessity test answers documented in spec
+- [ ] If new artifact → §4 necessity test answers documented
 
 ---
 

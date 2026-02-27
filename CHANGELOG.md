@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Specs: moved `spec-v0.2.0.md` and `spec-v0.3.0.md` to `docs/spec/`
-  subdirectory; updated references in `development-standard.md`
 - Brain: added Epistemic Discipline section (say "I don't know", read before
   claiming, question assumptions)
 - Brain: added two rules — MUST question assumptions, MUST NOT invent facts
