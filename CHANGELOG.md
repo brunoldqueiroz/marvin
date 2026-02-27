@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-02-27
+
+### Added
+
+- 10 expert skills — specialist advisors invoked via `/skill-name` or auto-
+  routed by Marvin based on topic. Each skill has a frontmatter (name,
+  description, tools), core principles, best practices, anti-patterns, and
+  review checklist:
+  - `airflow-expert`: DAG design, TaskFlow API, operators, scheduling, XCom,
+    deferrable operators, dynamic task mapping, performance tuning
+  - `aws-expert`: IAM, S3, Lambda, VPC, cost optimization, Well-Architected
+  - `dbt-expert`: project structure, ref/source, incremental models, Jinja,
+    materializations, testing
+  - `docker-expert`: Dockerfiles, multi-stage builds, security, Compose,
+    layer caching
+  - `docs-expert`: READMEs, changelogs, ADRs, docstrings, Diátaxis framework
+  - `git-expert`: branching, commit conventions, rebase, hooks, conflict
+    resolution
+  - `python-expert`: typing, uv/ruff/mypy, pytest, dataclasses vs Pydantic,
+    idioms
+  - `snowflake-expert`: warehouse sizing, RBAC, Time Travel, streams/tasks,
+    VARIANT, clustering
+  - `spark-expert`: DataFrame API, shuffle optimization, AQE, Delta Lake,
+    memory management
+  - `terraform-expert`: HCL syntax, modules, state management, plan/apply,
+    lifecycle
+- `settings.json`: `Bash(airflow *)` permission for airflow-expert skill
+- All skills set to `user-invocable: false` — auto-routed by Marvin only,
+  not callable via `/skill-name`
+
 ## [0.3.0] - 2026-02-27
 
 ### Added
