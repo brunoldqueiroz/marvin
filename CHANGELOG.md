@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Brain: expanded Identity section to describe Marvin as a general-purpose IT
-  assistant (software dev, data engineering, data analysis, research, studies)
+  assistant (software dev, data engineering, AI engineering, data analysis,
+  research, studies)
 - Brain: removed redundant Standards section (duplicated Rule #4)
 
 ### Removed
