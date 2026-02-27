@@ -4,13 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "marvin-cli"
-version = "0.5.0"
+version = "0.5.1"
 description = "Data Engineering & AI Assistant — Claude Code orchestration layer"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "loguru>=0.7",
     "click>=8.0",
+    "rich>=13.0",
 ]
 
 [project.scripts]

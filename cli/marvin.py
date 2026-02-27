@@ -19,6 +19,8 @@ from pathlib import Path
 
 import click
 from loguru import logger
+from rich.console import Console
+from rich.table import Table
 
 GITHUB_REPO = "brunoldqueiroz/marvin"
 INIT_EXCLUDE = {"dev", "settings.local.json"}
@@ -108,7 +110,7 @@ def parse_frontmatter(path: Path) -> dict[str, str]:
 
 
 def _list_entries(kind: str, subdir: str, filename: str) -> None:
-    """List agents or skills from DATA_DIR."""
+    """List agents or skills from DATA_DIR as a rich table."""
     entries_dir = DATA_DIR / subdir
     if not entries_dir.exists():
         logger.error(f"{kind} directory not found: {entries_dir}")
@@ -120,13 +122,22 @@ def _list_entries(kind: str, subdir: str, filename: str) -> None:
             fm = parse_frontmatter(md)
             name = fm.get("name", entry_dir.name)
             desc = fm.get("description", "")
-            entries.append((name, desc))
+            # Truncate at first sentence boundary for clean display
+            short = desc.split(". Use when:")[0].split(". Use for:")[0]
+            if short != desc:
+                short += "."
+            entries.append((name, short))
     if not entries:
         logger.warning(f"No {kind} found.")
         return
-    width = max(len(n) for n, _ in entries)
+
+    table = Table(title=f"{kind.capitalize()} ({len(entries)})")
+    table.add_column("Name", style="cyan", no_wrap=True)
+    table.add_column("Description")
     for name, desc in entries:
-        logger.info("  {}  {}", name.ljust(width), desc)
+        table.add_row(name, desc)
+
+    Console(stderr=True).print(table)
 
 
 def _download_claude_dir(ref: str = "main") -> Path:
