@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-02-27
+
+### Added
+
+- `marvin-cli` Python package with hatchling build and `.claude/` bundled as
+  package data — install via `uv tool install` or `pipx install`
+- `marvin init --latest` / `--ref` flags for GitHub tarball download
+- `click` CLI framework with declarative subcommands and auto `--help`
+- `loguru` for colored logging output
+- `install.sh` uv/pipx one-line installer
+
 ## [0.4.0] - 2026-02-27
 
 ### Added
