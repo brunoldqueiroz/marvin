@@ -7,8 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-27
+
+### Added
+
+- `hooks/_lib.sh`: `log_metric()` — shared JSONL writer with rotation (keep 500
+  when >1000 lines), replaces inline rotation in subagent-quality-gate.sh
+- `hooks/session-context.sh`: `session_start` metric event (session, model,
+  source, permission_mode)
+- `hooks/session-end.sh` — new SessionEnd hook, logs `session_end` event with
+  reason; pairs with session_start for duration tracking
+- `hooks/tool-failure.sh` — new PostToolUseFailure hook, logs `tool_failure`
+  event with tool, error, is_interrupt
+- `settings.json`: registered SessionEnd and PostToolUseFailure hook entries
+
 ### Changed
 
+- `hooks/tool-usage-log.sh`: rewritten from per-session plain text to JSONL via
+  `log_metric`; adds file_path (Write/Edit/Read), command preview (Bash),
+  tool_use_id for correlation
+- `hooks/mcp-error-monitor.sh`: switched from plain-text `tool-errors.log` to
+  `log_metric` with `mcp_error` event
+- `hooks/subagent-quality-gate.sh`: added `cwd` field, replaced inline
+  printf+rotation with `log_metric`
 - Brain: added Epistemic Discipline section (say "I don't know", read before
   claiming, question assumptions)
 - Brain: added two rules — MUST question assumptions, MUST NOT invent facts
@@ -21,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - `/status` skill
+- Per-session `tool-logs/<session>.log` files (replaced by unified metrics.jsonl)
+- Plain-text `tool-errors.log` (replaced by `mcp_error` events in metrics.jsonl)
 
 ## [0.2.0] - 2026-02-26
 

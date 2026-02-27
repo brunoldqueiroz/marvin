@@ -49,6 +49,13 @@ if [ -n "$MODEL" ] && [ -n "$CLAUDE_PROJECT_DIR" ]; then
   echo "$MODEL" > "$CLAUDE_PROJECT_DIR/.claude/dev/.session-model" 2>/dev/null
 fi
 
+# Log session_start metric
+{
+  PERM_MODE=$(echo "$INPUT" | json_val '.permission_mode')
+  log_metric "$(printf '{"ts":"%s","event":"session_start","session":"%s","model":"%s","source":"%s","permission_mode":"%s"}' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SESSION_ID" "$MODEL" "${SOURCE:-startup}" "$PERM_MODE")"
+} 2>/dev/null
+
 if [ -n "$CONTEXT" ]; then
   if command -v jq &> /dev/null; then
     jq -n --arg ctx "$CONTEXT" '{additionalContext: $ctx}'

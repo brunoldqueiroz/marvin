@@ -38,22 +38,11 @@ fi
 
 # --- Metrics logging (best-effort, never blocks) ---
 {
-  METRICS_DIR="${CLAUDE_PROJECT_DIR:-.}/.claude/dev"
-  mkdir -p "$METRICS_DIR" 2>/dev/null
   SESSION=$(echo "$INPUT" | json_val '.session_id' 2>/dev/null || echo "")
   OUTPUT_LEN=${#LAST_MSG}
-  printf '{"ts":"%s","event":"subagent_stop","agent":"%s","agent_id":"%s","session":"%s","status":"%s","output_len":%d,"has_artifact":%s,"permission_mode":"%s","transcript":"%s"}\n' \
-    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$AGENT_NAME" "$AGENT_ID" "$SESSION" "$STATUS" "$OUTPUT_LEN" "$HAS_ARTIFACT" "$PERM_MODE" "$AGENT_TRANSCRIPT" \
-    >> "$METRICS_DIR/metrics.jsonl"
-
-  # Rotate: keep last 500 lines when exceeding 1000
-  METRICS_FILE="$METRICS_DIR/metrics.jsonl"
-  if [ -f "$METRICS_FILE" ]; then
-    LINE_COUNT=$(wc -l < "$METRICS_FILE" 2>/dev/null || echo "0")
-    if [ "$LINE_COUNT" -gt 1000 ]; then
-      tail -500 "$METRICS_FILE" > "$METRICS_FILE.tmp" && mv "$METRICS_FILE.tmp" "$METRICS_FILE"
-    fi
-  fi
+  CWD=$(echo "$INPUT" | json_val '.cwd' 2>/dev/null || echo "")
+  log_metric "$(printf '{"ts":"%s","event":"subagent_stop","agent":"%s","agent_id":"%s","session":"%s","status":"%s","output_len":%d,"has_artifact":%s,"cwd":"%s","permission_mode":"%s","transcript":"%s"}' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$AGENT_NAME" "$AGENT_ID" "$SESSION" "$STATUS" "$OUTPUT_LEN" "$HAS_ARTIFACT" "$CWD" "$PERM_MODE" "$AGENT_TRANSCRIPT")"
 } 2>/dev/null
 
 # --- Quality gate ---

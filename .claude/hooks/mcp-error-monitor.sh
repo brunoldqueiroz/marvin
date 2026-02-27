@@ -23,14 +23,14 @@ fi
 
 [ -z "$ERROR_MATCH" ] && exit 0
 
-# Persistent log
-LOGDIR="${CLAUDE_PROJECT_DIR:-.}/.claude/dev"
-mkdir -p "$LOGDIR"
-printf '%s MCP_ERROR tool=%s error=%s\n' \
-  "$(date -Iseconds)" "$TOOL" "$ERROR_MATCH" \
-  >> "$LOGDIR/tool-errors.log"
+# Log to unified metrics
+SESSION=$(echo "$INPUT" | json_val '.session_id')
+SERVER=$(echo "$TOOL" | cut -d'_' -f3)
+{
+  log_metric "$(printf '{"ts":"%s","event":"mcp_error","session":"%s","tool":"%s","server":"%s","error":"%s"}' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SESSION" "$TOOL" "$SERVER" "$ERROR_MATCH")"
+} 2>/dev/null
 
 # Surface to Claude (and therefore to the user)
-SERVER=$(echo "$TOOL" | cut -d'_' -f3)
 echo "MCP tool '$TOOL' (server: $SERVER) returned error: $ERROR_MATCH. Check API key/billing for '$SERVER'." >&2
 exit 2
