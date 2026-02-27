@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Brain: added Epistemic Discipline section (say "I don't know", read before
+  claiming, question assumptions)
+- Brain: added two rules — MUST question assumptions, MUST NOT invent facts
+- Brain: rewritten Identity (IT assistant → AI assistant, active voice)
 - Brain: expanded Identity section to describe Marvin as a general-purpose IT
   assistant (software dev, data engineering, AI engineering, data analysis,
   research, studies)
