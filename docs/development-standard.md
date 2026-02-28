@@ -4,7 +4,7 @@
 > this document. It codifies empirically validated patterns for evolving
 > AI-augmented development projects.
 
-**Version:** 1.0 — February 2026
+**Version:** 1.1 — February 2026
 **Applies to:** all files under `.claude/` and project-level configuration.
 
 ---
@@ -36,6 +36,13 @@ their purposes causes failures.
    the same rigor as production code: version control, review, testing.
 5. **Probabilistic instructions need deterministic enforcement.** If a
    constraint matters after 10+ messages, back it with a hook.
+6. **Start with the simplest approach.** Single LLM call > workflow > agent.
+   Add orchestration layers only when simpler solutions demonstrably fail to
+   meet quality or latency requirements.
+7. **Prefer just-in-time over upfront context.** Load knowledge at the point
+   of need (skills, `@path` imports) rather than in CLAUDE.md. Upfront context
+   pays a fixed cost every turn. Just-in-time costs more per retrieval but
+   preserves budget for the 90% of turns that don't need it.
 
 ### 1.3 Evidence Base
 
@@ -105,11 +112,24 @@ maxTurns: <10-30>
 | tools | Allowlist only. List each tool explicitly. |
 | model | Match to task complexity (see §8). |
 | maxTurns | Start at 10-20; increase only with evidence. |
+| Tool selection | Include a `Tool Selection` table mapping question types to tools when agent has 3+ tools |
 
 **Anti-patterns:**
 - Behavioral instructions in the description field (degrades routing)
 - Missing "Does NOT:" (causes false-positive routing)
 - Omitting tools allowlist (agent gets all tools by default)
+
+**Tool design (Agent-Computer Interface):**
+
+| Principle | Guideline |
+|-----------|-----------|
+| Self-contained | Each tool description includes usage, edge cases, input format — no external docs required |
+| Minimal overlap | If two tools serve similar purposes, add clear "Use X for A, Y for B" routing |
+| Token-efficient returns | Tools return only what the agent needs, not raw dumps. Format for LLM consumption |
+| Poka-yoke | Prefer specific parameters over free-form strings. Return actionable error messages |
+
+**Anti-pattern:** Tool description that says "Use this tool to do X" without
+input format, constraints, or when NOT to use it.
 
 ### 3.3 SKILL.md
 
@@ -118,22 +138,56 @@ maxTurns: <10-30>
 ```yaml
 ---
 name: <skill-name>
+user-invocable: <true|false>
 description: >
   <What it does>. Use when: <trigger conditions>.
-  Does NOT: <what it cannot do>.
-tools: <allowlist>
+  Triggers: "<phrase1>", "<phrase2>", "<phrase3>".
+  Do NOT use for <out-of-scope> (other-skill-name).
+tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash(<domain-tool>*)
+  - mcp__context7__resolve-library-id
+  - mcp__context7__query-docs
+  - mcp__exa__web_search_exa
+  - mcp__exa__get_code_context_exa
+  - mcp__exa__crawling_exa
+  - mcp__qdrant__qdrant-find
+  - mcp__qdrant__qdrant-store
+metadata:
+  author: <owner>
+  version: <semver>
+  category: <advisory|workflow>
 ---
 ```
 
 | Property | Guideline |
 |----------|-----------|
 | Body budget | < 500 lines |
-| description | "Use when:" trigger pattern |
+| user-invocable | `false` for advisory skills auto-routed by description; `true` for user-triggered workflows |
+| description | "Use when:" + `Triggers:` quoted phrases + "Do NOT use for:" with cross-refs to sibling skills |
+| tools | Explicit per-tool list. Use `Bash(pattern*)` for scoped shell access. List each MCP tool individually |
+| metadata | `author`, `version` (semver), `category` (`advisory` or `workflow`) |
 | Side effects | Add `disable-model-invocation` for skills with side effects |
+
+**Body structure (advisory skills):**
+
+| Section | Purpose |
+|---------|---------|
+| Tool Selection | Table mapping needs → tools (see §3.2 tool selection guideline) |
+| Core Principles | 7-10 numbered, opinionated principles for the domain |
+| Best Practices | 10 numbered actionable practices with detail |
+| Anti-Patterns | 10 numbered mistakes to avoid |
+| Examples | 3 worked scenarios: "User says → Actions → Result" |
+| Troubleshooting | 3-4 error scenarios: "Error → Cause → Solution" |
+| Review Checklist | 10 checkbox items reflecting principles and practices |
 
 **Anti-patterns:**
 - Orchestration logic in a skill (circular delegation risk)
 - Skill that needs exclusive tools (should be an agent)
+- `Triggers:` phrases too generic (causes false-positive routing across skills)
+- Missing "Do NOT use for:" boundary (overlaps with sibling skills)
 
 ### 3.4 Hooks
 
@@ -186,6 +240,43 @@ tools: <allowlist>
 | Permissions | Deny > allow. Least privilege. |
 | Wildcards | Never allow destructive wildcards (`rm -rf *`) |
 | Env vars | Feature flags for experimental behavior |
+
+### 3.7 Workflow Composition Patterns
+
+Choose the simplest pattern that meets the task requirements.
+
+| Pattern | When to use | Marvin mapping |
+|---------|-------------|----------------|
+| Single LLM call | Task is self-contained, no tools needed | Direct response (no delegation) |
+| Prompt Chaining | Fixed sequence, each step depends on prior output | Sequential delegations via `.artifacts/` handoff |
+| Routing | Input falls into distinct categories | `description` field routing to agents/skills |
+| Parallelization | Independent subtasks with no shared state | Multiple parallel agent calls; sectioning or voting |
+| Orchestrator-Workers | Subtask count unknown until runtime | Orchestrator dynamically spawning sub-agents |
+| Evaluator-Optimizer | Output needs iterative refinement against criteria | Agent + rubric loop (generate → judge → refine) |
+
+**Decision rule:** Start at the top. Move down only when the pattern above
+cannot meet quality, latency, or complexity requirements.
+
+**Anti-pattern:** Jumping to Orchestrator-Workers for a task that prompt
+chaining would solve. Each layer adds ~4x token cost.
+
+### 3.8 Long-Horizon Strategies
+
+For tasks that approach or exceed the context window:
+
+| Strategy | Mechanism | When to use |
+|----------|-----------|-------------|
+| Compaction | Pre-compact hooks save state; post-compact hooks reinject | Session exceeds 60% context; automated via hooks |
+| Structured notes | Write progress and decisions to `.artifacts/` | Multi-step task where losing intermediate state is costly |
+| Sub-agent decomposition | Delegate bounded subtasks with isolated context | Clear decomposition points; main context is saturated |
+| Checkpoint files | Periodic writes with completed/remaining items | Long implementation tasks (10+ files) |
+
+**Decision rule:** Use compaction hooks (already automated) as baseline.
+Add structured notes when task state is non-trivial. Decompose into sub-agents
+when a single context window cannot hold all relevant files simultaneously.
+
+**Anti-pattern:** Continuing a long session without compaction or notes,
+relying on the model to "remember" — compliance drops below 20% after context fills.
 
 ---
 
@@ -338,7 +429,8 @@ Before committing changes to any `.claude/` file:
 
 ## References
 
-- [Anthropic: Building Effective Agents](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/be-clear-and-direct) — canonical orchestration patterns
+- [Anthropic: Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — canonical orchestration patterns
+- [Anthropic: Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — context management strategies
 - arXiv:2511.12884 — "Context debt" and instruction decay empirics
 - arXiv:2602.11988 — ETH Zurich study on LLM-generated instruction files
 - Lost in the Middle (TACL 2024) — positional attention bias in LLMs
