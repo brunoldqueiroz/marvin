@@ -4,7 +4,7 @@
 > this document. It codifies empirically validated patterns for evolving
 > AI-augmented development projects.
 
-**Version:** 1.1 — February 2026
+**Version:** 1.2 — February 2026
 **Applies to:** all files under `.claude/` and project-level configuration.
 
 ---
@@ -53,6 +53,10 @@ their purposes causes failures.
 | LLM-generated CLAUDE.md reduces success 0.5–3% | arXiv:2602.11988, ETH Zurich 2026 |
 | IFEval compliance drops beyond ~150 instructions | IFEval benchmark, 2025 |
 | Multi-agent uses ~4x tokens (hub-spoke), ~15x (mesh) | Anthropic engineering blog, 2025 |
+| MAS overhead ranges 58–515% over single-agent baseline | arXiv:2512.08296, Dec 2025 |
+| Above 45% single-agent accuracy, adding agents degrades performance | arXiv:2512.08296, capability ceiling effect |
+| Skill selection degrades sharply beyond ~50-100 skills | arXiv:2601.04748, phase transition, Jan 2026 |
+| Single-agent + skills is competitive, not a degraded fallback | arXiv:2601.12307, Jan 2026 |
 
 ---
 
@@ -298,13 +302,42 @@ If all answers are NO → do not create the artifact.
    overrun)?
    - If NO → keep it as an instruction, not a hook.
 
-### 4.3 Agent vs. Skill decision
+### 4.3 Agent vs. Skill Decision
 
-5. Does the domain require **exclusive tools** other agents don't need?
-   - If YES → Agent.
-6. Does the prompt need **> 3K characters** AND require **full-task routing**?
-   - If both YES → Agent.
-   - Otherwise → Skill.
+**Core distinction:** Skills are passive procedural knowledge that extends a
+single agent's capabilities. Agents isolate context and execute with autonomous
+judgment and dedicated tooling.
+
+**Three-question litmus test (apply in order):**
+
+| # | Question | If YES → |
+|---|----------|----------|
+| 1 | Does the domain require **exclusive tools** other agents don't need? | Agent (skills cannot add tools) |
+| 2 | Does the prompt need **> 3-5K chars** of domain depth (DSL, decision trees, strategies)? | Agent (dedicated prompt body) |
+| 3 | Does the orchestrator route **entire tasks** to this domain? | Agent (full-task routing signal) |
+
+**Rule:** Q1 = YES → Agent. Q2 + Q3 both YES → Agent. Otherwise → Skill.
+
+**Default:** When in doubt, start as a Skill. Skills are easier to promote to
+agents than agents are to decompose back.
+
+**Use-case guidance:**
+
+| Use case | Recommendation | Rationale |
+|----------|----------------|-----------|
+| Coding conventions, style, anti-patterns | Skill (reference) | Fits in 2-3K chars; contextual; no exclusive tools |
+| Deep domain with CLI (dbt, terraform, spark) | Agent | Exclusive CLI tools; DSL depth; full-task routing |
+| Commit/deploy/release workflows | Skill (task, `disable-model-invocation`) | User-controlled side effects |
+| Research / codebase exploration | Skill (`context: fork`) or Agent | Either works; skill is simpler if no exclusive tools |
+| Security audit, compliance review | Agent | Exclusive tooling; deep domain; full-task routing |
+
+**Architecture tiers (evidence-based):**
+
+| Tier | When | Token cost |
+|------|------|------------|
+| Single-agent + skills | Skill library < 50; no exclusive tooling; tasks are sequential | Baseline (1x) |
+| Single-agent + skills + domain agents | Deep domains need exclusive tools or prompt depth | ~4x per delegation |
+| Agent Teams (experimental) | Parallel, decomposable, independent workloads only | ~15x; avoid for sequential tasks |
 
 ---
 
@@ -394,6 +427,9 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 | Conversational relay | Copies tokens into context; information loss | Filesystem handoff via `.artifacts/` |
 | Overly broad tools allowlist | Agent can do unintended damage | Explicit allowlist per agent |
 | Judge model = evaluated model | Self-assessment bias | Always use cheaper judge (Haiku → Sonnet) |
+| Premature multi-agent | Above 45% single-agent accuracy, agents degrade performance | Exhaust single-agent + skills first |
+| Skill library sprawl (> 50 skills) | Selection accuracy degrades sharply (phase transition) | Curate; promote overloaded areas to agents |
+| Context pollution in subagents | Injecting orchestrator context defeats isolation purpose | Subagent value comes from clean, bounded context |
 
 ---
 
@@ -436,3 +472,8 @@ Before committing changes to any `.claude/` file:
 - Lost in the Middle (TACL 2024) — positional attention bias in LLMs
 - IFEval (2025) — instruction-following evaluation benchmark
 - MT-Bench — LLM-as-judge methodology and chain-of-thought scoring
+- [Anthropic: Equipping Agents with Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — skills as capability extensions vs agents as autonomous entities
+- arXiv:2512.08296 — MAS scaling science; 58–515% overhead; capability ceiling at 45%
+- arXiv:2601.04748 — single-agent + skills vs MAS; phase transition at ~50-100 skills
+- arXiv:2601.12307 — single-agent + skills competitive with multi-agent workflows
+- arXiv:2503.13657 — MAS failure modes; context pollution as primary failure cause
