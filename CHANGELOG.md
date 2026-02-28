@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.2] - 2026-02-28
+
+### Changed
+
+- `skills/python-expert/SKILL.md`: broadened trigger keywords (added
+  development, async/await, packaging, debugging, standard library, "any
+  Python language question") and expanded "Does NOT" with airflow/docker
+  cross-references
+- `skills/dbt-expert/SKILL.md`: refined "Does NOT" boundary with
+  snowflake-expert — "warehouse administration, sizing, or Snowflake-specific
+  DDL" instead of overly broad "warehouse SQL/operations"
+- `skills/docs-expert/SKILL.md`: added "Does NOT: edit non-documentation
+  Markdown (config files, CLAUDE.md, SKILL.md)" to reduce false positives
+- `hooks/tool-usage-log.sh`: capture `skill` field when Skill tool is
+  invoked, enabling per-skill usage tracking in metrics.jsonl
+
 ## [0.5.1] - 2026-02-27
 
 ### Added

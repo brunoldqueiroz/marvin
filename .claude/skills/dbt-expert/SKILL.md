@@ -5,9 +5,9 @@ description: >
   dbt (data build tool) expert advisor. Use when: user asks about dbt project
   structure, ref/source patterns, incremental models, Jinja macros,
   materializations, dbt testing, or data modeling conventions.
-  Does NOT: handle warehouse SQL/operations (snowflake-expert), write Python
-  application code (python-expert), or manage infrastructure (aws-expert,
-  terraform-expert).
+  Does NOT: handle warehouse administration, sizing, or Snowflake-specific DDL
+  (snowflake-expert), write Python application code (python-expert), or manage
+  infrastructure (aws-expert, terraform-expert).
 tools:
   - Read
   - Glob

@@ -6,7 +6,8 @@ description: >
   ADRs, docstrings, Diátaxis framework, technical writing, or documentation
   structure.
   Does NOT: write application code (python-expert), manage git workflows
-  (git-expert), or handle infrastructure (aws-expert, terraform-expert).
+  (git-expert), handle infrastructure (aws-expert, terraform-expert), or
+  edit non-documentation Markdown (config files, CLAUDE.md, SKILL.md).
 tools:
   - Read
   - Glob

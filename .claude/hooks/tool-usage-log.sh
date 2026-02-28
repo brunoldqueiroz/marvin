@@ -15,6 +15,7 @@ TOOL_ID=$(echo "$INPUT" | json_val '.tool_use_id')
 # Extract tool-specific fields
 FILE=""
 CMD=""
+SKILL=""
 case "$TOOL" in
   Write|Edit|Read)
     FILE=$(echo "$INPUT" | json_val '.tool_input.file_path')
@@ -22,9 +23,12 @@ case "$TOOL" in
   Bash)
     CMD=$(echo "$INPUT" | json_val '.tool_input.command' | head -c 100 | tr '"' "'")
     ;;
+  Skill)
+    SKILL=$(echo "$INPUT" | json_val '.tool_input.skill')
+    ;;
 esac
 
 {
-  log_metric "$(printf '{"ts":"%s","event":"tool_use","session":"%s","tool":"%s","tool_id":"%s","file":"%s","cmd":"%s"}' \
-    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SESSION" "$TOOL" "$TOOL_ID" "$FILE" "$CMD")"
+  log_metric "$(printf '{"ts":"%s","event":"tool_use","session":"%s","tool":"%s","tool_id":"%s","file":"%s","cmd":"%s","skill":"%s"}' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SESSION" "$TOOL" "$TOOL_ID" "$FILE" "$CMD" "$SKILL")"
 } 2>/dev/null

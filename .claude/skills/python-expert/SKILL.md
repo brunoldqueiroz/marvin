@@ -2,11 +2,13 @@
 name: python-expert
 user-invocable: false
 description: >
-  Python expert advisor. Use when: user asks about Python typing, uv/ruff/mypy
-  toolchain, pytest patterns, dataclasses vs Pydantic, Python idioms, or
-  Python code quality.
-  Does NOT: handle distributed computing (spark-expert), write documentation
-  files (docs-expert), or manage infrastructure (aws-expert, terraform-expert).
+  Python expert advisor. Use when: user asks about Python development, typing,
+  async/await, uv/ruff/mypy toolchain, pytest patterns, dataclasses vs
+  Pydantic, packaging, debugging, standard library, or any Python language
+  question.
+  Does NOT: handle distributed computing (spark-expert), Airflow DAGs
+  (airflow-expert), Dockerfiles (docker-expert), write documentation files
+  (docs-expert), or manage infrastructure (aws-expert, terraform-expert).
 tools:
   - Read
   - Glob
