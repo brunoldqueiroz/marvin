@@ -5,8 +5,11 @@ description: >
   AWS expert advisor. Use when: user asks about IAM, S3, Lambda, VPC, cost
   optimization, Well-Architected Framework, AWS CLI, or any AWS service
   configuration.
-  Does NOT: write HCL/IaC syntax (terraform-expert), handle container builds
-  (docker-expert), or write application code (python-expert).
+  Triggers: "IAM policy", "S3 bucket policy", "Lambda cold start",
+  "VPC endpoint", "cost optimization", "security group", "cross-account
+  access", "SSO setup".
+  Do NOT use for HCL/IaC syntax (terraform-expert), container builds
+  (docker-expert), or application code (python-expert).
 tools:
   - Read
   - Glob
@@ -21,6 +24,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # AWS Expert
@@ -114,6 +121,55 @@ opinionated guidance grounded in current AWS best practices.
    Gateway endpoints are free.
 10. **Over-provisioned instances** — paying for idle capacity. Use Compute
     Optimizer; right-size before committing to Savings Plans.
+
+## Examples
+
+### Example 1: Design least-privilege IAM policy
+
+User says: "My Lambda needs to read from one S3 bucket and write to DynamoDB."
+
+Actions:
+1. Create policy with specific `s3:GetObject` on the bucket ARN and `dynamodb:PutItem` on the table ARN
+2. Add condition keys (`aws:SecureTransport`, `aws:RequestedRegion`) for defense in depth
+3. Recommend using IAM Access Analyzer to further refine after deployment
+
+Result: Lambda has exactly the permissions it needs — no wildcards, scoped to specific resources.
+
+### Example 2: Reduce NAT Gateway costs with VPC endpoints
+
+User says: "Our AWS bill shows $800/month on NAT Gateway data processing."
+
+Actions:
+1. Add free Gateway Endpoints for S3 and DynamoDB in the VPC
+2. Identify high-traffic AWS services and add Interface Endpoints for them
+3. Update route tables to direct traffic through endpoints instead of NAT
+
+Result: NAT Gateway costs reduced by 60% by routing AWS service traffic through VPC endpoints.
+
+### Example 3: Optimize Lambda cold starts
+
+User says: "Our API Lambda has P99 latency of 8 seconds on cold starts."
+
+Actions:
+1. Switch to arm64 runtime (20% cheaper, comparable cold start)
+2. Move heavy initialization to module scope (outside handler)
+3. Enable SnapStart for supported runtimes or add provisioned concurrency for strict-SLA endpoints
+
+Result: Cold start reduced from 8s to 800ms through init optimization and SnapStart.
+
+## Troubleshooting
+
+### Error: S3 "Access Denied" despite correct bucket policy
+Cause: S3 Block Public Access overrides bucket policy, or IAM policy has an explicit Deny, or the request lacks required condition keys.
+Solution: Check Block Public Access settings at account and bucket level. Use IAM Policy Simulator to trace the denial. Verify no SCP or permissions boundary is blocking the action.
+
+### Error: Lambda function timing out
+Cause: Lambda is in a VPC without NAT Gateway or VPC endpoints, so it cannot reach AWS services or the internet.
+Solution: Add Gateway Endpoints for S3/DynamoDB (free). Add NAT Gateway for internet access. Or move Lambda out of VPC if it doesn't need private resource access.
+
+### Error: Unexpected NAT Gateway cost spike
+Cause: High-volume traffic to AWS services (S3, DynamoDB, STS) routing through NAT Gateway instead of VPC endpoints.
+Solution: Add free Gateway Endpoints for S3/DynamoDB. Add Interface Endpoints for other frequently accessed AWS services. Monitor with VPC Flow Logs to identify top traffic destinations.
 
 ## Review Checklist
 

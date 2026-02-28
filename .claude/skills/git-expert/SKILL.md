@@ -5,9 +5,11 @@ description: >
   Git expert advisor. Use when: user asks about branching strategies, commit
   conventions, conflict resolution, rebase, history cleanup, git hooks,
   large repo performance, or any git workflow question.
-  Does NOT: write application code (python-expert), create documentation
-  files (docs-expert), or manage CI/CD infrastructure (aws-expert,
-  terraform-expert).
+  Triggers: "conventional commit", "rebase strategy", "merge conflict",
+  "git hook setup", "force push safety", "branch cleanup", "bisect debug",
+  "sparse checkout".
+  Do NOT use for application code (python-expert), documentation files
+  (docs-expert), or CI/CD infrastructure (aws-expert, terraform-expert).
 tools:
   - Read
   - Glob
@@ -25,6 +27,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Git Expert
@@ -110,6 +116,55 @@ opinionated guidance grounded in current best practices.
    developers to disable hooks entirely.
 10. **Ignoring `.gitignore`** — leads to accidental commits of IDE configs,
     OS files, environment files.
+
+## Examples
+
+### Example 1: Clean up messy commit history before PR
+
+User says: "I have 15 commits including 'WIP', 'fix typo', and 'actually fix it' — how do I clean up?"
+
+Actions:
+1. Use `git commit --fixup=<sha>` to mark fixup targets retroactively
+2. Run `git rebase -i --autosquash origin/main` to squash fixups into their parent commits
+3. Reword remaining commits to follow Conventional Commits format
+
+Result: 15 commits consolidated into 3 clean, atomic commits with meaningful messages.
+
+### Example 2: Set up pre-commit hooks for a Python project
+
+User says: "I want to enforce linting before commits but my team keeps skipping hooks."
+
+Actions:
+1. Configure Lefthook or pre-commit framework with ruff and mypy on staged files only
+2. Keep hook runtime under 5 seconds to avoid developer frustration
+3. Add full test suite to `pre-push` hook instead of `pre-commit`
+
+Result: Fast pre-commit hooks catch lint issues instantly; comprehensive checks run on push.
+
+### Example 3: Resolve recurring merge conflicts
+
+User says: "We keep getting the same merge conflicts in config files."
+
+Actions:
+1. Enable `git config rerere.enabled true` to record and replay conflict resolutions
+2. Switch to `diff.algorithm histogram` for better conflict detection
+3. Recommend shorter-lived branches and more frequent rebases to reduce divergence
+
+Result: Git automatically resolves previously-seen conflicts; new conflicts are rarer due to frequent integration.
+
+## Troubleshooting
+
+### Error: Accidentally force-pushed to a shared branch
+Cause: Using `git push --force` instead of `--force-with-lease`, overwriting collaborators' commits.
+Solution: Ask affected collaborators to push their local copies. If no one has the lost commits, check `git reflog` on the server (if accessible). Prevent recurrence by aliasing `push --force` to `push --force-with-lease` globally.
+
+### Error: Pre-commit hooks are too slow, developers bypass with --no-verify
+Cause: Running full test suites or type-checking the entire codebase in pre-commit hooks.
+Solution: Lint only staged files (`lint-staged`, `lefthook`). Move full test suites to `pre-push`. Target under 5 seconds for pre-commit.
+
+### Error: Secrets accidentally committed to repository
+Cause: API keys, passwords, or tokens included in committed files without `.gitignore` or secret scanning.
+Solution: Rotate the compromised credentials immediately (history is distributed — scrubbing alone is insufficient). Use `git filter-repo` to remove from history. Add gitleaks or detect-secrets to pre-commit hooks to prevent recurrence.
 
 ## Review Checklist
 

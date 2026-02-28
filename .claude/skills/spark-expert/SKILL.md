@@ -5,9 +5,10 @@ description: >
   Apache Spark/PySpark expert advisor. Use when: user asks about PySpark
   DataFrame API, shuffle optimization, partitioning, AQE, Delta Lake, memory
   management, or distributed computing performance.
-  Does NOT: handle Python language-level concerns (python-expert), manage
-  cloud infrastructure (aws-expert, terraform-expert), or write dbt models
-  (dbt-expert).
+  Triggers: "shuffle partition", "broadcast join", "Delta MERGE", "AQE tuning",
+  "PySpark UDF", "withColumn loop", "executor OOM", "explain plan".
+  Do NOT use for Python language-level concerns (python-expert), cloud
+  infrastructure (aws-expert, terraform-expert), or dbt models (dbt-expert).
 tools:
   - Read
   - Glob
@@ -24,6 +25,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Spark Expert
@@ -121,6 +126,55 @@ practices.
    write to sink.
 10. **Low `memoryOverhead` for PySpark** — executor killed by YARN/K8s with
     no Spark error. Set 20-25% for Python workloads.
+
+## Examples
+
+### Example 1: Optimize a slow Delta MERGE
+
+User says: "My Delta MERGE takes 4 hours even though only 1% of rows change daily."
+
+Actions:
+1. Check if partition column is included in the MERGE join condition
+2. Recommend adding the partition key to reduce scan from full table to single partition
+3. Suggest enabling deletion vectors and running OPTIMIZE with ZORDER on join columns
+
+Result: MERGE time drops from 4 hours to 12 minutes by leveraging partition pruning and data skipping.
+
+### Example 2: Replace Python UDFs with built-in functions
+
+User says: "My PySpark job is slow and the Spark UI shows most time in Python worker."
+
+Actions:
+1. Identify Python row UDFs in the codebase causing JVM-Python serialization overhead
+2. Show equivalent built-in `pyspark.sql.functions` replacements
+3. For cases where built-ins aren't sufficient, recommend Pandas UDFs (Arrow-vectorized)
+
+Result: Job runtime reduced by 7x after eliminating Python row UDFs.
+
+### Example 3: Fix withColumn loop causing StackOverflow
+
+User says: "My Spark job fails with StackOverflowError when adding 100+ columns."
+
+Actions:
+1. Explain that `withColumn` in a loop causes exponential plan growth
+2. Show `select` with all column expressions at once as the fix
+3. Mention `withColumns` (Spark 3.3+) as a cleaner alternative
+
+Result: Plan generation drops from minutes to milliseconds; StackOverflow eliminated.
+
+## Troubleshooting
+
+### Error: Executor killed by YARN/Kubernetes with no Spark error message
+Cause: Python memory overhead exceeds the default 10% allocation, causing the container to be killed by the resource manager.
+Solution: Set `spark.executor.memoryOverhead` to 20-25% of executor memory. For Pandas UDF workloads, also set `spark.executor.pyspark.memory` explicitly.
+
+### Error: Shuffle spill causing extremely slow job
+Cause: Shuffle partitions are too large (default `spark.sql.shuffle.partitions=200` is too low for TB+ data), causing disk spill.
+Solution: Increase `spark.sql.shuffle.partitions` to 1000-4000. Verify AQE is enabled with `coalescePartitions.enabled=true` to handle over-partitioning automatically.
+
+### Error: withColumn in a loop causes StackOverflowError or very slow plan generation
+Cause: Each `withColumn` call creates a new plan node. In a loop, this causes exponential plan growth.
+Solution: Replace the loop with a single `select()` call containing all column expressions, or use `withColumns()` (Spark 3.3+) for multiple columns at once.
 
 ## Review Checklist
 

@@ -5,8 +5,11 @@ description: >
   Docker expert advisor. Use when: user asks about Dockerfiles, multi-stage
   builds, container security, Docker Compose, layer caching, base image
   selection, or container best practices.
-  Does NOT: manage cloud services like ECS/EKS (aws-expert), write IaC
-  (terraform-expert), or handle application code logic (python-expert).
+  Triggers: "multi-stage build", "Docker layer cache", "non-root user",
+  "compose healthcheck", "base image choice", "secret mount", "image size
+  reduction", "dockerignore".
+  Do NOT use for cloud services like ECS/EKS (aws-expert), IaC
+  (terraform-expert), or application code logic (python-expert).
 tools:
   - Read
   - Glob
@@ -22,6 +25,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Docker Expert
@@ -112,6 +119,55 @@ opinionated guidance grounded in current best practices.
    Use `condition: service_healthy`.
 10. **Many small `RUN` layers** — bloated image. Chain related commands with
     `&&` or use heredoc syntax.
+
+## Examples
+
+### Example 1: Multi-stage Python application build
+
+User says: "My Python Docker image is 1.2GB, how do I reduce it?"
+
+Actions:
+1. Design multi-stage build: `builder` stage with full Python + build deps, `final` stage with slim base
+2. Use `COPY --from=builder` to copy only the virtual environment and app code
+3. Switch to `python:3.12-slim` base and add non-root user
+
+Result: Image reduced from 1.2GB to 180MB with no build tools in production.
+
+### Example 2: Docker Compose service dependency ordering
+
+User says: "My app container crashes because the database isn't ready when it starts."
+
+Actions:
+1. Add `healthcheck` to the database service with appropriate `start_period`
+2. Change `depends_on` to use `condition: service_healthy`
+3. Add application-level retry logic as defense in depth
+
+Result: App waits for database to be fully accepting connections before starting.
+
+### Example 3: Secure build-time secret handling
+
+User says: "I need to pull from a private npm registry during Docker build."
+
+Actions:
+1. Use `RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm ci` to mount the secret
+2. Pass the secret at build time: `docker build --secret id=npmrc,src=.npmrc .`
+3. Verify the secret is not in any layer with `docker history`
+
+Result: Private registry credentials used during build but never stored in any image layer.
+
+## Troubleshooting
+
+### Error: Docker layer cache invalidated on every build
+Cause: Copying source code before installing dependencies, so any code change invalidates the dependency install layer.
+Solution: Order layers correctly: `COPY requirements.txt .` → `RUN pip install` → `COPY . .`. Dependencies are only reinstalled when requirements change.
+
+### Error: Container runs as root despite USER directive in Dockerfile
+Cause: The `USER` directive is placed before `COPY` or `RUN` commands that require root, and a subsequent stage doesn't re-set the user.
+Solution: Place `USER app` after all `COPY --chown=app:app` and `RUN` commands that need root. Verify with `docker exec <container> whoami`.
+
+### Error: Compose service starts before dependency is actually ready
+Cause: Using basic `depends_on` which only waits for container start, not application readiness.
+Solution: Add `healthcheck` to the dependency service and use `depends_on: condition: service_healthy`. Set appropriate `interval`, `timeout`, `retries`, and `start_period`.
 
 ## Review Checklist
 

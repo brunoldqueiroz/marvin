@@ -5,8 +5,11 @@ description: >
   Snowflake expert advisor. Use when: user asks about warehouse sizing, RBAC,
   Time Travel, streams/tasks, VARIANT/semi-structured data, query optimization,
   clustering, or Snowflake cost management.
-  Does NOT: handle dbt model structure or Jinja (dbt-expert), write Python
-  application code (python-expert), or manage IaC (terraform-expert).
+  Triggers: "warehouse sizing", "resource monitor", "Time Travel cost",
+  "stream task pattern", "VARIANT query", "clustering key", "RBAC setup",
+  "query profile".
+  Do NOT use for dbt model structure or Jinja (dbt-expert), Python application
+  code (python-expert), or IaC (terraform-expert).
 tools:
   - Read
   - Glob
@@ -23,6 +26,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Snowflake Expert
@@ -114,6 +121,55 @@ guidance grounded in current Snowflake best practices.
    hierarchy, creates audit noise. Grant to access roles instead.
 10. **High-churn tables with long Time Travel** — massive hidden storage
     costs. Use `TRANSIENT` tables or short retention for staging.
+
+## Examples
+
+### Example 1: Right-size a warehouse based on Query Profile
+
+User says: "Our ETL warehouse is XL but jobs still seem slow."
+
+Actions:
+1. Query `QUERY_HISTORY` to find P95 execution time and queuing time
+2. Check Query Profile for spilling to local/remote storage (indicates memory pressure)
+3. If queuing is high, recommend multi-cluster; if spilling, recommend scaling up; if neither, investigate query patterns
+
+Result: Warehouse right-sized from XL to L with multi-cluster (MIN=1, MAX=3), reducing cost 25% while eliminating queue wait.
+
+### Example 2: Build a CDC pipeline with streams and tasks
+
+User says: "I need to incrementally process changes from a source table into a target."
+
+Actions:
+1. Create a standard stream on the source table to capture CDC changes
+2. Create a serverless task with `WHEN SYSTEM$STREAM_HAS_DATA('stream')` gate
+3. Write MERGE statement consuming the stream within a transaction
+
+Result: Zero-lag incremental pipeline that only runs and bills when new data arrives.
+
+### Example 3: Optimize VARIANT column queries
+
+User says: "Queries on our JSON event data are 10x slower than on structured tables."
+
+Actions:
+1. Cast VARIANT extractions to concrete types (`::STRING`, `::NUMBER`) to enable pruning
+2. Filter before FLATTEN to avoid exponential row growth
+3. Extract frequently-queried paths into typed materialized columns
+
+Result: Query performance improved 4-5x through type casting and materialized columns on hot paths.
+
+## Troubleshooting
+
+### Error: Warehouse costs unexpectedly high despite low query volume
+Cause: `AUTO_SUSPEND` set too high (or not set), warehouse staying active during idle periods. Or tasks running on warehouse without `SYSTEM$STREAM_HAS_DATA` gate.
+Solution: Set `AUTO_SUSPEND = 60` for ETL warehouses. Add resource monitors with NOTIFY@75% and SUSPEND@100%. Gate all stream-processing tasks with `WHEN SYSTEM$STREAM_HAS_DATA()`.
+
+### Error: Task runs every schedule interval but processes zero rows
+Cause: Missing `WHEN SYSTEM$STREAM_HAS_DATA('stream_name')` condition on the task, so it starts and bills the warehouse minimum even when the stream is empty.
+Solution: Add the `WHEN` clause to the task definition. For serverless tasks, this is free (no charge on empty stream). For warehouse tasks, this avoids the 60-second minimum billing.
+
+### Error: Query not pruning micro-partitions despite WHERE clause
+Cause: Using functions on filter columns (e.g., `WHERE YEAR(created_at) = 2024`) which prevents the query optimizer from using micro-partition metadata.
+Solution: Rewrite as range predicates: `WHERE created_at >= '2024-01-01' AND created_at < '2025-01-01'`. Check pruning with `SYSTEM$CLUSTERING_INFORMATION` and Query Profile's "Partitions scanned vs total".
 
 ## Review Checklist
 

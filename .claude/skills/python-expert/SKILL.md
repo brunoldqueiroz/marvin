@@ -6,9 +6,11 @@ description: >
   async/await, uv/ruff/mypy toolchain, pytest patterns, dataclasses vs
   Pydantic, packaging, debugging, standard library, or any Python language
   question.
-  Does NOT: handle distributed computing (spark-expert), Airflow DAGs
-  (airflow-expert), Dockerfiles (docker-expert), write documentation files
-  (docs-expert), or manage infrastructure (aws-expert, terraform-expert).
+  Triggers: "type hint", "pytest fixture", "ruff warning", "mypy error",
+  "uv add", "dataclass vs pydantic", "async await", "f-string debug".
+  Do NOT use for distributed computing (spark-expert), Airflow DAGs
+  (airflow-expert), Dockerfiles (docker-expert), documentation files
+  (docs-expert), or infrastructure (aws-expert, terraform-expert).
 tools:
   - Read
   - Glob
@@ -30,6 +32,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Python Expert
@@ -120,6 +126,55 @@ guidance grounded in current best practices.
    Use built-in `list`, `dict`, `X | None`.
 10. **Missing `__init__.py` type stubs** — causes mypy to miss entire packages.
     Add `py.typed` marker for typed packages.
+
+## Examples
+
+### Example 1: Modernize type hints
+
+User says: "My codebase uses Optional[str] and List[int] everywhere, how should I update?"
+
+Actions:
+1. Explain modern syntax: `str | None` replaces `Optional[str]`, `list[int]` replaces `List[int]`
+2. Recommend ruff rule `UP` to auto-fix old-style annotations
+3. Advise running `ruff check --select UP --fix` for automated migration
+
+Result: Codebase migrated to modern type syntax with zero manual edits.
+
+### Example 2: Design pytest fixtures for database tests
+
+User says: "My tests are slow because each one creates a fresh database connection."
+
+Actions:
+1. Recommend session-scoped fixture for the database engine
+2. Show function-scoped fixture with `yield` for transaction rollback isolation
+3. Suggest `conftest.py` placement for shared fixtures
+
+Result: Tests share one connection pool but each test runs in an isolated transaction, cutting suite time by 80%.
+
+### Example 3: Configure ruff + mypy for a new project
+
+User says: "I'm starting a new Python project, what linting setup should I use?"
+
+Actions:
+1. Generate `pyproject.toml` config with ruff rules `["E", "F", "I", "B", "UP", "RUF"]`
+2. Enable `mypy strict = true` with overrides for untyped third-party libs
+3. Show `uv add --dev ruff mypy pytest` one-liner for toolchain setup
+
+Result: Project has a single-file configuration for linting, type checking, and testing from day one.
+
+## Troubleshooting
+
+### Error: mypy "Module has no attribute" or "Cannot find implementation or library stub"
+Cause: Third-party library has no type stubs or py.typed marker.
+Solution: Add `[[tool.mypy.overrides]]` with `module = "library_name.*"` and `ignore_missing_imports = true`. Install stubs if available (`uv add --dev types-requests`).
+
+### Error: Mutable default argument causes shared state between calls
+Cause: Using `def f(items=[])` — the list is created once and shared across all calls.
+Solution: Use `items: list | None = None` with `if items is None: items = []` inside the function body.
+
+### Error: ruff and existing formatter (black/isort) produce conflicting changes
+Cause: Running both ruff and black/isort simultaneously creates formatting conflicts.
+Solution: Remove black and isort. ruff replaces both — use `ruff check --fix` for linting and `ruff format` for formatting. Configure all rules in `pyproject.toml`.
 
 ## Review Checklist
 

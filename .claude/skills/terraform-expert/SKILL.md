@@ -5,8 +5,11 @@ description: >
   Terraform/OpenTofu expert advisor. Use when: user asks about HCL syntax,
   modules, state management, plan/apply workflows, for_each vs count,
   resource lifecycle, or IaC patterns.
-  Does NOT: manage AWS services directly (aws-expert), handle container
-  builds (docker-expert), or write application code (python-expert).
+  Triggers: "for_each vs count", "state migration", "module design",
+  "terraform plan error", "provider version pin", "remote backend setup",
+  "lifecycle rule", "drift detection".
+  Do NOT use for managing AWS services directly (aws-expert), container builds
+  (docker-expert), or application code (python-expert).
 tools:
   - Read
   - Glob
@@ -21,6 +24,10 @@ tools:
   - mcp__exa__crawling_exa
   - mcp__qdrant__qdrant-find
   - mcp__qdrant__qdrant-store
+metadata:
+  author: bruno
+  version: 1.0.0
+  category: advisory
 ---
 
 # Terraform Expert
@@ -115,6 +122,55 @@ provide opinionated guidance grounded in current best practices.
    with `~>`, commit lock file.
 10. **Copy-paste per environment** — drift, inconsistency, 3x maintenance.
     Use shared modules + environment-specific variable files.
+
+## Examples
+
+### Example 1: Migrate from count to for_each
+
+User says: "Adding a new subnet to my list causes Terraform to destroy and recreate existing ones."
+
+Actions:
+1. Explain the index-shift problem with `count` — removing item [1] shifts all subsequent indices
+2. Show `for_each` with `toset()` pattern where each resource is addressed by key, not index
+3. Guide through `terraform state mv` to migrate existing resources without destruction
+
+Result: Subnets are managed by name key; adding or removing items only affects the target resource.
+
+### Example 2: Design a reusable module for multi-environment deployment
+
+User says: "I'm copy-pasting Terraform code across dev, staging, and prod."
+
+Actions:
+1. Extract shared infrastructure into a module with well-defined variables and outputs
+2. Create per-environment `.tfvars` files with environment-specific values
+3. Ensure separate state files per environment for independent blast radius
+
+Result: Single module source of truth with environment-specific configuration — no code duplication.
+
+### Example 3: Import existing AWS resources into Terraform state
+
+User says: "I have manually created resources I want Terraform to manage."
+
+Actions:
+1. Write the resource block in HCL matching the existing resource's configuration
+2. Run `terraform import <resource_address> <resource_id>` to adopt into state
+3. Run `terraform plan` to verify no changes are detected (config matches reality)
+
+Result: Existing resources are under Terraform management without recreation or downtime.
+
+## Troubleshooting
+
+### Error: Terraform wants to destroy and recreate resources when modifying a list with `count`
+Cause: `count` uses numeric indices — adding/removing items shifts indices, making Terraform think resources changed identity.
+Solution: Migrate to `for_each` with string keys. Use `terraform state mv` to remap existing resources to their new key-based addresses without destruction.
+
+### Error: State lock — "Error acquiring the state lock"
+Cause: A previous `terraform apply` crashed or was interrupted without releasing the DynamoDB lock, or another user is running a concurrent apply.
+Solution: Verify no one else is running an apply. If the lock is stale, use `terraform force-unlock <LOCK_ID>` (with caution). Prevent by using CI/CD with concurrency groups to serialize applies.
+
+### Error: Provider version mismatch after running `terraform init`
+Cause: Provider version constraints are too loose or `.terraform.lock.hcl` is not committed, allowing different versions across environments.
+Solution: Pin providers with `~>` constraints in `versions.tf`. Commit `.terraform.lock.hcl` to version control. Run `terraform init -upgrade` only when intentionally updating providers.
 
 ## Review Checklist
 
