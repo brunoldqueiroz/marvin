@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "marvin-cli"
-version = "0.5.1"
+version = "0.5.2"
 description = "Data Engineering & AI Assistant — Claude Code orchestration layer"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -22,6 +22,13 @@ packages = ["cli"]
 
 [tool.hatch.build.targets.wheel.force-include]
 ".claude" = "cli/_data/.claude"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "pep621"
+update_changelog_on_bump = false
 
 [dependency-groups]
 dev = [
