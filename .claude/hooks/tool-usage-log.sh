@@ -21,7 +21,7 @@ case "$TOOL" in
     FILE=$(echo "$INPUT" | json_val '.tool_input.file_path')
     ;;
   Bash)
-    CMD=$(echo "$INPUT" | json_val '.tool_input.command' | head -c 100 | tr '"' "'")
+    CMD=$(echo "$INPUT" | json_val '.tool_input.command' | head -c 100 | tr '\n\r\t' '   ' | sed 's/\\/\\\\/g' | tr '"' "'")
     ;;
   Skill)
     SKILL=$(echo "$INPUT" | json_val '.tool_input.skill')

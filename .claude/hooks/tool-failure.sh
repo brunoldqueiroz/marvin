@@ -14,7 +14,7 @@ IS_INTERRUPT=$(echo "$INPUT" | json_val '.is_interrupt')
 [ -z "$TOOL" ] && exit 0
 
 # Sanitize error for JSON (escape quotes, truncate)
-ERROR=$(printf '%s' "$ERROR" | tr '"' "'" | head -c 200)
+ERROR=$(printf '%s' "$ERROR" | tr '\n\r\t' '   ' | sed 's/\\/\\\\/g' | tr '"' "'" | head -c 200)
 [ "$IS_INTERRUPT" != "true" ] && IS_INTERRUPT="false"
 
 {
