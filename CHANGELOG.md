@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.6.1] - 2026-02-28
+
+### Changed
+
+- Update development standard v1.0 → v1.1
+- Enrich skills vs agents decision framework v1.1 → v1.2
+
+### Fixed
+
+- Sanitize newlines and backslashes in metrics JSONL hooks
+
+### Bump
+
+- Version 0.6.0 → 0.6.1
+
 ## [0.6.0] - 2026-02-28
 
 ### Added
