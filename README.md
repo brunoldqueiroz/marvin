@@ -239,20 +239,22 @@ prd.json.example                   # Reference PRD JSON schema
     */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
-    session-start-context.sh       # SessionStart: model, source, git, previous session
+    session-start-context.sh       # SessionStart: inject git + previous session context
+    session-start-log.sh           # SessionStart: log session_start metric
     session-start-reinject.sh      # SessionStart(compact): recover after compaction
-    session-end-log.sh             # SessionEnd: log session_end event
+    session-end-log.sh             # SessionEnd: log session_end metric
     pre-compact-save.sh            # PreCompact: snapshot before compaction
     pre-tool-use-block-secrets.sh  # PreToolUse: block secret exposure
     post-tool-use-log.sh           # PostToolUse: tool invocation tracking
     post-tool-use-mcp-monitor.sh   # PostToolUse: MCP error detection
     post-tool-failure-log.sh       # PostToolUseFailure: failure tracking
-    stop-persist.sh                # Stop: transcript → session log
+    stop-persist.sh                # Stop: persist raw session log
     subagent-start-log.sh          # SubagentStart: spawn tracking
-    subagent-stop-gate.sh          # SubagentStop: validate + metrics
+    subagent-stop-gate.sh          # SubagentStop: quality gate
+    subagent-stop-log.sh           # SubagentStop: log subagent metrics
     user-prompt-log.sh             # UserPromptSubmit: prompt tracking
     notification-log.sh            # Notification: idle/permission tracking
-  dev/                             # Gitignored — metrics.jsonl, session-log.md
+  dev/                             # Gitignored — metrics.jsonl, session_logs/
 .mcp.json                          # MCP server configuration
 ```
 
@@ -266,17 +268,17 @@ Marvin operates on an **Orient → Think → Work → Persist** cycle:
    subtasks? Parallel or sequential? Plan mode for uncertain approaches
 3. **Work** — Route to the right topology, delegate with structured handoffs,
    evaluate output against acceptance criteria, recover from failures
-4. **Persist** — On session end, hooks parse the transcript and write a structured
-   summary (model, permission mode, prompts, tools, files, commits) for the next
-   session
+4. **Persist** — On session stop, a hook writes a raw text log (git state,
+   commits, uncommitted changes) to `session_logs/` for the next session
 
 ## Observability
 
-Two files in `.claude/dev/` (gitignored) provide session-level telemetry:
+Two locations in `.claude/dev/` (gitignored) provide session-level telemetry:
 
-- **`session-log.md`** — Per-session summaries: user prompts, tools used, files
-  modified, git commits, agent usage, model, and permission mode
+- **`session_logs/`** — Raw text logs per session (git state, commits,
+  uncommitted changes). Last 10 kept, older rotated automatically
 - **`metrics.jsonl`** — Unified event stream: session_start, session_end,
-  tool_use, tool_failure, subagent_stop
+  tool_use, tool_failure, subagent_start, subagent_stop, user_prompt,
+  notification
 
 Use `marvin metrics` to analyze the JSONL data from the command line.
