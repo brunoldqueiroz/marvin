@@ -15,11 +15,15 @@ through hooks, a structured brain, and specialist agents.
 - **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
   topology-based routing, structured handoff protocol, and failure recovery
 - **Ralph Loop** — Autonomous implementation workflow: `/prd` → `/ralph` →
-  `ralph.sh` spawns fresh Claude Code sessions until all stories pass
+  `ralph.sh` spawns fresh Claude Code sessions until all stories pass, with
+  post-implementation verification and automatic run archival
+- **SDD Light** — Structured acceptance criteria (`scenario/when/then/verify`),
+  project-wide constitution constraints (`must/must_not/prefer`), and
+  `/spec-check` readiness validation before autonomous execution
 - **Researcher agent** — Proactive research specialist with Context7, Exa,
   and Qdrant KB access
-- **12 skills** — 10 expert advisors + `/prd` (PRD generator) + `/ralph`
-  (PRD-to-JSON converter)
+- **13 skills** — 10 expert advisors + `/prd` (PRD generator) + `/ralph`
+  (PRD-to-JSON converter) + `/spec-check` (PRD readiness validator)
 - **Observability hooks** — Session context, tool usage, agent quality gate,
   metrics logging to JSONL
 - **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
@@ -99,13 +103,14 @@ criteria pass.
 ### How it works
 
 ```
-/prd → tasks/prd-feature.md (markdown PRD)
+/prd → tasks/prd-feature.md (markdown PRD with structured criteria + constitution)
+/spec-check → validates prd.json readiness (score 0–11, READY/REVIEW/BLOCK)
 /ralph → prd.json (JSON task list, passes: false)
 ./scripts/ralph.sh [max_iterations]
-  └─ Iteration N: claude -p <prompt>
+  └─ Iteration N: claude -p <prompt> (constitution injected if present)
      └─ Reads prd.json → implements 1 story → tests → commits → updates prd.json
      └─ Exits (fresh context on next iteration)
-  └─ All stories pass → exit 0
+  └─ All stories pass → verify each criteria.verify command → archive run → exit 0
 ```
 
 ### Step 1: Create a PRD
@@ -115,8 +120,10 @@ criteria pass.
 /prd
 ```
 
-The skill asks clarifying questions and generates a structured PRD at
-`tasks/prd-{feature}.md` with user stories and testable acceptance criteria.
+The skill asks clarifying questions (including architectural constraints) and
+generates a structured PRD at `tasks/prd-{feature}.md` with user stories,
+structured acceptance criteria (`scenario/when/then/verify`), and an optional
+constitution (`must/must_not/prefer`).
 
 ### Step 2: Convert to JSON
 
@@ -125,7 +132,18 @@ The skill asks clarifying questions and generates a structured PRD at
 ```
 
 Converts the markdown PRD to `prd.json` — the task tracking file the loop uses.
-Each story starts with `passes: false`.
+Each story starts with `passes: false`. Structured criteria and constitution are
+preserved. Flat string criteria from older PRDs are auto-converted.
+
+### Step 2.5: Validate readiness (optional)
+
+```bash
+/spec-check
+```
+
+Runs 6 quality checks on `prd.json` (criteria count, verify coverage, dependency
+order, story size, quality gates, constitution presence) and scores 0–11. A score
+of 9+ means READY to run the loop.
 
 ### Step 3: Run the loop in the devcontainer
 
@@ -166,6 +184,8 @@ Each iteration spawns a fresh Claude Code session that:
 4. Implements it, runs quality checks, commits if passing
 5. Updates `prd.json` (`passes: true`) and appends to `progress.txt`
 6. Signals `<promise>COMPLETE</promise>` when all stories pass
+7. Post-completion: ralph.sh runs each `verify` command to confirm, reverts
+   `passes` on failure, and archives the run to `archive/{feature}-{date}/`
 
 ### Runtime files (gitignored)
 
@@ -174,7 +194,8 @@ Each iteration spawns a fresh Claude Code session that:
 | `prd.json` | Active task state — stories with `passes` flags |
 | `progress.txt` | Append-only learnings log across iterations |
 | `.last-branch` | Branch change detection for archival |
-| `archive/` | Archived runs from previous features |
+| `.verified-stories` | Tracks which stories passed post-verification |
+| `archive/` | Archived runs (prd.json + progress.txt per feature) |
 
 ## MCP Servers
 
@@ -214,6 +235,7 @@ prd.json.example                   # Reference PRD JSON schema
   skills/
     prd/SKILL.md                   # /prd — PRD generator (workflow)
     ralph/SKILL.md                 # /ralph — PRD to JSON converter (workflow)
+    spec-check/SKILL.md            # /spec-check — PRD readiness validator (workflow)
     */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
