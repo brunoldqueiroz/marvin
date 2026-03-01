@@ -1,6 +1,6 @@
 # Marvin
 
-[![version](https://img.shields.io/badge/version-0.7.0-blue)](https://github.com/brunoldqueiroz/marvin/releases)
+[![version](https://img.shields.io/badge/version-0.8.0-blue)](https://github.com/brunoldqueiroz/marvin/releases)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-powered-blueviolet)](https://docs.anthropic.com/en/docs/claude-code)
 
@@ -10,7 +10,7 @@ executing, and delegates to specialist agents.
 Marvin adds session memory, agent delegation, and observability to Claude Code
 through hooks, a structured brain, and specialist agents.
 
-## What's Included (v0.7.0)
+## What's Included (v0.8.0)
 
 - **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
   topology-based routing, structured handoff protocol, and failure recovery
