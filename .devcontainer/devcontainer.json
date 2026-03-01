@@ -10,11 +10,11 @@
   },
   "postCreateCommand": "uv sync && npm install -g @anthropic-ai/claude-code && chmod +x .claude/hooks/*.sh",
   "containerEnv": {
-    "VIRTUAL_ENV": "/workspaces/marvin/.venv",
-    "PATH": "/workspaces/marvin/.venv/bin:${containerEnv:PATH}"
+    "VIRTUAL_ENV": "/workspaces/marvin/.venv"
   },
   "remoteEnv": {
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
-    "EXA_API_KEY": "${localEnv:EXA_API_KEY}"
+    "EXA_API_KEY": "${localEnv:EXA_API_KEY}",
+    "PATH": "/workspaces/marvin/.venv/bin:${containerEnv:PATH}"
   }
 }
