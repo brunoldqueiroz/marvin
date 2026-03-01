@@ -1,5 +1,5 @@
 #!/bin/bash
-# block-secrets.sh — Prevent commands that might expose secrets
+# pre-tool-use-block-secrets.sh — Prevent commands that might expose secrets
 # Hook: PreToolUse (matcher: Bash)
 # Exit 2 = block the action
 

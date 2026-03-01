@@ -1,5 +1,5 @@
 #!/bin/bash
-# compact-reinject.sh — Re-inject Marvin context after compaction
+# session-start-reinject.sh — Re-inject Marvin context after compaction
 # Hook: SessionStart (matcher: compact)
 
 source "$(dirname "$0")/_lib.sh"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tool-usage-log.sh — Log tool usage events as JSONL
+# post-tool-use-log.sh — Log tool usage events as JSONL
 # Hook: PostToolUse (matcher: "")
 source "$(dirname "$0")/_lib.sh"
 

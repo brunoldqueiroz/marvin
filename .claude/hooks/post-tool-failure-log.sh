@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tool-failure.sh — Log tool failure events
+# post-tool-failure-log.sh — Log tool failure events
 # Hook: PostToolUseFailure (matcher: "")
 source "$(dirname "$0")/_lib.sh"
 

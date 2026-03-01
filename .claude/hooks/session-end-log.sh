@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# session-end.sh — Log session_end event
+# session-end-log.sh — Log session_end event
 # Hook: SessionEnd (matcher: "")
 source "$(dirname "$0")/_lib.sh"
 

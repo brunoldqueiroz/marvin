@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# mcp-error-monitor.sh — PostToolUse hook that detects MCP tool errors
+# post-tool-use-mcp-monitor.sh — PostToolUse hook that detects MCP tool errors
 # and surfaces them via exit 2 (hard gate) + persistent log.
 source "$(dirname "$0")/_lib.sh"
 

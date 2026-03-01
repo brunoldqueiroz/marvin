@@ -239,16 +239,19 @@ prd.json.example                   # Reference PRD JSON schema
     */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
-    session-context.sh             # SessionStart: model, source, git, previous session
-    session-end.sh                 # SessionEnd: log session_end event
-    compact-reinject.sh            # SessionStart(compact): recover after compaction
+    session-start-context.sh       # SessionStart: model, source, git, previous session
+    session-start-reinject.sh      # SessionStart(compact): recover after compaction
+    session-end-log.sh             # SessionEnd: log session_end event
     pre-compact-save.sh            # PreCompact: snapshot before compaction
-    session-persist.sh             # Stop: transcript → session log
-    subagent-quality-gate.sh       # SubagentStop: validate + metrics
-    tool-usage-log.sh              # PostToolUse: tool invocation tracking
-    tool-failure.sh                # PostToolUseFailure: failure tracking
-    mcp-error-monitor.sh           # PostToolUse: MCP error detection
-    block-secrets.sh               # PreToolUse: block secret exposure
+    pre-tool-use-block-secrets.sh  # PreToolUse: block secret exposure
+    post-tool-use-log.sh           # PostToolUse: tool invocation tracking
+    post-tool-use-mcp-monitor.sh   # PostToolUse: MCP error detection
+    post-tool-failure-log.sh       # PostToolUseFailure: failure tracking
+    stop-persist.sh                # Stop: transcript → session log
+    subagent-start-log.sh          # SubagentStart: spawn tracking
+    subagent-stop-gate.sh          # SubagentStop: validate + metrics
+    user-prompt-log.sh             # UserPromptSubmit: prompt tracking
+    notification-log.sh            # Notification: idle/permission tracking
   dev/                             # Gitignored — metrics.jsonl, session-log.md
 .mcp.json                          # MCP server configuration
 ```

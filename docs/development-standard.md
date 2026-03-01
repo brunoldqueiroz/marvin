@@ -362,7 +362,7 @@ head -1 .claude/agents/*/AGENT.md   # Must start with ---
 
 ### 5.2 Layer 2 — Behavioral (~$0.002/eval)
 
-Per-agent quality gate via `subagent-quality-gate.sh`:
+Per-agent quality gate via `subagent-stop-gate.sh`:
 
 1. **Mechanical checks first:** artifact presence, output length, failure
    phrase detection.
@@ -409,7 +409,7 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 - `agents/researcher/AGENT.md`: memory: project, maxTurns: 20
 
 ### Fixed
-- `hooks/subagent-quality-gate.sh`: add Exa usage verification
+- `hooks/subagent-stop-gate.sh`: add Exa usage verification
 ```
 
 ---

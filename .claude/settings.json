@@ -87,7 +87,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-secrets.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-use-block-secrets.sh"
           }
         ]
       }
@@ -98,7 +98,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start-context.sh"
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start-log.sh"
           }
         ]
       },
@@ -107,7 +111,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/compact-reinject.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start-reinject.sh"
           }
         ]
       }
@@ -129,7 +133,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-persist.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-persist.sh"
           }
         ]
       }
@@ -140,7 +144,44 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-quality-gate.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-stop-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-stop-log.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/user-prompt-log.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-start-log.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/notification-log.sh"
           }
         ]
       }
@@ -151,7 +192,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-end.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-end-log.sh"
           }
         ]
       }
@@ -162,7 +203,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-failure.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-failure-log.sh"
           }
         ]
       }
@@ -173,7 +214,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/tool-usage-log.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-use-log.sh"
           }
         ]
       },
@@ -182,7 +223,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/mcp-error-monitor.sh"
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/post-tool-use-mcp-monitor.sh"
           }
         ]
       }
