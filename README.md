@@ -127,19 +127,45 @@ The skill asks clarifying questions and generates a structured PRD at
 Converts the markdown PRD to `prd.json` — the task tracking file the loop uses.
 Each story starts with `passes: false`.
 
-### Step 3: Run the loop
+### Step 3: Run the loop in the devcontainer
+
+The loop uses `--dangerously-skip-permissions`, which gives Claude Code full
+system access. **Always run it inside the devcontainer** to isolate execution
+from your host machine.
 
 ```bash
+# 1. Open the project in the devcontainer (VS Code or GitHub Codespaces)
+# 2. Inside the container, run:
 ./scripts/ralph.sh        # default: 10 iterations
 ./scripts/ralph.sh 20     # custom max iterations
 ```
 
+**Why the devcontainer matters:** The `.claude/` directory is part of the
+project workspace, so Claude Code automatically loads it on every session.
+This means each `ralph.sh` iteration spawns Claude Code **as Marvin** — with
+the brain (`CLAUDE.md`), all skills (`/prd`, `/ralph`, expert advisors),
+hooks (quality gate, metrics, secrets blocking), and settings. The agent
+inside the loop isn't a bare Claude Code — it's Marvin with full
+orchestration capabilities.
+
+The devcontainer provides:
+
+| Component | How it gets there |
+|-----------|-------------------|
+| Python 3.13 + uv | Dockerfile base image |
+| Node 22 + Claude Code | Devcontainer feature + `postCreateCommand` |
+| Marvin CLI (`marvin`) | `uv sync` installs the project on PATH |
+| Marvin config (`.claude/`) | Workspace mount — part of the repo |
+| API keys | Forwarded from host via `remoteEnv` |
+| Executable hooks | `postCreateCommand` runs `chmod +x` |
+
 Each iteration spawns a fresh Claude Code session that:
-1. Reads `prd.json` and `progress.txt`
-2. Picks the highest-priority incomplete story
-3. Implements it, runs quality checks, commits if passing
-4. Updates `prd.json` (`passes: true`) and appends to `progress.txt`
-5. Signals `<promise>COMPLETE</promise>` when all stories pass
+1. Loads `.claude/CLAUDE.md` (Marvin brain), skills, hooks, and settings
+2. Reads `prd.json` and `progress.txt`
+3. Picks the highest-priority incomplete story
+4. Implements it, runs quality checks, commits if passing
+5. Updates `prd.json` (`passes: true`) and appends to `progress.txt`
+6. Signals `<promise>COMPLETE</promise>` when all stories pass
 
 ### Runtime files (gitignored)
 

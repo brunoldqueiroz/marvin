@@ -24,6 +24,7 @@ from rich.table import Table
 
 GITHUB_REPO = "brunoldqueiroz/marvin"
 INIT_EXCLUDE = {"dev", "settings.local.json"}
+INIT_EXTRAS = ["scripts", ".devcontainer", "prd.json.example", "tasks"]
 
 
 # ---------------------------------------------------------------------------
@@ -54,6 +55,7 @@ def _resolve_data_dir() -> Path:
 
 
 DATA_DIR = _resolve_data_dir()
+DATA_ROOT = DATA_DIR.parent
 
 
 # ---------------------------------------------------------------------------
@@ -216,8 +218,10 @@ def init(path: str, force: bool, latest: bool, ref: str | None) -> None:
     if latest:
         tmpdir = _download_claude_dir(ref=ref or "main")
         source = _find_claude_in_download(tmpdir)
+        source_root = source.parent
     else:
         source = DATA_DIR
+        source_root = DATA_ROOT
         if not source.exists():
             logger.error("Bundled data not found: {}", source)
             logger.error("Try: marvin init --latest")
@@ -245,6 +249,24 @@ def init(path: str, force: bool, latest: bool, ref: str | None) -> None:
             for hook in hooks_dir.iterdir():
                 if hook.is_file() and hook.suffix == ".sh":
                     hook.chmod(hook.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+
+        # Copy Ralph loop extras (scripts, devcontainer, prd.json.example, tasks)
+        for name in INIT_EXTRAS:
+            src = source_root / name
+            dst = target / name
+            if not src.exists():
+                continue
+            if dst.exists() and not force:
+                continue
+            if src.is_dir():
+                shutil.copytree(src, dst, dirs_exist_ok=True)
+            else:
+                shutil.copy2(src, dst)
+
+        # Ensure ralph.sh is executable
+        ralph_sh = target / "scripts" / "ralph.sh"
+        if ralph_sh.exists():
+            ralph_sh.chmod(ralph_sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
         logger.info("Initialized Marvin at {}", dest)
     finally:
