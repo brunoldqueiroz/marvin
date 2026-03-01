@@ -6,22 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.7.0] - 2026-02-28
+## [0.7.0] - 2026-03-01
 
 ### Added
 
-- Ralph Loop integration — autonomous implementation workflow
-- `/prd` skill — interactive PRD generator for feature planning
-- `/ralph` skill — PRD to JSON converter for autonomous execution
-- `scripts/ralph.sh` — bash orchestration loop spawning fresh Claude Code sessions
-- `prd.json.example` — reference schema for task tracking
-- `tasks/` directory for PRD storage
-- Devcontainer configuration (Python 3.13, Node 22, uv, Claude Code)
+- Integrate Ralph Loop autonomous implementation workflow
 
-### Changed
+### Fixed
 
-- Add `jq` and `chmod` to allowed bash permissions
-- Add Ralph loop runtime state entries to `.gitignore`
+- Include Ralph loop extras in marvin init and wheel packaging
+
+### Bump
+
+- Version 0.6.1 → 0.7.0
 
 ## [0.6.1] - 2026-02-28
 
