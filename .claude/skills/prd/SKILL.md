@@ -41,6 +41,9 @@ question with options (A/B/C/D) plus a free-text option. Cover these areas:
 4. **Quality criteria** — What checks must pass? (tests, linting, type checking)
 5. **Integrations** — Does this feature depend on or integrate with existing
    systems, APIs, or data sources?
+6. **Constraints** — Are there architectural constraints, forbidden patterns, or
+   strong preferences? (e.g., "must use bcrypt", "must not expose stack traces",
+   "prefer async endpoints")
 
 Wait for the user to answer before proceeding to Phase 2.
 
@@ -63,17 +66,23 @@ Each story follows this format:
 **As a** [role], **I want** [capability] **so that** [benefit].
 
 **Acceptance Criteria:**
-- [ ] Specific, testable requirement
-- [ ] Another testable requirement
-- [ ] Quality gate: ruff/mypy/pytest passes
+
+| Scenario | When | Then | Verify |
+|----------|------|------|--------|
+| Successful creation | POST /api/items with valid data | 201 + item JSON | pytest tests/test_items.py::test_create |
+| Invalid input | POST /api/items with missing fields | 400 + error details | pytest tests/test_items.py::test_create_invalid |
+| Linting passes | After implementation | ruff check reports no violations | ruff check . |
 ```
 
 **Story constraints:**
 - Each story MUST fit within a single Claude Code context window
+- Acceptance criteria MUST be structured as scenario/when/then/verify
+- The `verify` field MUST contain a runnable command (e.g., `pytest ...`,
+  `ruff check .`, `curl ...`) or the literal `"manual"` for criteria that
+  cannot be automated
 - Acceptance criteria MUST be verifiable by automated tools or explicit checks
-  (e.g., "ruff check passes", "pytest passes with >= 2 tests", "endpoint
-  returns 200 with JSON body") — never use vague criteria like "works correctly"
-  or "is performant"
+  — never use vague criteria like "works correctly" or "is performant"
+- PREFER automated verify commands; aim for < 30% manual criteria per story
 - Order stories by dependency: schema/models → backend logic → API → UI
 - Assign priority numbers: 1 = highest (implement first), N = lowest
 
@@ -99,6 +108,28 @@ How to measure whether the feature achieved its goals after deployment.
 #### 9. Open Questions
 Unresolved questions that need human input before or during implementation.
 Mark each with priority (blocking vs. nice-to-have).
+
+#### 10. Constitution (optional)
+If the user provided constraints in Phase 1 question 6, generate a Constitution
+section with three subsections:
+
+```
+### Constitution
+
+**MUST:**
+- Use bcrypt for password hashing with cost factor >= 12
+
+**MUST NOT:**
+- Store plaintext passwords
+- Expose stack traces in API responses
+
+**PREFER:**
+- Async endpoints where possible
+```
+
+Only include this section if the user specified constraints. Each constraint
+should be a single, actionable sentence. The Ralph Loop will inject these as
+hard rules into every implementation session.
 
 ### Phase 3: Save
 

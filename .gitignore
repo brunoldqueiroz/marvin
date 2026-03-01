@@ -23,6 +23,7 @@ wheels/
 prd.json
 progress.txt
 .last-branch
+.verified-stories
 archive/
 
 # IDE

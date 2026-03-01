@@ -2,18 +2,56 @@
   "project": "my-app",
   "branchName": "ralph/add-user-auth",
   "description": "Add user authentication with JWT tokens and role-based access control",
+  "constitution": {
+    "must": [
+      "Use bcrypt for password hashing with cost factor >= 12",
+      "Return standard RFC 7807 problem details on errors"
+    ],
+    "must_not": [
+      "Store plaintext passwords",
+      "Expose stack traces in API responses"
+    ],
+    "prefer": [
+      "Async endpoints where possible",
+      "Dependency injection over global state"
+    ]
+  },
   "userStories": [
     {
       "id": "US-001",
       "title": "User registration endpoint",
       "description": "As a new user, I want to register with email and password so that I can access the application",
       "acceptanceCriteria": [
-        "POST /api/auth/register accepts email and password",
-        "Password is hashed before storage",
-        "Returns 201 with JWT token on success",
-        "Returns 409 if email already exists",
-        "ruff check passes with no violations",
-        "pytest passes with >= 1 test covering the endpoint"
+        {
+          "scenario": "Successful registration",
+          "when": "POST /api/auth/register with valid email and password",
+          "then": "201 with JWT token in response body",
+          "verify": "pytest tests/test_auth.py::test_register_success"
+        },
+        {
+          "scenario": "Duplicate email",
+          "when": "POST /api/auth/register with an already registered email",
+          "then": "409 Conflict with error message",
+          "verify": "pytest tests/test_auth.py::test_register_duplicate"
+        },
+        {
+          "scenario": "Password hashing",
+          "when": "A user registers",
+          "then": "Password is stored as bcrypt hash, never plaintext",
+          "verify": "pytest tests/test_auth.py::test_password_hashed"
+        },
+        {
+          "scenario": "Linting passes",
+          "when": "After implementation",
+          "then": "ruff check reports no violations",
+          "verify": "ruff check ."
+        },
+        {
+          "scenario": "Test coverage",
+          "when": "After implementation",
+          "then": "pytest passes with >= 1 test covering the endpoint",
+          "verify": "pytest tests/test_auth.py -v"
+        }
       ],
       "priority": 1,
       "passes": false,
@@ -24,12 +62,36 @@
       "title": "User login endpoint",
       "description": "As a registered user, I want to log in with my credentials so that I receive a JWT token",
       "acceptanceCriteria": [
-        "POST /api/auth/login accepts email and password",
-        "Returns 200 with JWT token on valid credentials",
-        "Returns 401 on invalid credentials",
-        "Token expires after 24 hours",
-        "ruff check passes with no violations",
-        "pytest passes with >= 2 tests covering success and failure"
+        {
+          "scenario": "Valid credentials",
+          "when": "POST /api/auth/login with valid email and password",
+          "then": "200 with JWT token",
+          "verify": "pytest tests/test_auth.py::test_login_success"
+        },
+        {
+          "scenario": "Invalid credentials",
+          "when": "POST /api/auth/login with wrong password",
+          "then": "401 Unauthorized",
+          "verify": "pytest tests/test_auth.py::test_login_invalid"
+        },
+        {
+          "scenario": "Token expiry",
+          "when": "JWT token is issued",
+          "then": "Token expires after 24 hours",
+          "verify": "pytest tests/test_auth.py::test_token_expiry"
+        },
+        {
+          "scenario": "Linting passes",
+          "when": "After implementation",
+          "then": "ruff check reports no violations",
+          "verify": "ruff check ."
+        },
+        {
+          "scenario": "Test coverage",
+          "when": "After implementation",
+          "then": "pytest passes with >= 2 tests covering success and failure",
+          "verify": "pytest tests/test_auth.py -v"
+        }
       ],
       "priority": 2,
       "passes": false,

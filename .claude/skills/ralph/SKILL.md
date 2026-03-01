@@ -41,14 +41,23 @@ Transform the markdown PRD into this JSON structure:
   "project": "<project-name>",
   "branchName": "ralph/<feature-name>",
   "description": "<one-line feature summary>",
+  "constitution": {
+    "must": ["..."],
+    "must_not": ["..."],
+    "prefer": ["..."]
+  },
   "userStories": [
     {
       "id": "US-001",
       "title": "<brief title>",
       "description": "As a [role], I want [feature] so that [value]",
       "acceptanceCriteria": [
-        "Specific, testable requirement",
-        "Quality gate: ruff/mypy/pytest passes"
+        {
+          "scenario": "<short name>",
+          "when": "<trigger/input>",
+          "then": "<expected outcome>",
+          "verify": "<runnable command or 'manual'>"
+        }
       ],
       "priority": 1,
       "passes": false,
@@ -64,7 +73,22 @@ Field rules:
 - `priority`: 1 = highest (implement first); preserve dependency order from PRD
 - `passes`: always `false` — the loop drives these to `true`
 - `notes`: always empty string — the loop populates this across iterations
-- `acceptanceCriteria`: copy verbatim from PRD; ensure each is testable
+- `constitution`: extract from the PRD's Constitution section if present. Omit
+  the field entirely if no constitution was defined. Each array may be empty.
+- `acceptanceCriteria`: convert from the PRD's acceptance criteria table into
+  structured objects:
+  - `scenario`: short descriptive name
+  - `when`: the trigger condition or input
+  - `then`: expected outcome or assertion
+  - `verify`: a runnable shell command that validates this criterion. Use the
+    PRD's Verify column. If no command is possible, use `"manual"`.
+
+**Backward compatibility:** If the PRD uses flat string criteria (old format),
+convert each string to a structured object:
+- `scenario`: derive from the string content
+- `when`/`then`: split the string into condition and expectation
+- `verify`: `"manual"` (unless the string already names a command like
+  `ruff check .` or `pytest ...`)
 
 ### Step 3: Validate
 
@@ -85,6 +109,11 @@ Before writing, validate the conversion:
 
 4. **Quality gates** — Every story must include at least one quality gate
    criterion (e.g., "ruff check passes", "pytest passes").
+
+5. **Verify fields** — Every structured criterion must have a `verify` field.
+   Validate that verify commands look executable (start with a known tool name
+   like `pytest`, `ruff`, `mypy`, `curl`, `bash`, or are `"manual"`). Flag
+   suspicious verify values and suggest corrections.
 
 ### Step 4: Handle existing prd.json
 
