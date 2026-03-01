@@ -1,0 +1,16 @@
+{
+  "name": "Marvin Dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
+    }
+  },
+  "postCreateCommand": "uv sync && npm install -g @anthropic-ai/claude-code",
+  "remoteEnv": {
+    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
+    "EXA_API_KEY": "${localEnv:EXA_API_KEY}"
+  }
+}

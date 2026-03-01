@@ -30,6 +30,8 @@
       "Bash(tail *)",
       "Bash(mkdir *)",
       "Bash(which *)",
+      "Bash(jq *)",
+      "Bash(chmod *)",
       "Bash(make*)",
       "Bash(git-cliff*)",
       "Bash(cz*)",

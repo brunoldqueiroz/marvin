@@ -1,6 +1,6 @@
 # Marvin
 
-[![version](https://img.shields.io/badge/version-0.5.1-blue)](https://github.com/brunoldqueiroz/marvin/releases)
+[![version](https://img.shields.io/badge/version-0.7.0-blue)](https://github.com/brunoldqueiroz/marvin/releases)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-powered-blueviolet)](https://docs.anthropic.com/en/docs/claude-code)
 
@@ -10,18 +10,22 @@ executing, and delegates to specialist agents.
 Marvin adds session memory, agent delegation, and observability to Claude Code
 through hooks, a structured brain, and specialist agents.
 
-## What's Included (v0.5.1)
+## What's Included (v0.7.0)
 
 - **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
   topology-based routing, structured handoff protocol, and failure recovery
+- **Ralph Loop** — Autonomous implementation workflow: `/prd` → `/ralph` →
+  `ralph.sh` spawns fresh Claude Code sessions until all stories pass
 - **Researcher agent** — Proactive research specialist with Context7, Exa,
   and Qdrant KB access
-- **10 expert skills** — Airflow, AWS, dbt, Docker, docs, Git, Python,
-  Snowflake, Spark, Terraform
+- **12 skills** — 10 expert advisors + `/prd` (PRD generator) + `/ralph`
+  (PRD-to-JSON converter)
 - **Observability hooks** — Session context, tool usage, agent quality gate,
   metrics logging to JSONL
 - **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
 - **CLI** — `marvin init`, `marvin agents`, `marvin skills`, `marvin metrics`
+- **Devcontainer** — Ready-to-use dev environment with Python 3.13, Node 22,
+  uv, and Claude Code
 
 ## Install
 
@@ -85,6 +89,67 @@ marvin --version
 marvin --help
 ```
 
+## Ralph Loop (Autonomous Implementation)
+
+The Ralph Loop is an autonomous implementation workflow inspired by
+[snarktank/ralph](https://github.com/snarktank/ralph). It iteratively spawns
+fresh Claude Code sessions to implement user stories until all acceptance
+criteria pass.
+
+### How it works
+
+```
+/prd → tasks/prd-feature.md (markdown PRD)
+/ralph → prd.json (JSON task list, passes: false)
+./scripts/ralph.sh [max_iterations]
+  └─ Iteration N: claude -p <prompt>
+     └─ Reads prd.json → implements 1 story → tests → commits → updates prd.json
+     └─ Exits (fresh context on next iteration)
+  └─ All stories pass → exit 0
+```
+
+### Step 1: Create a PRD
+
+```bash
+# Inside Claude Code, run:
+/prd
+```
+
+The skill asks clarifying questions and generates a structured PRD at
+`tasks/prd-{feature}.md` with user stories and testable acceptance criteria.
+
+### Step 2: Convert to JSON
+
+```bash
+/ralph
+```
+
+Converts the markdown PRD to `prd.json` — the task tracking file the loop uses.
+Each story starts with `passes: false`.
+
+### Step 3: Run the loop
+
+```bash
+./scripts/ralph.sh        # default: 10 iterations
+./scripts/ralph.sh 20     # custom max iterations
+```
+
+Each iteration spawns a fresh Claude Code session that:
+1. Reads `prd.json` and `progress.txt`
+2. Picks the highest-priority incomplete story
+3. Implements it, runs quality checks, commits if passing
+4. Updates `prd.json` (`passes: true`) and appends to `progress.txt`
+5. Signals `<promise>COMPLETE</promise>` when all stories pass
+
+### Runtime files (gitignored)
+
+| File | Purpose |
+|------|---------|
+| `prd.json` | Active task state — stories with `passes` flags |
+| `progress.txt` | Append-only learnings log across iterations |
+| `.last-branch` | Branch change detection for archival |
+| `archive/` | Archived runs from previous features |
+
 ## MCP Servers
 
 Marvin uses three MCP servers (configured in `.mcp.json`):
@@ -109,11 +174,21 @@ cli/
   __init__.py                      # Package marker
   marvin.py                        # CLI entry point (click + loguru)
 install.sh                         # One-line installer (uv/pipx)
+scripts/
+  ralph.sh                         # Ralph Loop orchestration script
+tasks/                             # PRD storage (prd-*.md files)
+prd.json.example                   # Reference PRD JSON schema
+.devcontainer/
+  devcontainer.json                # Dev environment configuration
+  Dockerfile                       # Python 3.13 + git + jq + uv
 .claude/
   CLAUDE.md                        # Brain — reasoning, routing, handoff, recovery
   settings.json                    # Hooks + permissions
   agents/researcher/AGENT.md       # Research specialist
-  skills/*/SKILL.md                # 10 expert skills
+  skills/
+    prd/SKILL.md                   # /prd — PRD generator (workflow)
+    ralph/SKILL.md                 # /ralph — PRD to JSON converter (workflow)
+    */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
     session-context.sh             # SessionStart: model, source, git, previous session

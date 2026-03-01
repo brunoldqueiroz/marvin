@@ -1,0 +1,39 @@
+{
+  "project": "my-app",
+  "branchName": "ralph/add-user-auth",
+  "description": "Add user authentication with JWT tokens and role-based access control",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "User registration endpoint",
+      "description": "As a new user, I want to register with email and password so that I can access the application",
+      "acceptanceCriteria": [
+        "POST /api/auth/register accepts email and password",
+        "Password is hashed before storage",
+        "Returns 201 with JWT token on success",
+        "Returns 409 if email already exists",
+        "ruff check passes with no violations",
+        "pytest passes with >= 1 test covering the endpoint"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "User login endpoint",
+      "description": "As a registered user, I want to log in with my credentials so that I receive a JWT token",
+      "acceptanceCriteria": [
+        "POST /api/auth/login accepts email and password",
+        "Returns 200 with JWT token on valid credentials",
+        "Returns 401 on invalid credentials",
+        "Token expires after 24 hours",
+        "ruff check passes with no violations",
+        "pytest passes with >= 2 tests covering success and failure"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
