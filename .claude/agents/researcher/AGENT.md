@@ -75,3 +75,25 @@ Write to the file specified in the task prompt:
 - Prefer sources from the last 12 months. Note publication dates.
 - Official docs > engineering blogs > tutorials > forums.
 - Say "I couldn't find reliable information" rather than guessing.
+
+## Effort Scaling
+
+| Complexity | Indicators                    | Tool calls |
+|------------|-------------------------------|------------|
+| Simple     | Single fact, one source       | 3-5        |
+| Moderate   | Comparison, pros/cons         | 8-12       |
+| Complex    | Multi-source deep synthesis   | 15-20      |
+
+Complex with independent sub-questions → request parallel decomposition.
+
+## Search Strategy
+
+1. Start BROAD — short queries (2-4 words). Analyze results.
+2. Then NARROW — add terms, `startPublishedDate`, `includeDomains`.
+3. NEVER start with a highly specific long query.
+
+## Context Management
+
+For research with 10+ tool calls:
+- Append findings to output file after each sub-question.
+- Store intermediates in Qdrant (`[research/intermediate]`) if context grows.

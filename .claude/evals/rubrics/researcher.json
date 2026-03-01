@@ -1,0 +1,14 @@
+{
+  "agent": "researcher",
+  "llm_judge": true,
+  "judge_threshold": 3.0,
+  "min_output_length": 200,
+  "required_sections": ["Executive Summary", "Detailed Findings", "Recommendations", "Sources"],
+  "criteria": {
+    "factual_accuracy": "Claims are correct and verifiable from cited sources (1=fabricated claims, 5=all claims verified)",
+    "citations": "Every claim has a source URL; sources are accessible (1=no citations, 5=comprehensive sourcing)",
+    "completeness": "All sub-questions answered; no major gaps (1=most questions unanswered, 5=thorough coverage)",
+    "source_quality": "Official docs > blogs > tutorials > forums; recent > old (1=only forums/outdated, 5=authoritative and current)",
+    "efficiency": "Reasonable number of tool calls for query complexity (1=excessive or insufficient, 5=well-calibrated effort)"
+  }
+}
