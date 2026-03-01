@@ -288,6 +288,20 @@ def skills() -> None:
 
 @cli.command()
 @click.argument("path", default=".", type=click.Path(exists=True))
+def dashboard(path: str) -> None:
+    """Live TUI dashboard for metrics.jsonl."""
+    from cli.dashboard import run_dashboard
+
+    target = Path(path).resolve()
+    metrics_file = target / ".claude" / "dev" / "metrics.jsonl"
+    if not metrics_file.exists():
+        logger.error("metrics file not found: {}", metrics_file)
+        raise SystemExit(1)
+    run_dashboard(metrics_file)
+
+
+@cli.command()
+@click.argument("path", default=".", type=click.Path(exists=True))
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
 def metrics(path: str, as_json: bool) -> None:
     """Analyze .claude/dev/metrics.jsonl and print insights."""
