@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add reviewer agent — code review with ruff/mypy/CodeRabbit integration
-- Add tester agent — test execution, failure analysis, and coverage
-- Add security agent — vulnerability scanning with bandit/pip-audit/semgrep
-- Add implementer agent — feature implementation with quality check iteration
-- Add eval rubrics for all 4 new agents
-- Add allowed commands for security and review tooling (bandit, pip-audit, safety, semgrep, coderabbit, coverage)
+- Add reviewer, tester, security, and implementer agents
+
+### Changed
+
+- Replace .devcontainer with plain Docker for Ralph loop
+
+### Bump
+
+- Version 0.12.0 → 0.13.0
 
 ## [0.12.0] - 2026-03-03
 
