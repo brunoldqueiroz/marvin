@@ -32,6 +32,27 @@ Execute these three phases in order. Do not skip phases.
 
 ### Phase 1: Clarify
 
+#### Step 0: Check for Design Specs
+
+Before asking questions, check for relevant specs:
+
+1. Search `spec/draft/*.md` and `spec/shipped/*.md` for specs related to the
+   feature being planned
+2. If a matching spec is found, read it and pre-populate PRD sections:
+   - **Change Table** → story scope (which files each story touches)
+   - **Design Rules** → constitution (MUST/MUST NOT/PREFER)
+   - **Scenarios** → acceptance criteria structure (GIVEN/WHEN/THEN → scenario/when/then)
+   - **Scope out-of-scope** → non-goals section
+   - **Implementation Order** → story priority ordering
+3. Tell the user which spec was found and what was pre-populated
+4. Reduce Phase 1 questions to gaps NOT already covered by the spec
+5. Add a reference comment at the top of the generated PRD:
+   `<!-- Spec: spec/draft/{name}.md -->` or `<!-- Spec: spec/shipped/{name}.md -->`
+
+If no spec is found, proceed normally with the full question set below.
+
+#### Clarifying Questions
+
 Ask the user 3–5 clarifying questions to understand the feature. Present each
 question with options (A/B/C/D) plus a free-text option. Cover these areas:
 

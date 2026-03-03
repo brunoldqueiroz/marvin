@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Added
+
+- Add Full SDD — `/spec` design spec generator with OpenSpec-inspired workflow
+- Add spec validation mode to `/spec-check` (6 checks, max 10 points)
+- Add spec consumption to `/prd` — auto-populates PRD from design specs
+- Add `spec/template.md` canonical spec template
+- Add `spec/draft/` and `spec/shipped/` directory structure with freeze policy
+- Add `pre-tool-use-spec-freeze.sh` warning hook for shipped spec edits
+- Add `.claude/rules/specs.md` path-scoped rule for spec files
+
 ## [0.11.2] - 2026-03-01
 
 ### Fixed

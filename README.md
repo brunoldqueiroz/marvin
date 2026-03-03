@@ -17,13 +17,17 @@ through hooks, a structured brain, and specialist agents.
 - **Ralph Loop** — Autonomous implementation workflow: `/prd` → `/ralph` →
   `ralph.sh` spawns fresh Claude Code sessions until all stories pass, with
   post-implementation verification and automatic run archival
-- **SDD Light** — Structured acceptance criteria (`scenario/when/then/verify`),
-  project-wide constitution constraints (`must/must_not/prefer`), and
-  `/spec-check` readiness validation before autonomous execution
+- **SDD** — Full spec-driven development: `/spec` generates design specs
+  (OpenSpec-inspired) with change tables, design rules, and scenarios;
+  `/spec-check` validates both specs and PRDs; `/prd` auto-consumes specs;
+  frozen-spec policy for shipped specs; structured acceptance criteria
+  (`scenario/when/then/verify`) and constitution constraints
+  (`must/must_not/prefer`)
 - **Researcher agent** — Proactive research specialist with Context7, Exa,
   and Qdrant KB access
-- **13 skills** — 10 expert advisors + `/prd` (PRD generator) + `/ralph`
-  (PRD-to-JSON converter) + `/spec-check` (PRD readiness validator)
+- **14 skills** — 10 expert advisors + `/spec` (design spec generator) +
+  `/prd` (PRD generator) + `/ralph` (PRD-to-JSON converter) + `/spec-check`
+  (PRD & spec readiness validator)
 - **Observability hooks** — Session context, tool usage, agent quality gate,
   metrics logging to JSONL
 - **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
@@ -103,7 +107,9 @@ criteria pass.
 ### How it works
 
 ```
-/prd → tasks/prd-feature.md (markdown PRD with structured criteria + constitution)
+/spec → spec/draft/feature.md (design spec with change table + design rules) [optional]
+/spec-check → validates spec readiness (score 0–10, READY/REVIEW/BLOCK) [optional]
+/prd → tasks/prd-feature.md (markdown PRD, auto-consumes spec if present)
 /spec-check → validates prd.json readiness (score 0–11, READY/REVIEW/BLOCK)
 /ralph → prd.json (JSON task list, passes: false)
 ./scripts/ralph.sh [max_iterations]
@@ -223,6 +229,10 @@ cli/
 install.sh                         # One-line installer (uv/pipx)
 scripts/
   ralph.sh                         # Ralph Loop orchestration script
+spec/
+  template.md                      # Canonical spec template
+  draft/                           # Draft specs (editable)
+  shipped/                         # Shipped specs (frozen)
 tasks/                             # PRD storage (prd-*.md files)
 prd.json.example                   # Reference PRD JSON schema
 .devcontainer/
@@ -233,9 +243,10 @@ prd.json.example                   # Reference PRD JSON schema
   settings.json                    # Hooks + permissions
   agents/researcher/AGENT.md       # Research specialist
   skills/
+    spec/SKILL.md                  # /spec — Design spec generator (workflow)
     prd/SKILL.md                   # /prd — PRD generator (workflow)
     ralph/SKILL.md                 # /ralph — PRD to JSON converter (workflow)
-    spec-check/SKILL.md            # /spec-check — PRD readiness validator (workflow)
+    spec-check/SKILL.md            # /spec-check — PRD & spec readiness validator (workflow)
     */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
@@ -245,6 +256,7 @@ prd.json.example                   # Reference PRD JSON schema
     session-end-log.sh             # SessionEnd: log session_end metric
     pre-compact-save.sh            # PreCompact: snapshot before compaction
     pre-tool-use-block-secrets.sh  # PreToolUse: block secret exposure
+    pre-tool-use-spec-freeze.sh    # PreToolUse: warn on shipped spec edits
     post-tool-use-log.sh           # PostToolUse: tool invocation tracking
     post-tool-use-mcp-monitor.sh   # PostToolUse: MCP error detection
     post-tool-failure-log.sh       # PostToolUseFailure: failure tracking
