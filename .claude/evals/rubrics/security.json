@@ -1,0 +1,14 @@
+{
+  "agent": "security",
+  "llm_judge": true,
+  "judge_threshold": 4.0,
+  "min_output_length": 200,
+  "required_sections": ["Executive Summary", "Vulnerabilities", "Dependency Audit", "Secrets Scan", "Recommendations"],
+  "criteria": {
+    "vulnerability_identification": "Accuracy of found vulnerabilities — catches real security issues (1=misses critical vulnerabilities, 5=catches subtle issues)",
+    "false_positives": "Noise level — flagged issues are genuine security concerns (1=mostly noise, 5=all findings are real)",
+    "remediation_quality": "Actionable fixes with specific code changes or configuration updates (1=vague advice, 5=specific remediation code)",
+    "severity_accuracy": "CVSS-aligned severity calibration matching actual impact (1=everything marked critical, 5=calibrated to real risk)",
+    "coverage": "Attack surface analyzed — code, dependencies, secrets, configuration (1=only ran one scanner, 5=comprehensive multi-vector analysis)"
+  }
+}

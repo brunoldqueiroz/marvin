@@ -1,0 +1,13 @@
+{
+  "agent": "implementer",
+  "llm_judge": true,
+  "judge_threshold": 3.0,
+  "min_output_length": 150,
+  "required_sections": ["Summary", "Files Modified", "Quality Checks"],
+  "criteria": {
+    "requirement_adherence": "Implementation meets all stated requirements and acceptance criteria (1=misses key requirements, 5=all requirements met)",
+    "code_quality": "Follows project patterns, naming conventions, and idiomatic style (1=inconsistent with codebase, 5=indistinguishable from existing code)",
+    "test_coverage": "New code has meaningful test coverage (1=no tests written, 5=comprehensive with edge cases)",
+    "iteration_effectiveness": "Efficient fix cycles — reads errors, identifies root cause, fixes systematically (1=blind trial-and-error, 5=systematic and efficient)"
+  }
+}

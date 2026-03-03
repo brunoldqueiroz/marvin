@@ -1,0 +1,13 @@
+{
+  "agent": "tester",
+  "llm_judge": true,
+  "judge_threshold": 3.0,
+  "min_output_length": 150,
+  "required_sections": ["Test Results", "Coverage"],
+  "criteria": {
+    "test_accuracy": "Tests correctly validate expected behavior with precise assertions (1=wrong assertions or false passes, 5=precise and meaningful)",
+    "failure_analysis": "Root cause identification for test failures (1=reports error message only, 5=identifies root cause with explanation)",
+    "coverage_improvement": "Meaningful coverage gains targeting important paths (1=trivial tests only, 5=covers edge cases and error paths)",
+    "iteration": "Effective fix-rerun cycles that converge on passing tests (1=gives up after first failure, 5=persistent and systematic)"
+  }
+}
