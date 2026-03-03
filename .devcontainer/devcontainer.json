@@ -9,12 +9,15 @@
     }
   },
   "postCreateCommand": "uv sync && npm install -g @anthropic-ai/claude-code && chmod +x .claude/hooks/*.sh",
+  "mounts": [
+    "source=claude-config-${devcontainerId},target=/home/vscode/.claude,type=volume"
+  ],
   "containerEnv": {
-    "VIRTUAL_ENV": "/workspaces/marvin/.venv"
+    "VIRTUAL_ENV": "/workspaces/marvin/.venv",
+    "EXA_API_KEY": "${localEnv:EXA_API_KEY}",
+    "DISABLE_AUTOUPDATER": "1"
   },
   "remoteEnv": {
-    "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
-    "EXA_API_KEY": "${localEnv:EXA_API_KEY}",
     "PATH": "/workspaces/marvin/.venv/bin:${containerEnv:PATH}"
   }
 }

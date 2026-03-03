@@ -50,6 +50,15 @@ if [[ -f "$LAST_BRANCH_FILE" ]]; then
 fi
 echo "$BRANCH_NAME" > "$LAST_BRANCH_FILE"
 
+# --- Resume support: checkout feature branch if it exists ---
+if git rev-parse --verify "$BRANCH_NAME" &>/dev/null; then
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  if [[ "$CURRENT_BRANCH" != "$BRANCH_NAME" ]]; then
+    echo "Resuming: switching to branch $BRANCH_NAME"
+    git checkout "$BRANCH_NAME"
+  fi
+fi
+
 # --- Verification function ---
 
 verify_story() {
@@ -172,7 +181,6 @@ ${constitution_block}
    - Node: \`npm test\`, \`npm run lint\`
    - Check the project's pyproject.toml or package.json for available commands
 7. If ALL checks pass:
-   - Stage and commit with message: "feat(ralph): US-NNN — <story title>"
    - Update \`prd.json\`: set the story's \`passes\` to \`true\`
    - Append to \`progress.txt\`:
      \`\`\`
@@ -182,6 +190,8 @@ ${constitution_block}
      - Patterns discovered: <any>
      - Gotchas: <any>
      \`\`\`
+   - Stage ALL changes (code + prd.json + progress.txt)
+   - Commit with message: "feat(ralph): US-NNN — <story title>"
 8. If checks FAIL:
    - Debug and fix — do NOT commit failing code
    - If you cannot fix after reasonable effort, add notes to the story's
@@ -202,10 +212,18 @@ PROMPT
 
 # --- Main loop ---
 
-echo "=== Ralph Loop ==="
+TOTAL_STORIES=$(jq '.userStories | length' "$PRD_FILE")
+COMPLETED_STORIES=$(jq '[.userStories[] | select(.passes == true)] | length' "$PRD_FILE")
+REMAINING_STORIES=$(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE")
+
+if [[ "$COMPLETED_STORIES" -gt 0 ]]; then
+  echo "=== Ralph Loop (RESUMING) ==="
+else
+  echo "=== Ralph Loop ==="
+fi
 echo "Project: $(jq -r '.project' "$PRD_FILE")"
 echo "Branch:  $BRANCH_NAME"
-echo "Stories: $(jq '[.userStories[] | select(.passes == false)] | length' "$PRD_FILE") remaining"
+echo "Stories: $REMAINING_STORIES remaining ($COMPLETED_STORIES already completed)"
 echo "Max iterations: $MAX_ITERATIONS"
 
 # Show constitution summary if present
