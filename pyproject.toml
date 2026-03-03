@@ -24,7 +24,7 @@ packages = ["cli"]
 [tool.hatch.build.targets.wheel.force-include]
 ".claude" = "cli/_data/.claude"
 "scripts" = "cli/_data/scripts"
-".devcontainer" = "cli/_data/.devcontainer"
+"docker" = "cli/_data/docker"
 "prd.json.example" = "cli/_data/prd.json.example"
 "tasks" = "cli/_data/tasks"
 

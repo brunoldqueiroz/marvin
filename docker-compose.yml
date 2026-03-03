@@ -1,0 +1,19 @@
+services:
+  ralph:
+    build: docker/ralph
+    cap_add: [NET_ADMIN, NET_RAW]
+    volumes:
+      - .:/workspace
+      - claude-config:/home/ralph/.claude
+    environment:
+      - CLAUDE_CODE_OAUTH_TOKEN
+      - EXA_API_KEY
+      - CONTEXT7_API_KEY
+    working_dir: /workspace
+    command: >-
+      bash -c "sudo /usr/local/bin/init-firewall.sh
+      && chmod +x .claude/hooks/*.sh
+      && ./scripts/ralph.sh"
+
+volumes:
+  claude-config:
