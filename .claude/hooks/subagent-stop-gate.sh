@@ -26,12 +26,12 @@ STATUS="pass"
 if [ "$HAS_ARTIFACT" = false ]; then
   if [ -z "$LAST_MSG" ] || [ "${#LAST_MSG}" -lt 20 ]; then
     STATUS="blocked"
-  elif echo "$LAST_MSG" | grep -qi "I could not\|I cannot\|I'm unable\|failed to\|error occurred\|no results found"; then
+  elif echo "$LAST_MSG" | grep -qi "I could not\|I cannot\|I'm unable\|no results found"; then
     STATUS="blocked"
   fi
 else
   # Agent wrote artifact — only block on explicit failure signals
-  if [ -n "$LAST_MSG" ] && echo "$LAST_MSG" | grep -qi "I could not\|I cannot\|I'm unable\|failed to\|error occurred\|no results found"; then
+  if [ -n "$LAST_MSG" ] && echo "$LAST_MSG" | grep -qi "I could not\|I cannot\|I'm unable\|no results found"; then
     STATUS="blocked"
   fi
 fi

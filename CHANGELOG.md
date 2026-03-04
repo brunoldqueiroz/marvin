@@ -6,27 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [Unreleased]
+## [0.14.0] - 2026-03-04
 
 ### Added
 
-- SDD workflow based on GitHub Spec Kit methodology:
-  - `/sdd-constitution` skill — create project constitution
-  - `/sdd-specify` skill — capture feature spec with optional research
-  - `/sdd-plan` skill — create implementation plan from spec
-  - `/sdd-tasks` skill — generate task checklist from plan
-- SDD templates: `.specify/templates/{constitution,research,spec,plan,tasks}.md`
-- SDD rules: `.claude/rules/specs.md` — pipeline, numbering, implementation rule
-- SDD flow diagram: `imgs/diagrams/sdd-flow.svg`
-- CLAUDE.md section referencing SDD workflow
+- Add SDD workflow based on GitHub Spec Kit
 
-### Removed
+### Changed
 
-- SDD workflow: `/spec`, `/spec-check`, `/prd`, `/ralph` skills
-- Ralph Loop: `scripts/ralph.sh`, `docker/ralph/`, `docker-compose.yml`,
-  `spec/`, `tasks/`, `prd.json.example`
-- `pre-tool-use-spec-freeze.sh` hook and its settings.json entries
-- `.claude/rules/specs.md` freeze policy
+- Remove SDD and Ralph Loop for re-implementation
+
+### Bump
+
+- Version 0.13.0 → 0.14.0
 
 ## [0.13.0] - 2026-03-03
 
