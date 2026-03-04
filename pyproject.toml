@@ -23,10 +23,6 @@ packages = ["cli"]
 
 [tool.hatch.build.targets.wheel.force-include]
 ".claude" = "cli/_data/.claude"
-"scripts" = "cli/_data/scripts"
-"docker" = "cli/_data/docker"
-"prd.json.example" = "cli/_data/prd.json.example"
-"tasks" = "cli/_data/tasks"
 
 [tool.commitizen]
 name = "cz_conventional_commits"

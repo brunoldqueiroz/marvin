@@ -19,13 +19,6 @@ wheels/
 .claude/dev/
 .claude/.pre-compact-state.json
 
-# Ralph loop runtime state
-prd.json
-progress.txt
-.last-branch
-.verified-stories
-archive/
-
 # IDE
 .idea/
 .vscode/

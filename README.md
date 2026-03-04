@@ -14,26 +14,14 @@ through hooks, a structured brain, and specialist agents.
 
 - **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
   topology-based routing, structured handoff protocol, and failure recovery
-- **Ralph Loop** — Autonomous implementation workflow: `/prd` → `/ralph` →
-  `ralph.sh` spawns fresh Claude Code sessions until all stories pass, with
-  post-implementation verification and automatic run archival
-- **SDD** — Full spec-driven development: `/spec` generates design specs
-  (OpenSpec-inspired) with change tables, design rules, and scenarios;
-  `/spec-check` validates both specs and PRDs; `/prd` auto-consumes specs;
-  frozen-spec policy for shipped specs; structured acceptance criteria
-  (`scenario/when/then/verify`) and constitution constraints
-  (`must/must_not/prefer`)
 - **Researcher agent** — Proactive research specialist with Context7, Exa,
   and Qdrant KB access
-- **14 skills** — 10 expert advisors + `/spec` (design spec generator) +
-  `/prd` (PRD generator) + `/ralph` (PRD-to-JSON converter) + `/spec-check`
-  (PRD & spec readiness validator)
+- **10 skills** — Expert advisors: python, dbt, spark, airflow, aws, docker,
+  docs, git, snowflake, terraform
 - **Observability hooks** — Session context, tool usage, agent quality gate,
   metrics logging to JSONL
 - **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
 - **CLI** — `marvin init`, `marvin agents`, `marvin skills`, `marvin metrics`
-- **Devcontainer** — Ready-to-use dev environment with Python 3.13, Node 22,
-  uv, and Claude Code
 
 ## Install
 
@@ -97,112 +85,6 @@ marvin --version
 marvin --help
 ```
 
-## Ralph Loop (Autonomous Implementation)
-
-The Ralph Loop is an autonomous implementation workflow inspired by
-[snarktank/ralph](https://github.com/snarktank/ralph). It iteratively spawns
-fresh Claude Code sessions to implement user stories until all acceptance
-criteria pass.
-
-### How it works
-
-```
-/spec → spec/draft/feature.md (design spec with change table + design rules) [optional]
-/spec-check → validates spec readiness (score 0–10, READY/REVIEW/BLOCK) [optional]
-/prd → tasks/prd-feature.md (markdown PRD, auto-consumes spec if present)
-/spec-check → validates prd.json readiness (score 0–11, READY/REVIEW/BLOCK)
-/ralph → prd.json (JSON task list, passes: false)
-./scripts/ralph.sh [max_iterations]
-  └─ Iteration N: claude -p <prompt> (constitution injected if present)
-     └─ Reads prd.json → implements 1 story → tests → commits → updates prd.json
-     └─ Exits (fresh context on next iteration)
-  └─ All stories pass → verify each criteria.verify command → archive run → exit 0
-```
-
-### Step 1: Create a PRD
-
-```bash
-# Inside Claude Code, run:
-/prd
-```
-
-The skill asks clarifying questions (including architectural constraints) and
-generates a structured PRD at `tasks/prd-{feature}.md` with user stories,
-structured acceptance criteria (`scenario/when/then/verify`), and an optional
-constitution (`must/must_not/prefer`).
-
-### Step 2: Convert to JSON
-
-```bash
-/ralph
-```
-
-Converts the markdown PRD to `prd.json` — the task tracking file the loop uses.
-Each story starts with `passes: false`. Structured criteria and constitution are
-preserved. Flat string criteria from older PRDs are auto-converted.
-
-### Step 2.5: Validate readiness (optional)
-
-```bash
-/spec-check
-```
-
-Runs 6 quality checks on `prd.json` (criteria count, verify coverage, dependency
-order, story size, quality gates, constitution presence) and scores 0–11. A score
-of 9+ means READY to run the loop.
-
-### Step 3: Run the loop in the devcontainer
-
-The loop uses `--dangerously-skip-permissions`, which gives Claude Code full
-system access. **Always run it inside the devcontainer** to isolate execution
-from your host machine.
-
-```bash
-# 1. Open the project in the devcontainer (VS Code or GitHub Codespaces)
-# 2. Inside the container, run:
-./scripts/ralph.sh        # default: 10 iterations
-./scripts/ralph.sh 20     # custom max iterations
-```
-
-**Why the devcontainer matters:** The `.claude/` directory is part of the
-project workspace, so Claude Code automatically loads it on every session.
-This means each `ralph.sh` iteration spawns Claude Code **as Marvin** — with
-the brain (`CLAUDE.md`), all skills (`/prd`, `/ralph`, expert advisors),
-hooks (quality gate, metrics, secrets blocking), and settings. The agent
-inside the loop isn't a bare Claude Code — it's Marvin with full
-orchestration capabilities.
-
-The devcontainer provides:
-
-| Component | How it gets there |
-|-----------|-------------------|
-| Python 3.13 + uv | Dockerfile base image |
-| Node 22 + Claude Code | Devcontainer feature + `postCreateCommand` |
-| Marvin CLI (`marvin`) | `uv sync` installs the project on PATH |
-| Marvin config (`.claude/`) | Workspace mount — part of the repo |
-| API keys | Forwarded from host via `remoteEnv` |
-| Executable hooks | `postCreateCommand` runs `chmod +x` |
-
-Each iteration spawns a fresh Claude Code session that:
-1. Loads `.claude/CLAUDE.md` (Marvin brain), skills, hooks, and settings
-2. Reads `prd.json` and `progress.txt`
-3. Picks the highest-priority incomplete story
-4. Implements it, runs quality checks, commits if passing
-5. Updates `prd.json` (`passes: true`) and appends to `progress.txt`
-6. Signals `<promise>COMPLETE</promise>` when all stories pass
-7. Post-completion: ralph.sh runs each `verify` command to confirm, reverts
-   `passes` on failure, and archives the run to `archive/{feature}-{date}/`
-
-### Runtime files (gitignored)
-
-| File | Purpose |
-|------|---------|
-| `prd.json` | Active task state — stories with `passes` flags |
-| `progress.txt` | Append-only learnings log across iterations |
-| `.last-branch` | Branch change detection for archival |
-| `.verified-stories` | Tracks which stories passed post-verification |
-| `archive/` | Archived runs (prd.json + progress.txt per feature) |
-
 ## MCP Servers
 
 Marvin uses three MCP servers (configured in `.mcp.json`):
@@ -227,26 +109,11 @@ cli/
   __init__.py                      # Package marker
   marvin.py                        # CLI entry point (click + loguru)
 install.sh                         # One-line installer (uv/pipx)
-scripts/
-  ralph.sh                         # Ralph Loop orchestration script
-spec/
-  template.md                      # Canonical spec template
-  draft/                           # Draft specs (editable)
-  shipped/                         # Shipped specs (frozen)
-tasks/                             # PRD storage (prd-*.md files)
-prd.json.example                   # Reference PRD JSON schema
-.devcontainer/
-  devcontainer.json                # Dev environment configuration
-  Dockerfile                       # Python 3.13 + git + jq + uv
 .claude/
   CLAUDE.md                        # Brain — reasoning, routing, handoff, recovery
   settings.json                    # Hooks + permissions
   agents/researcher/AGENT.md       # Research specialist
   skills/
-    spec/SKILL.md                  # /spec — Design spec generator (workflow)
-    prd/SKILL.md                   # /prd — PRD generator (workflow)
-    ralph/SKILL.md                 # /ralph — PRD to JSON converter (workflow)
-    spec-check/SKILL.md            # /spec-check — PRD & spec readiness validator (workflow)
     */SKILL.md                     # 10 expert advisory skills
   hooks/
     _lib.sh                        # Shared utilities (log_metric, json_val)
@@ -256,7 +123,6 @@ prd.json.example                   # Reference PRD JSON schema
     session-end-log.sh             # SessionEnd: log session_end metric
     pre-compact-save.sh            # PreCompact: snapshot before compaction
     pre-tool-use-block-secrets.sh  # PreToolUse: block secret exposure
-    pre-tool-use-spec-freeze.sh    # PreToolUse: warn on shipped spec edits
     post-tool-use-log.sh           # PostToolUse: tool invocation tracking
     post-tool-use-mcp-monitor.sh   # PostToolUse: MCP error detection
     post-tool-failure-log.sh       # PostToolUseFailure: failure tracking

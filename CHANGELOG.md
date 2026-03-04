@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased]
+
+### Removed
+
+- SDD workflow: `/spec`, `/spec-check`, `/prd`, `/ralph` skills
+- Ralph Loop: `scripts/ralph.sh`, `docker/ralph/`, `docker-compose.yml`,
+  `spec/`, `tasks/`, `prd.json.example`
+- `pre-tool-use-spec-freeze.sh` hook and its settings.json entries
+- `.claude/rules/specs.md` freeze policy
+
 ## [0.13.0] - 2026-03-03
 
 ### Added
