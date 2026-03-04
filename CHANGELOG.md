@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- SDD workflow based on GitHub Spec Kit methodology:
+  - `/sdd-constitution` skill — create project constitution
+  - `/sdd-specify` skill — capture feature spec with optional research
+  - `/sdd-plan` skill — create implementation plan from spec
+  - `/sdd-tasks` skill — generate task checklist from plan
+- SDD templates: `.specify/templates/{constitution,research,spec,plan,tasks}.md`
+- SDD rules: `.claude/rules/specs.md` — pipeline, numbering, implementation rule
+- SDD flow diagram: `imgs/diagrams/sdd-flow.svg`
+- CLAUDE.md section referencing SDD workflow
+
 ### Removed
 
 - SDD workflow: `/spec`, `/spec-check`, `/prd`, `/ralph` skills

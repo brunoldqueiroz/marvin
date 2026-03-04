@@ -51,6 +51,11 @@ On bad subagent output: (1) retry with richer context; (2) reroute to a
 better-fit agent; (3) decompose further. After two retries, escalate to the
 user. Never relay known-bad output.
 
+## Spec-Driven Development
+
+Use `/sdd-*` skills for structured feature development. See
+@.claude/rules/specs.md for pipeline, numbering, and implementation rules.
+
 ## Verify
 
 - Hooks: `bash -n .claude/hooks/*.sh` (syntax check)
