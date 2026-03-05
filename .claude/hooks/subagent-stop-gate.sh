@@ -21,7 +21,19 @@ if [ -d "$ARTIFACT_DIR" ]; then
   [ -n "$RECENT" ] && HAS_ARTIFACT=true
 fi
 
-# --- Determine status for metrics ---
+# --- Check for deterministic completion signal ---
+LAST_LINE=$(echo "$LAST_MSG" | grep -v '^$' | tail -1)
+
+if echo "$LAST_LINE" | grep -qE '^SIGNAL:(DONE|BLOCKED|PARTIAL)$'; then
+  SIGNAL=$(echo "$LAST_LINE" | grep -oE 'SIGNAL:(DONE|BLOCKED|PARTIAL)')
+  case "$SIGNAL" in
+    SIGNAL:DONE)    exit 0 ;;
+    SIGNAL:BLOCKED) echo "Agent reported: $SIGNAL" >&2; exit 2 ;;
+    SIGNAL:PARTIAL) exit 0 ;;  # allow through, caller decides
+  esac
+fi
+
+# --- Fallback: heuristic-based detection (backward compatibility) ---
 STATUS="pass"
 if [ "$HAS_ARTIFACT" = false ]; then
   if [ -z "$LAST_MSG" ] || [ "${#LAST_MSG}" -lt 20 ]; then

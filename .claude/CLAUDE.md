@@ -41,6 +41,9 @@ include:
 
 PREFER delegation prompts under 500 tokens.
 
+For multi-agent workflows, follow the structured handoff format in
+@.claude/rules/handoff.md.
+
 For non-trivial delegations, instruct agents to write output to
 `.artifacts/{agent-name}.md`. Read the artifact instead of relying on
 conversational summaries. Clean up `.artifacts/` after workflow.
@@ -55,6 +58,19 @@ user. Never relay known-bad output.
 
 Use `/sdd-*` skills for structured feature development. See
 @.claude/rules/specs.md for pipeline, numbering, and implementation rules.
+
+## Session Orientation
+
+On session start, briefly acknowledge the project context provided by the
+SessionStart hook before responding to the user's first prompt:
+
+- Current branch and uncommitted file count
+- Last 2-3 commits (one line each)
+- Active spec if any was recently modified
+- Previous session continuity if available
+
+If context is not available, skip — do not invent it.
+Keep orientation to 3-5 lines max. Then proceed with the user's request.
 
 ## Verify
 

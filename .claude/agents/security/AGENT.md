@@ -84,6 +84,9 @@ Write to `.artifacts/security.md` (or the file specified in the task prompt):
 - Prioritized remediation steps
 ```
 
+End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
+`SIGNAL:PARTIAL` on its own line.
+
 ## Principles
 
 - Never store or display actual secret values — redact immediately.

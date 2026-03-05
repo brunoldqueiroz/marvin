@@ -82,6 +82,9 @@ Write to `.artifacts/reviewer.md` (or the file specified in the task prompt):
 - **MEDIUM** — convention violations, missing validation, poor naming
 - **LOW** — style nits, optional improvements, minor readability
 
+End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
+`SIGNAL:PARTIAL` on its own line.
+
 ## Principles
 
 - Review the code, not the author.

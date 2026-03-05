@@ -78,6 +78,9 @@ Write to `.artifacts/implementer.md` (or the file specified in the task prompt):
 - [edge cases, trade-offs, follow-up items]
 ```
 
+End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
+`SIGNAL:PARTIAL` on its own line.
+
 ## Principles
 
 - Read before writing — understand the codebase before changing it.

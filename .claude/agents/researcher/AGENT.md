@@ -70,6 +70,9 @@ Write to the file specified in the task prompt:
 - [Title](URL) — brief description
 ```
 
+End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
+`SIGNAL:PARTIAL` on its own line.
+
 ## Principles
 
 - Prefer sources from the last 12 months. Note publication dates.

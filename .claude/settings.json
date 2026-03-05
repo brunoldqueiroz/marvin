@@ -98,6 +98,15 @@
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-use-block-secrets.sh"
           }
         ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-use-block-partial-read.sh"
+          }
+        ]
       }
     ],
     "SessionStart": [

@@ -77,6 +77,9 @@ Write to `.artifacts/tester.md` (or the file specified in the task prompt):
 - [anything else relevant]
 ```
 
+End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
+`SIGNAL:PARTIAL` on its own line.
+
 ## Principles
 
 - Always run tests before claiming they pass.

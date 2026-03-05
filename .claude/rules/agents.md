@@ -29,6 +29,18 @@ paths:
 - MUST include procedural workflow ("How You Work" steps).
 - Body budget: < 100 lines.
 
+## Completion Signal
+
+Every agent MUST end its final message with exactly one signal on its own line:
+
+```
+SIGNAL:DONE    — task completed successfully
+SIGNAL:BLOCKED — task could not be completed (explain above)
+SIGNAL:PARTIAL — task partially completed (explain what remains above)
+```
+
+The signal MUST be the last non-empty line of the agent's final message.
+
 ## Constraints
 
 - MUST NOT put behavioral/procedural instructions in `description` —

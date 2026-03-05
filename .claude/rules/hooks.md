@@ -46,6 +46,16 @@ INPUT=$(cat)
 - Other codes — fail-open (logged but does not block)
 - MUST NOT use `exit 1` for gates — that signals tool failure, not a block.
 
+## Failure Philosophy
+
+Every hook MUST declare its failure philosophy in the comment header.
+
+| Philosophy | Behavior | When to use |
+|------------|----------|-------------|
+| **fail-closed** | On doubt, block. False positives acceptable. | Gates: security, validation, quality |
+| **fail-open** | On doubt, allow. Never blocks the user. | Logs, persistence, monitoring |
+| **advisory** | On doubt, degrade gracefully — return empty context instead of crashing. | Context injection, reinject |
+
 ## _lib.sh Utilities
 
 - MUST use `json_val '.path.to.field'` for JSON extraction — never raw
@@ -88,23 +98,24 @@ Session persistence uses raw text files in `.claude/dev/session_logs/`:
 
 ## Current Hook Inventory
 
-| Event | Hook | Role |
-|-------|------|------|
-| SessionStart (startup) | `session-start-context.sh` | context |
-| SessionStart (startup) | `session-start-log.sh` | log |
-| SessionStart (compact) | `session-start-reinject.sh` | reinject |
-| SessionEnd | `session-end-log.sh` | log |
-| PreCompact | `pre-compact-save.sh` | persist |
-| PreToolUse (Bash) | `pre-tool-use-block-secrets.sh` | gate |
-| PostToolUse | `post-tool-use-log.sh` | log |
-| PostToolUse (mcp__) | `post-tool-use-mcp-monitor.sh` | monitor |
-| PostToolUseFailure | `post-tool-failure-log.sh` | log |
-| Stop | `stop-persist.sh` | persist |
-| SubagentStart | `subagent-start-log.sh` | log |
-| SubagentStop | `subagent-stop-gate.sh` | gate |
-| SubagentStop | `subagent-stop-log.sh` | log |
-| UserPromptSubmit | `user-prompt-log.sh` | log |
-| Notification | `notification-log.sh` | log |
+| Event | Hook | Role | Philosophy |
+|-------|------|------|------------|
+| SessionStart (startup) | `session-start-context.sh` | context | advisory |
+| SessionStart (startup) | `session-start-log.sh` | log | fail-open |
+| SessionStart (compact) | `session-start-reinject.sh` | reinject | advisory |
+| SessionEnd | `session-end-log.sh` | log | fail-open |
+| PreCompact | `pre-compact-save.sh` | persist | fail-open |
+| PreToolUse (Bash) | `pre-tool-use-block-secrets.sh` | gate | fail-closed |
+| PreToolUse (Read) | `pre-tool-use-block-partial-read.sh` | gate | fail-closed |
+| PostToolUse | `post-tool-use-log.sh` | log | fail-open |
+| PostToolUse (mcp__) | `post-tool-use-mcp-monitor.sh` | monitor | fail-closed |
+| PostToolUseFailure | `post-tool-failure-log.sh` | log | fail-open |
+| Stop | `stop-persist.sh` | persist | fail-open |
+| SubagentStart | `subagent-start-log.sh` | log | fail-open |
+| SubagentStop | `subagent-stop-gate.sh` | gate | fail-closed |
+| SubagentStop | `subagent-stop-log.sh` | log | fail-open |
+| UserPromptSubmit | `user-prompt-log.sh` | log | fail-open |
+| Notification | `notification-log.sh` | log | fail-open |
 
 ## Lifecycle
 
