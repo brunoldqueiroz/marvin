@@ -10,18 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Skill description confusability audit with symmetric "Does NOT" cross-references across all 16 skills
-- Refactor 8 largest skills into SKILL.md + references/ sub-directory pattern (progressive disclosure)
-- Routing eval framework: 16 scenario JSON files with 6+ test cases each
-- validate-skills.py script for automated SKILL.md format validation
-- Skills preloading for implementer (python-expert), reviewer (python-expert, git-expert), and tester (python-expert) agents
-- Scaling rules document (.claude/rules/scaling.md) with hierarchical routing taxonomy and activation criteria
+- Implement skill architecture improvements (spec 001)
 
-### Changed
+### Bump
 
-- Optimize all 5 agent descriptions with "Use for / Does NOT" routing pattern
-- Switch researcher agent memory from user to project scope
-- Add Write and Edit tools to reviewer and security agents
+- Version 0.16.0 → 0.17.0
 
 ## [0.16.0] - 2026-03-05
 
