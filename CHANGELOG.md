@@ -6,17 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.16.0] - 2026-03-05
+
+### Added
+
+- Optimize skill descriptions for proactive loading
+
+### Bump
+
+- Version 0.15.0 → 0.16.0
+
 ## [0.15.0] - 2026-03-05
 
 ### Added
 
 - Add robustness and observability improvements inspired by AIOX
-
-### Changed
-
-- Optimize all 12 skill descriptions for proactive loading with natural-language triggers
-- Add Skill Loading section to CLAUDE.md with domain-to-skill mapping
-- Add Code Skills section to implementer agent for on-demand skill loading
 
 ### Bump
 
