@@ -2,13 +2,14 @@
 name: sdd-plan
 user-invocable: true
 description: >
-  SDD workflow — create implementation plan from spec. Use when: user invokes
-  /sdd-plan, a spec.md exists and needs an implementation strategy, or the user
-  wants to break a spec into components before coding.
+  SDD workflow — create implementation strategy from spec. Use when: user
+  invokes /sdd-plan, a spec.md exists and needs an execution strategy, or the
+  user wants to break a spec into ordered components before generating tasks.
   Triggers: "/sdd-plan", "plan implementation", "create plan from spec",
-  "implementation strategy".
-  Do NOT use for project constitution (sdd-constitution), writing specs
-  (sdd-specify), or generating tasks (sdd-tasks).
+  "implementation strategy", "break spec into components".
+  Do NOT use for project constitution (sdd-constitution), writing feature specs
+  (sdd-specify), or generating task checklists (sdd-tasks). This skill produces
+  strategy documents, not actionable task lists.
 tools:
   - Read
   - Glob

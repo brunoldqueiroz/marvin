@@ -1,0 +1,15 @@
+{
+  "skill": "snowflake-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "configure Snowflake warehouse auto-suspend and resource monitors", "expected": true},
+    {"query": "optimize a Snowflake query that is not pruning micro-partitions", "expected": true},
+    {"query": "set up Snowflake RBAC with access roles and functional roles", "expected": true},
+    {"query": "query VARIANT JSON columns efficiently in Snowflake", "expected": true},
+    {"query": "create a Snowflake stream and task DAG for CDC processing", "expected": true},
+    {"query": "how do I set Time Travel retention per table tier in Snowflake", "expected": true},
+    {"query": "create an incremental dbt model for a large orders table", "expected": false},
+    {"query": "how should I use ref vs source in my dbt staging models", "expected": false},
+    {"query": "write a Jinja macro for generating surrogate keys in dbt", "expected": false}
+  ]
+}

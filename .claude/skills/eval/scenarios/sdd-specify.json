@@ -1,0 +1,15 @@
+{
+  "skill": "sdd-specify",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "/sdd-specify a feature for user authentication with OAuth2", "expected": true},
+    {"query": "create a spec for the new data export feature", "expected": true},
+    {"query": "specify a new feature for rate limiting the API before we start coding", "expected": true},
+    {"query": "I want to define the requirements for a notification system", "expected": true},
+    {"query": "new feature spec for the reporting dashboard", "expected": true},
+    {"query": "capture the intent of the caching layer before implementation", "expected": true},
+    {"query": "create the project constitution and capture non-negotiable principles", "expected": false},
+    {"query": "/sdd-constitution for this new project", "expected": false},
+    {"query": "/sdd-plan the spec we wrote for user authentication", "expected": false}
+  ]
+}

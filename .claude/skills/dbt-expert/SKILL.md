@@ -2,16 +2,17 @@
 name: dbt-expert
 user-invocable: false
 description: >
-  dbt (data build tool) expert advisor. Load proactively when working on dbt
-  projects, writing SQL models, or building data pipelines with dbt. Use when:
-  user mentions dbt, creates models, writes Jinja macros, configures sources,
-  or asks about data modeling conventions.
-  Triggers: "dbt", "dbt project", "dbt model", "dbt run", "dbt test",
-  "ref vs source", "incremental model", "Jinja macro", "schema.yml",
-  "staging model", "data pipeline", "data transformation".
-  Do NOT use for warehouse administration or Snowflake DDL (snowflake-expert),
-  Python application code (python-expert), or infrastructure (aws-expert,
-  terraform-expert).
+  dbt (data build tool) expert advisor focused on the data transformation layer.
+  Use when: user works on dbt models, Jinja macros, ref/source resolution,
+  staging/intermediate/mart layer design, dbt testing, dbt documentation, or
+  dbt project configuration.
+  Triggers: "dbt model", "dbt run", "dbt test", "ref vs source",
+  "incremental model", "Jinja macro", "schema.yml", "staging model",
+  "dbt source freshness", "dbt-utils", "dbt project evaluator".
+  Do NOT use for: Snowflake warehouse administration, DDL, RBAC, Time Travel,
+  VARIANT data, clustering keys, query optimization, or warehouse sizing
+  (snowflake-expert); pure Python application code (python-expert);
+  infrastructure as code (terraform-expert, aws-expert).
 tools:
   - Read
   - Glob
@@ -73,31 +74,30 @@ You provide opinionated guidance grounded in official dbt Labs conventions.
 
 ## Best Practices
 
-1. **Naming**: `stg_<source>__<entity>.sql` for staging,
-   `int_<entity>_<verb>.sql` for intermediate, entity name only for marts.
-   YAML: `_<source>__models.yml`, `_<source>__sources.yml`.
-2. **Incremental strategy**: Start with `merge` + `unique_key`. Optimize
-   with `incremental_predicates` for tables >100M rows. Use `append` for
-   immutable events, `microbatch` (dbt 1.9+) for large time-series.
-3. **Always wrap incremental filters**: `{% if is_incremental() %}` around
-   WHERE clauses. Without this, the filter runs on full refresh too.
-4. **Testing strategy**: Staging: PK tests + `not_null` on critical columns.
-   Intermediate: row count + value range tests. Marts: full coverage — PK,
-   FK (`relationships`), `accepted_values`, business-rule tests.
-5. **Documentation**: Every mart model has model + column descriptions.
-   Use `{% docs %}` blocks for columns shared across 3+ models. Add
-   `meta.owner` on every mart.
-6. **dbt-project-evaluator**: Install and run in CI. Set
-   `test_coverage_target: 80` and `documentation_coverage_target: 90`.
-7. **Packages**: Pin with `[">=1.0.0", "<2.0.0"]` syntax. Core packages:
-   `dbt-utils`, `dbt-expectations`, `dbt-project-evaluator`.
-8. **Clustering/partitioning**: Set via `config()` in model SQL. Cluster on
-   columns used in WHERE/JOIN predicates (date, high-cardinality keys).
-9. **Jinja macros**: Keep focused (one transformation per macro). Use
-   `{% set %}` for intermediate variables. `{{ log('msg', info=true) }}`
-   for debugging.
-10. **Unit tests (dbt 1.8+)**: Test model SQL logic with mocked inputs.
-    Define in YAML with `given` (inputs) and `expect` (outputs).
+For incremental strategy details, testing YAML examples, documentation
+conventions, dbt-project-evaluator config, package management, clustering
+config, and unit test patterns → Read references/modeling.md
+
+1. **Naming**: `stg_<source>__<entity>.sql`, `int_<entity>_<verb>.sql`, entity
+   name for marts. YAML: `_<source>__models.yml`, `_<source>__sources.yml`.
+2. **Incremental strategy**: `merge` + `unique_key` as default. Add
+   `incremental_predicates` for >100M rows. `microbatch` for time-series (1.9+).
+3. **Always wrap incremental filters**: `{% if is_incremental() %}` around WHERE
+   clauses — without it, filter runs on full refresh too.
+4. **Testing strategy**: Staging: PK + `not_null`. Intermediate: row counts.
+   Marts: full coverage — PK, FK, `accepted_values`, business rules.
+5. **Documentation**: Model + column descriptions on every mart. `{% docs %}`
+   blocks for columns shared across 3+ models. `meta.owner` required.
+6. **dbt-project-evaluator**: Run in CI. `test_coverage_target: 80`,
+   `documentation_coverage_target: 90`. See references/modeling.md for config.
+7. **Packages**: Pin with `[">=1.0.0", "<2.0.0"]`. Core: `dbt-utils`,
+   `dbt-expectations`, `dbt-project-evaluator`. Commit `package-lock.yml`.
+8. **Clustering/partitioning**: Via `config()`. Cluster on WHERE/JOIN columns
+   (date, high-cardinality keys). See references/modeling.md for syntax.
+9. **Jinja macros**: One transformation per macro. `{% set %}` for variables.
+   `{{ log('msg', info=true) }}` for debugging.
+10. **Unit tests (dbt 1.8+)**: Mock inputs in YAML `given`/`expect` blocks.
+    Run with `dbt test --select test_type:unit`.
 
 ## Anti-Patterns
 
@@ -123,6 +123,8 @@ You provide opinionated guidance grounded in official dbt Labs conventions.
     to named macros for reusability and clarity.
 
 ## Examples
+
+For full code for each example → Read references/modeling.md
 
 ### Example 1: Design an incremental model
 
@@ -159,17 +161,19 @@ Result: Model has comprehensive test coverage — schema, referential integrity,
 
 ## Troubleshooting
 
+For detailed solutions with YAML/SQL examples → Read references/modeling.md
+
 ### Error: Incremental model reprocesses all rows on every run
-Cause: Missing `{% if is_incremental() %}` guard around the WHERE clause, so the filter applies on full refresh and is absent during incremental runs (or vice versa).
-Solution: Wrap the incremental filter in `{% if is_incremental() %}...{% endif %}`. Verify with `dbt run --select model_name` and check row count.
+Cause: Missing `{% if is_incremental() %}` guard — filter absent during incremental runs or always active on full refresh.
+Solution: Wrap the incremental filter in `{% if is_incremental() %}...{% endif %}`.
 
 ### Error: Source freshness check fails with "Could not find loaded_at_field"
-Cause: The `loaded_at_field` column name doesn't match the actual column in the source table, or the source YAML is missing the `freshness` block.
-Solution: Verify the column name exists in the source table. Add both `loaded_at_field` and `freshness` with `warn_after` and `error_after` thresholds.
+Cause: Column name mismatch or missing `freshness` block in source YAML.
+Solution: Verify the column exists in the source table; add `loaded_at_field` + `freshness` thresholds.
 
 ### Error: Duplicate rows appearing in mart models
-Cause: Missing primary key tests allowed duplicates to propagate from upstream models, or a join produced a fan-out.
-Solution: Add `unique` + `not_null` tests on every model's primary key. Check intermediate joins for unintended fan-outs by comparing row counts before and after joins.
+Cause: Missing PK tests let duplicates propagate, or a join produced a fan-out.
+Solution: Add `unique` + `not_null` on every PK; check row counts before/after joins.
 
 ## Review Checklist
 
@@ -183,3 +187,8 @@ Solution: Add `unique` + `not_null` tests on every model's primary key. Check in
 - [ ] Source freshness configured for all sources
 - [ ] Model and column descriptions present on all marts
 - [ ] `meta.owner` set on public-facing models
+
+---
+
+For incremental strategies, testing YAML, documentation conventions, and unit
+test patterns → Read references/modeling.md

@@ -2,12 +2,13 @@
 name: checklist-runner
 user-invocable: true
 description: >
-  Generic checklist executor. Load when user wants to validate work against a
+  Generic checklist executor. Load proactively when user wants to validate work against a
   checklist. Use when: user wants to run, verify, or score a Markdown checklist
   against the current project state.
   Triggers: "run checklist", "verify checklist", "score this", "check against",
   "validate checklist", "run quality check", "checklist report".
-  Do NOT use for: writing checklists, code review, or security audits.
+  Do NOT use for: writing new checklists (sdd-tasks), code review with
+  judgment (reviewer agent), or security vulnerability audits (security agent).
 tools:
   - Read
   - Glob

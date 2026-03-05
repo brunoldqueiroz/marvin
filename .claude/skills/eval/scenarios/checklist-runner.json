@@ -1,0 +1,15 @@
+{
+  "skill": "checklist-runner",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "run checklist against the current project state", "expected": true},
+    {"query": "verify this checklist and give me a score", "expected": true},
+    {"query": "run quality check using the review checklist in SKILL.md", "expected": true},
+    {"query": "validate checklist items and report which ones pass or fail", "expected": true},
+    {"query": "check against the deployment checklist and tell me what is missing", "expected": true},
+    {"query": "score this checklist file for the current codebase", "expected": true},
+    {"query": "generate a task checklist from the implementation plan", "expected": false},
+    {"query": "break the plan into delegatable tasks for the implementer agent", "expected": false},
+    {"query": "create tasks from plan.md with acceptance criteria", "expected": false}
+  ]
+}

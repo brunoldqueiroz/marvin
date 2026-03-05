@@ -1,0 +1,15 @@
+{
+  "skill": "sdd-constitution",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "/sdd-constitution", "expected": true},
+    {"query": "create the project constitution before we start writing specs", "expected": true},
+    {"query": "set up SDD with project principles for this new repo", "expected": true},
+    {"query": "I want to define non-negotiable project constraints before implementation", "expected": true},
+    {"query": "initialize the constitution file for this project", "expected": true},
+    {"query": "setup SDD and capture what the team considers inviolable standards", "expected": true},
+    {"query": "/sdd-specify a feature for user authentication", "expected": false},
+    {"query": "create a spec for the new export feature", "expected": false},
+    {"query": "specify a new feature for rate limiting the API", "expected": false}
+  ]
+}

@@ -2,15 +2,17 @@
 name: snowflake-expert
 user-invocable: false
 description: >
-  Snowflake expert advisor. Load proactively when working on Snowflake projects,
-  writing SQL for Snowflake, or managing data warehouses. Use when: user mentions
-  Snowflake, writes SQL queries, asks about warehouse sizing, RBAC, Time Travel,
-  streams/tasks, VARIANT data, query optimization, clustering, or cost management.
-  Triggers: "snowflake", "create warehouse", "snowflake query", "warehouse sizing",
-  "Time Travel", "VARIANT query", "clustering key", "RBAC setup", "snowflake project",
-  "data warehouse", "snowflake SQL".
-  Do NOT use for dbt model structure or Jinja (dbt-expert), Python application
-  code (python-expert), or IaC (terraform-expert).
+  Snowflake platform expert advisor focused on warehouse administration and SQL
+  optimization. Use when: user asks about Snowflake warehouse config, RBAC,
+  Time Travel, streams/tasks, VARIANT/semi-structured data, clustering keys,
+  query performance, micro-partition pruning, or Snowflake cost management.
+  Triggers: "warehouse sizing", "RBAC setup", "Time Travel retention",
+  "VARIANT query", "clustering key", "SYSTEM$STREAM_HAS_DATA",
+  "micro-partition pruning", "resource monitor", "Snowflake task DAG".
+  Do NOT use for: dbt model structure, Jinja macros, ref vs source resolution,
+  staging/marts layer design, dbt testing, or dbt documentation (dbt-expert);
+  pure Python application code (python-expert); infrastructure as code
+  (terraform-expert, aws-expert).
 tools:
   - Read
   - Glob
@@ -73,32 +75,30 @@ guidance grounded in current Snowflake best practices.
 
 ## Best Practices
 
+For warehouse sizing details, Time Travel config, Streams/Tasks patterns,
+Dynamic Tables, VARIANT access, query optimization, and cost monitoring SQL
+→ Read references/optimization.md
+
 1. **Warehouse sizing**: Start XS/S, scale on Query Profile evidence.
-   `AUTO_SUSPEND`: 60s for ETL, 300s for BI (cache warmth). Always
-   `AUTO_RESUME = TRUE` and `INITIALLY_SUSPENDED = TRUE`.
-2. **Multi-cluster**: Solves concurrency, not single-query speed. Use
-   `ECONOMY` scaling for cost, `STANDARD` for latency. MIN=1, MAX=2-3.
-3. **Time Travel**: Set `DATA_RETENTION_TIME_IN_DAYS` per table tier.
-   Critical: 30-90 days. Standard: 7 days. Staging: 0-1 day. Use
-   `TRANSIENT` tables for staging (no Fail-safe cost).
-4. **Streams**: Standard for full CDC, `INSERT_ONLY = TRUE` for ingestion
-   pipelines (better performance). Stream pointer advances on DML consumption
-   within a transaction.
-5. **Task DAGs**: Root task has `SCHEDULE`; children use `AFTER parent`.
-   Set `SUSPEND_TASK_AFTER_NUM_FAILURES = 3`. Resume root task last.
-6. **Dynamic Tables**: Prefer over Streams+Tasks for declarative ELT when
-   you don't need explicit change-type control (SCD2, delete handling).
-7. **VARIANT access**: Always cast extractions to concrete types
-   (`::STRING`, `::DATE`). Filter before FLATTEN (avoid exponential row
-   growth). Extract hot paths to typed columns (40-45% speedup).
-8. **Query optimization**: Use `QUALIFY` over window-function subqueries.
-   Avoid functions on WHERE columns (`YEAR(col)` prevents pruning — use
-   range predicates). Specify only needed columns, never `SELECT *`.
+   `AUTO_SUSPEND`: 60s ETL, 300s BI. Always `AUTO_RESUME = TRUE`.
+2. **Multi-cluster**: Solves concurrency, not query speed. `ECONOMY` for cost,
+   `STANDARD` for latency. MIN=1, MAX=2-3. See references/optimization.md.
+3. **Time Travel**: Per-table tier retention (critical: 30-90d, standard: 7d,
+   staging: 0-1d). `TRANSIENT` for staging — no Fail-safe cost.
+4. **Streams**: Standard for full CDC; `INSERT_ONLY = TRUE` for ingestion.
+   Pointer advances on committed DML. See references/optimization.md for DAG.
+5. **Task DAGs**: Root has `SCHEDULE`; children use `AFTER parent`.
+   `SUSPEND_TASK_AFTER_NUM_FAILURES = 3`. Resume root last.
+6. **Dynamic Tables**: Prefer over Streams+Tasks for declarative ELT unless
+   you need explicit change-type control (SCD2, deletes).
+7. **VARIANT access**: Cast to concrete types (`::STRING`, `::DATE`). Filter
+   before FLATTEN. Extract hot paths to typed columns (40-45% speedup).
+8. **Query optimization**: Use `QUALIFY` for window-function filtering. Range
+   predicates on date columns (not functions). No `SELECT *`.
 9. **FUTURE GRANTS**: Auto-apply privileges to new objects in schemas.
    Prevents orphaned objects with no access.
-10. **Cost monitoring**: Query `WAREHOUSE_METERING_HISTORY`,
-    `QUERY_HISTORY`, `AUTOMATIC_CLUSTERING_HISTORY`, `TASK_HISTORY`
-    regularly. Use Budgets for serverless features.
+10. **Cost monitoring**: `WAREHOUSE_METERING_HISTORY`, `QUERY_HISTORY`,
+    `AUTOMATIC_CLUSTERING_HISTORY`, `TASK_HISTORY`. Budgets for serverless.
 
 ## Anti-Patterns
 
@@ -160,17 +160,19 @@ Result: Query performance improved 4-5x through type casting and materialized co
 
 ## Troubleshooting
 
+For detailed solutions with SQL commands and edge cases → Read references/optimization.md
+
 ### Error: Warehouse costs unexpectedly high despite low query volume
-Cause: `AUTO_SUSPEND` set too high (or not set), warehouse staying active during idle periods. Or tasks running on warehouse without `SYSTEM$STREAM_HAS_DATA` gate.
-Solution: Set `AUTO_SUSPEND = 60` for ETL warehouses. Add resource monitors with NOTIFY@75% and SUSPEND@100%. Gate all stream-processing tasks with `WHEN SYSTEM$STREAM_HAS_DATA()`.
+Cause: `AUTO_SUSPEND` too high, or tasks without `SYSTEM$STREAM_HAS_DATA` gate billing on empty runs.
+Solution: Set `AUTO_SUSPEND = 60` (ETL) / `300` (BI). Add resource monitors. Gate all stream tasks.
 
 ### Error: Task runs every schedule interval but processes zero rows
-Cause: Missing `WHEN SYSTEM$STREAM_HAS_DATA('stream_name')` condition on the task, so it starts and bills the warehouse minimum even when the stream is empty.
-Solution: Add the `WHEN` clause to the task definition. For serverless tasks, this is free (no charge on empty stream). For warehouse tasks, this avoids the 60-second minimum billing.
+Cause: Missing `WHEN SYSTEM$STREAM_HAS_DATA('stream_name')` — task bills minimum on every empty run.
+Solution: Add the `WHEN` clause to the task definition.
 
 ### Error: Query not pruning micro-partitions despite WHERE clause
-Cause: Using functions on filter columns (e.g., `WHERE YEAR(created_at) = 2024`) which prevents the query optimizer from using micro-partition metadata.
-Solution: Rewrite as range predicates: `WHERE created_at >= '2024-01-01' AND created_at < '2025-01-01'`. Check pruning with `SYSTEM$CLUSTERING_INFORMATION` and Query Profile's "Partitions scanned vs total".
+Cause: Functions on filter columns (e.g., `YEAR(col)`) prevent micro-partition pruning.
+Solution: Rewrite as range predicates: `col >= '2024-01-01' AND col < '2025-01-01'`.
 
 ## Review Checklist
 

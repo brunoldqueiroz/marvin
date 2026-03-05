@@ -1,0 +1,15 @@
+{
+  "skill": "sdd-tasks",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "/sdd-tasks generate the task checklist from the plan", "expected": true},
+    {"query": "create tasks from plan.md with acceptance criteria for each agent", "expected": true},
+    {"query": "break the plan into delegatable tasks before we start implementation", "expected": true},
+    {"query": "generate a checklist of atomic tasks from the authentication plan", "expected": true},
+    {"query": "task checklist for spec 002 so we can delegate to implementer", "expected": true},
+    {"query": "create the tasks.md from the plan we just approved", "expected": true},
+    {"query": "create an implementation plan from the export feature spec", "expected": false},
+    {"query": "/sdd-plan the spec and break it into components with execution order", "expected": false},
+    {"query": "plan the implementation strategy for the caching layer before generating tasks", "expected": false}
+  ]
+}

@@ -5,11 +5,12 @@ description: >
   Diagram generation expert. Load proactively when user wants visual
   representations of systems, processes, or data models. Use when: user asks
   to create, draw, or generate any kind of diagram.
-  Triggers: "diagram", "draw", "flowchart", "architecture diagram", "sequence
-  diagram", "ERD", "entity relationship", "visualize", "create diagram",
-  "system diagram", "data flow".
-  Do NOT use for data charts or plots (antvis/mcp-server-chart),
-  documentation files (docs-expert), or infrastructure code (terraform-expert).
+  Triggers: "flowchart", "architecture diagram", "sequence diagram", "ERD",
+  "entity relationship", "create diagram", "system diagram", "data flow",
+  "generate diagram", "draw architecture".
+  Do NOT use for written documentation, READMEs, changelogs, or ADRs
+  (docs-expert), data charts or statistical plots (antvis/mcp-server-chart),
+  or infrastructure-as-code (terraform-expert).
 tools:
   - Read
   - Glob
@@ -70,6 +71,9 @@ syntax, render output, and deliver production-ready diagrams.
 
 ## Best Practices
 
+For detailed shape reference, container nesting patterns, and connection type
+syntax → Read references/diagram-types.md
+
 1. **Containers for grouping.** Use nested containers to represent logical
    boundaries (services, layers, domains). Syntax: `parent: { child1; child2 }`.
 2. **Explicit shapes.** Use `shape: cylinder` for databases, `shape: queue` for
@@ -87,7 +91,7 @@ syntax, render output, and deliver production-ready diagrams.
    0=default, 1=Neutral Grey, 3=Origami, 4=Flagship Terrastruct,
    100=Terminal, 200=Dark Maelstrom, 300=Grape Soda.
 7. **Icons for clarity.** Use `icon` property with URLs or built-in icons to
-   make nodes instantly recognizable: `aws: { icon: https://icons.terrastruct.com/aws/... }`.
+   make nodes instantly recognizable.
 8. **Tooltip and link.** Add `tooltip` for hover details and `link` for
    clickable navigation in SVG output.
 9. **Multiple boards.** Use `layers`, `scenarios`, or `steps` for multi-page
@@ -120,6 +124,8 @@ syntax, render output, and deliver production-ready diagrams.
 
 ## Examples
 
+For full D2 code for each example → Read references/diagram-types.md
+
 ### Example 1: Simple flowchart
 
 User says: "Create a flowchart showing user login flow."
@@ -130,22 +136,6 @@ Actions:
 3. Ask user for output path
 4. Render with `d2 login-flow.d2 <output-path>/login-flow.svg`
 
-D2 code:
-```d2
-direction: down
-
-start: User opens app { shape: oval }
-input: Enter credentials { shape: rectangle }
-validate: Validate credentials { shape: diamond }
-success: Dashboard { shape: rectangle }
-failure: Show error { shape: rectangle }
-
-start -> input -> validate
-validate -> success: valid
-validate -> failure: invalid
-failure -> input: retry
-```
-
 ### Example 2: Architecture diagram
 
 User says: "Draw an architecture diagram for a microservices system with API gateway, auth service, user service, and PostgreSQL."
@@ -155,38 +145,6 @@ Actions:
 2. Use `--layout elk` for complex layout
 3. Validate and render
 
-D2 code:
-```d2
-direction: right
-
-client: Client { shape: person }
-
-gateway: API Gateway {
-  shape: hexagon
-}
-
-services: Backend Services {
-  auth: Auth Service {
-    shape: rectangle
-  }
-  users: User Service {
-    shape: rectangle
-  }
-}
-
-data: Data Layer {
-  postgres: PostgreSQL {
-    shape: cylinder
-  }
-}
-
-client -> gateway: "HTTPS"
-gateway -> services.auth: "gRPC"
-gateway -> services.users: "gRPC"
-services.auth -> data.postgres: "SQL"
-services.users -> data.postgres: "SQL"
-```
-
 ### Example 3: Sequence diagram
 
 User says: "Create a sequence diagram showing OAuth2 authorization code flow."
@@ -195,28 +153,6 @@ Actions:
 1. Generate D2 code using `shape: sequence_diagram`
 2. Model actors: User, Client App, Auth Server, Resource Server
 3. Validate and render
-
-D2 code:
-```d2
-oauth: OAuth2 Authorization Code Flow {
-  shape: sequence_diagram
-
-  user: User
-  app: Client App
-  auth: Auth Server
-  api: Resource Server
-
-  user -> app: Click "Login"
-  app -> auth: Redirect to /authorize
-  auth -> user: Show consent screen
-  user -> auth: Grant permission
-  auth -> app: Authorization code
-  app -> auth: Exchange code for token
-  auth -> app: Access token + Refresh token
-  app -> api: Request with access token
-  api -> app: Protected resource
-}
-```
 
 ## Troubleshooting
 
@@ -257,138 +193,10 @@ keyword).
 - [ ] Output format matches user need (SVG default, PNG if requested)
 - [ ] Output path confirmed with user before rendering
 
-## D2 Quick Reference
+---
 
-### Basic Syntax
-```d2
-# Node declaration
-server: Web Server
+For D2 syntax reference, shapes, styling, sequence diagrams, advanced features,
+and CLI commands → Read references/d2-syntax.md
 
-# Connection
-server -> db
-
-# Labeled connection
-server -> db: "SQL queries"
-
-# Container (grouping)
-cloud: AWS {
-  ec2: EC2 Instance
-  rds: RDS PostgreSQL { shape: cylinder }
-  ec2 -> rds
-}
-
-# Direction
-direction: down  # down | right | left | up
-```
-
-### Shapes
-```d2
-# Available shapes
-rect: Rectangle                          # default
-oval: Start { shape: oval }
-diamond: Decision { shape: diamond }
-cylinder: Database { shape: cylinder }
-queue: Message Queue { shape: queue }
-cloud: Cloud Provider { shape: cloud }
-person: User { shape: person }
-hexagon: External { shape: hexagon }
-package: Module { shape: package }
-page: Document { shape: page }
-circle: Node { shape: circle }
-```
-
-### Styling
-```d2
-# Inline style
-server: Web Server {
-  style: {
-    fill: "#e1f5fe"
-    stroke: "#0288d1"
-    border-radius: 8
-    font-size: 16
-    bold: true
-  }
-}
-
-# Connections style
-a -> b: label {
-  style: {
-    stroke: red
-    stroke-dash: 5
-    animated: true
-  }
-}
-```
-
-### Sequence Diagrams
-```d2
-diagram: Title {
-  shape: sequence_diagram
-  actor1: Actor 1
-  actor2: Actor 2
-  actor1 -> actor2: message
-  actor2 -> actor1: response
-  actor1 -> actor1: self-call
-}
-```
-
-### Advanced Features
-```d2
-# Multiple boards via layers
-layers: {
-  overview: { ... }
-  detail: { ... }
-}
-
-# Grid layout
-grid: {
-  grid-columns: 3
-  a; b; c; d; e; f
-}
-
-# Tooltip and link
-node: Clickable {
-  tooltip: "Extra details shown on hover"
-  link: "https://example.com"
-}
-
-# Icon
-aws: AWS {
-  icon: https://icons.terrastruct.com/aws/_Group%20Icons/Cloud-alt_light-bg.svg
-}
-
-# Classes (reusable styles)
-classes: {
-  service: {
-    style.fill: "#e8f5e9"
-    style.stroke: "#2e7d32"
-    shape: rectangle
-  }
-}
-node1.class: service
-node2.class: service
-
-# Sketch mode (via CLI flag)
-# d2 --sketch input.d2 output.svg
-```
-
-### CLI Commands
-```bash
-# Format/validate
-d2 fmt diagram.d2
-
-# Render SVG (default)
-d2 diagram.d2 output.svg
-
-# Render with options
-d2 --theme 200 --layout elk --sketch diagram.d2 output.svg
-
-# Render PNG
-d2 diagram.d2 output.png
-
-# Watch mode (live reload)
-d2 --watch diagram.d2 output.svg
-
-# List available themes
-d2 themes
-```
+For full diagram code examples, connection type reference, shape selection
+guide, and container nesting patterns → Read references/diagram-types.md

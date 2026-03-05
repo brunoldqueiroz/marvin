@@ -2,15 +2,18 @@
 name: terraform-expert
 user-invocable: false
 description: >
-  Terraform/OpenTofu expert advisor. Load proactively when writing .tf files,
-  managing infrastructure as code, or provisioning cloud resources. Use when:
-  user writes Terraform/OpenTofu, asks about HCL syntax, modules, state
-  management, plan/apply workflows, or IaC patterns.
-  Triggers: "terraform", "opentofu", "write tf file", "infrastructure as code",
-  "terraform plan", "terraform apply", "HCL", "terraform module", "state migration",
-  "provider version", "create infrastructure".
-  Do NOT use for managing AWS services directly (aws-expert), container builds
-  (docker-expert), or application code (python-expert).
+  Terraform/OpenTofu HCL and IaC patterns expert advisor. Use when: user writes
+  .tf files, asks about HCL syntax, module design, state management, plan/apply
+  workflows, provider configuration, state migration, or drift detection.
+  Triggers: "terraform plan", "terraform state", "HCL module", "for_each vs
+  count", "terraform provider", "state migration", "tfvars", "remote backend",
+  "terraform import", "opentofu".
+  Do NOT use for: AWS service configuration, IAM policy design, S3 bucket
+  settings, Lambda setup, cost optimization, or Well-Architected Framework
+  (aws-expert handles those); Dockerfile syntax, container builds, or Docker
+  Compose (docker-expert); application code (python-expert). This skill covers
+  HCL authoring, IaC patterns, and Terraform state management, not the behavior
+  of the cloud services being provisioned.
 tools:
   - Read
   - Glob
@@ -71,6 +74,9 @@ provide opinionated guidance grounded in current best practices.
 
 ## Best Practices
 
+For lifecycle rules, CI/CD workflow details, drift detection, state operations,
+and tag management patterns → Read references/patterns.md
+
 1. **Variables**: Always declare `type`, `description`, and `default` (where
    safe). Add `validation` blocks for non-trivial inputs. Mark secrets
    `sensitive = true`.
@@ -84,22 +90,19 @@ provide opinionated guidance grounded in current best practices.
    Semantic versioning. Platform modules (VPC, EKS) separate from app modules.
 6. **`for_each` patterns**: Accept `map` or `set(string)`. Use `toset()` to
    convert lists. Each instance addressed as `resource["key"]`.
-7. **Lifecycle rules**: `create_before_destroy` for zero-downtime replacements.
-   `ignore_changes` only for externally-managed attributes (keep list narrow).
-   `replace_triggered_by` for linked resource replacement.
+7. **Lifecycle rules**: `create_before_destroy`, `ignore_changes` (narrow list),
+   `replace_triggered_by`. See references/patterns.md for full examples.
 8. **Provider config**: Declare in `versions.tf` with `required_version` and
    `required_providers`. Use aliases for multi-region. Never put credentials
    in provider blocks.
-9. **CI/CD workflow**: `terraform fmt -check` → `terraform validate` →
-   `terraform plan -out=tfplan` on PRs. `terraform apply` on merge only.
-   Concurrency groups to serialize applies.
-10. **Drift detection**: Schedule `terraform plan -detailed-exitcode` on a
-    cron. Exit code 2 = drift. Auto-create issues.
-11. **State operations**: `state list` to inspect, `state mv` to rename,
-    `import` to adopt existing resources. `plan -refresh-only` to detect drift.
-12. **Tags**: Accept a `tags` map variable, `merge()` with module defaults,
-    apply to every taggable resource. Include `terraform = "true"`, `env`,
-    `owner`.
+9. **CI/CD workflow**: `fmt -check` → `validate` → `plan -out=tfplan` on PRs.
+   Apply on merge only. Concurrency groups to serialize applies.
+10. **Drift detection**: Schedule `plan -detailed-exitcode` on cron. Exit 2 =
+    drift. Auto-create issues. See references/patterns.md for OIDC setup.
+11. **State operations**: `state list/mv/rm`, `import`, `plan -refresh-only`.
+    See references/patterns.md for command reference and import workflow.
+12. **Tags**: Accept a `tags` map, `merge()` with defaults, apply to every
+    taggable resource. Required: `terraform`, `env`, `owner`.
 
 ## Anti-Patterns
 
@@ -161,17 +164,19 @@ Result: Existing resources are under Terraform management without recreation or 
 
 ## Troubleshooting
 
+For detailed solutions with commands and edge cases → Read references/patterns.md
+
 ### Error: Terraform wants to destroy and recreate resources when modifying a list with `count`
-Cause: `count` uses numeric indices — adding/removing items shifts indices, making Terraform think resources changed identity.
-Solution: Migrate to `for_each` with string keys. Use `terraform state mv` to remap existing resources to their new key-based addresses without destruction.
+Cause: `count` uses numeric indices — index shifts destroy unrelated resources.
+Solution: Migrate to `for_each` with string keys; use `terraform state mv` to remap.
 
 ### Error: State lock — "Error acquiring the state lock"
-Cause: A previous `terraform apply` crashed or was interrupted without releasing the DynamoDB lock, or another user is running a concurrent apply.
-Solution: Verify no one else is running an apply. If the lock is stale, use `terraform force-unlock <LOCK_ID>` (with caution). Prevent by using CI/CD with concurrency groups to serialize applies.
+Cause: Previous apply crashed without releasing the DynamoDB lock, or concurrent apply.
+Solution: Verify no active apply; use `terraform force-unlock <LOCK_ID>` if stale.
 
 ### Error: Provider version mismatch after running `terraform init`
-Cause: Provider version constraints are too loose or `.terraform.lock.hcl` is not committed, allowing different versions across environments.
-Solution: Pin providers with `~>` constraints in `versions.tf`. Commit `.terraform.lock.hcl` to version control. Run `terraform init -upgrade` only when intentionally updating providers.
+Cause: Loose constraints or `.terraform.lock.hcl` not committed.
+Solution: Pin with `~>` in `versions.tf`; commit lock file.
 
 ## Review Checklist
 

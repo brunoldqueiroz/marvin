@@ -6,8 +6,8 @@ description: >
   conflicts, or setting up repository conventions. Use when: user asks about
   branching, commits, rebasing, conflict resolution, git hooks, history cleanup,
   or repository performance.
-  Triggers: "git workflow", "commit message", "rebase", "merge conflict",
-  "git hook", "branch strategy", "git history", "force push", "bisect",
+  Triggers: "git workflow", "commit message", "git rebase", "merge conflict",
+  "git hook", "branch strategy", "git history", "force push", "git bisect",
   "cherry-pick", "clean up commits".
   Do NOT use for application code (python-expert), documentation files
   (docs-expert), or CI/CD infrastructure (aws-expert, terraform-expert).

@@ -1,0 +1,16 @@
+{
+  "skill": "dbt-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "create an incremental dbt model for a large orders table", "expected": true},
+    {"query": "how should I use ref vs source in my dbt staging models", "expected": true},
+    {"query": "add primary key uniqueness tests to my dbt mart model", "expected": true},
+    {"query": "write a Jinja macro for generating surrogate keys in dbt", "expected": true},
+    {"query": "configure dbt source freshness checks for all my sources", "expected": true},
+    {"query": "my staging model joins two source tables — how do I fix this", "expected": true},
+    {"query": "configure Snowflake warehouse auto-suspend and resource monitors", "expected": false},
+    {"query": "optimize a Snowflake query that is not pruning micro-partitions", "expected": false},
+    {"query": "set up Snowflake RBAC with access roles and functional roles", "expected": false},
+    {"query": "query VARIANT JSON columns efficiently in Snowflake", "expected": false}
+  ]
+}

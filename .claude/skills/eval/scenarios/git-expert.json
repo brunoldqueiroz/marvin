@@ -1,0 +1,15 @@
+{
+  "skill": "git-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "how do I clean up my commit history before opening a PR", "expected": true},
+    {"query": "set up a pre-commit hook to run linting on staged files only", "expected": true},
+    {"query": "resolve recurring merge conflicts in our config files using rerere", "expected": true},
+    {"query": "what is the conventional commits format for a breaking change", "expected": true},
+    {"query": "I accidentally committed secrets to the repo, how do I scrub them from history", "expected": true},
+    {"query": "configure git bisect to find which commit introduced a regression", "expected": true},
+    {"query": "add type hints to this Python function and fix the mypy errors", "expected": false},
+    {"query": "refactor this Python class to use dataclasses instead of dicts", "expected": false},
+    {"query": "write pytest fixtures for testing async database operations", "expected": false}
+  ]
+}

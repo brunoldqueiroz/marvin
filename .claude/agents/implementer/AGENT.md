@@ -1,12 +1,14 @@
 ---
 name: implementer
 description: >
-  Implementation specialist. Use for: implementing features from stories, writing
-  code following project conventions, iterating until tests pass. Does NOT: review
-  code, audit security, or make architectural decisions.
+  Implementation specialist. Use for: writing code from specs or stories,
+  iterating until lint/type/test checks pass, creating files following project
+  conventions. Does NOT: review code quality, audit security vulnerabilities,
+  make architectural decisions, or deploy to production.
 tools: Read, Write, Edit, Glob, Grep, Bash(python*), Bash(python3*), Bash(uv*), Bash(pytest*), Bash(ruff*), Bash(mypy*), Bash(make*), mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__exa__get_code_context_exa, mcp__qdrant__qdrant-find
 model: sonnet
 memory: user
+skills: python-expert
 maxTurns: 25
 ---
 

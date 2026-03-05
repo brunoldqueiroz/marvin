@@ -1,0 +1,15 @@
+{
+  "skill": "sdd-plan",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "/sdd-plan the authentication spec we just wrote", "expected": true},
+    {"query": "create an implementation plan from the spec for the export feature", "expected": true},
+    {"query": "plan the implementation strategy for spec 003 before generating tasks", "expected": true},
+    {"query": "break the spec into components with execution order and risks", "expected": true},
+    {"query": "implementation strategy for the caching layer spec", "expected": true},
+    {"query": "create a plan from spec.md identifying what files to create and modify", "expected": true},
+    {"query": "generate a task checklist from the plan we just created", "expected": false},
+    {"query": "break the plan into delegatable tasks with agent assignments", "expected": false},
+    {"query": "create tasks from plan.md with acceptance criteria for the implementer", "expected": false}
+  ]
+}

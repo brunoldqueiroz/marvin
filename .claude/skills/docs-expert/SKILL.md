@@ -9,8 +9,9 @@ description: >
   "ADR", "docstring", "technical writing", "API docs", "document this project",
   "improve docs", "write docs".
   Do NOT use for application code (python-expert), git workflows (git-expert),
-  infrastructure (aws-expert, terraform-expert), or non-documentation Markdown
-  (config files, CLAUDE.md, SKILL.md).
+  infrastructure (aws-expert, terraform-expert), diagram generation or visual
+  architecture charts (diagram-expert), or non-documentation Markdown (config
+  files, CLAUDE.md, SKILL.md).
 tools:
   - Read
   - Glob

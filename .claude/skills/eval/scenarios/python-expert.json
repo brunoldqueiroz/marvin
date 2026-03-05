@@ -1,0 +1,16 @@
+{
+  "skill": "python-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "add type hints to this function", "expected": true},
+    {"query": "fix this mypy error in models.py", "expected": true},
+    {"query": "refactor this Python class to use dataclasses", "expected": true},
+    {"query": "configure ruff and mypy for a new project", "expected": true},
+    {"query": "write pytest fixtures for database tests", "expected": true},
+    {"query": "how do I use async await properly in Python", "expected": true},
+    {"query": "write a PySpark job to process CSV files in parallel", "expected": false},
+    {"query": "optimize this Spark DataFrame shuffle operation", "expected": false},
+    {"query": "create an Airflow DAG that runs every day at midnight", "expected": false},
+    {"query": "how do I configure XCom push and pull in Airflow operators", "expected": false}
+  ]
+}

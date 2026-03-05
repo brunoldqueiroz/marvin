@@ -2,13 +2,14 @@
 name: sdd-tasks
 user-invocable: true
 description: >
-  SDD workflow — generate task checklist from plan. Use when: user invokes
-  /sdd-tasks, a plan.md exists and needs to be broken into actionable tasks,
-  or the user wants a delegatable checklist before implementation.
-  Triggers: "/sdd-tasks", "create tasks", "generate checklist", "break plan
-  into tasks".
-  Do NOT use for project constitution (sdd-constitution), writing specs
-  (sdd-specify), or planning (sdd-plan).
+  SDD workflow — generate actionable task checklist from plan. Use when: user
+  invokes /sdd-tasks, a plan.md exists and needs to be broken into delegatable
+  tasks, or the user wants an agent-ready checklist before implementation.
+  Triggers: "/sdd-tasks", "create tasks from plan", "generate checklist",
+  "break plan into tasks", "task checklist".
+  Do NOT use for project constitution (sdd-constitution), writing feature specs
+  (sdd-specify), or creating implementation strategy (sdd-plan). This skill
+  produces task checklists, not strategy documents.
 tools:
   - Read
   - Glob

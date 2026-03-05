@@ -69,34 +69,35 @@ opinionated guidance grounded in current best practices.
 
 ## Best Practices
 
+For multi-stage Dockerfile examples, non-root user patterns, cache mount
+syntax, Compose v2 service ordering, health check config, base image selection
+guide, apt-get patterns, secrets/profiles, image scanning, and read-only
+filesystem setup → Read references/best-practices.md
+
 1. **Multi-stage pattern**: Named stages (`AS builder`, `AS final`).
-   `COPY --from=builder` only artifacts needed at runtime. Use `--target`
-   for CI builds of specific stages.
-2. **Non-root user**: Alpine: `addgroup -g 1001 -S app && adduser -S app -u 1001 -G app`.
-   Debian: `groupadd -r app && useradd --no-log-init -r -g app app`. Always
-   `COPY --chown=app:app`.
-3. **Cache mounts**: `RUN --mount=type=cache,target=/root/.npm npm ci` for
-   npm. `/root/.cache/pip` for pip. Persists between builds without adding
-   to image layers.
-4. **Compose v2**: Drop `version:` field. Use `docker compose` (space, not
-   hyphen). Use `depends_on: condition: service_healthy` with `healthcheck:`
-   for startup ordering.
-5. **Health checks**: Define in Dockerfile (`HEALTHCHECK`) or Compose
-   (`healthcheck:`). Use `start_period` for slow-starting services.
-6. **Base image selection**: distroless for security-critical → alpine for
-   size → debian-slim for compatibility. Never untagged full images.
-7. **`.dockerignore`**: Always exclude `.git`, `.env`, `node_modules/`,
-   `__pycache__/`, `*.pem`, `*.key`, test/docs directories.
-8. **apt-get**: Always chain `update && install` in one `RUN`. Always
-   `--no-install-recommends`. Always `rm -rf /var/lib/apt/lists/*`.
-9. **Compose secrets**: Use `secrets:` section with file or environment
-   source. App reads from `/run/secrets/<name>`. Never ENV for passwords.
-10. **Compose profiles**: Optional services (pgadmin, prometheus) behind
-    `profiles: [debug]` — started only with `--profile debug`.
-11. **Image scanning**: Trivy or Docker Scout in CI with `--exit-code 1` on
-    CRITICAL/HIGH severity. Block builds on findings.
-12. **Read-only filesystem**: `--read-only` with `--tmpfs /tmp` for defense
-    in depth. In Compose: `read_only: true` + `tmpfs:`.
+   `COPY --from=builder` only runtime artifacts. `--target` for CI stage builds.
+2. **Non-root user**: Alpine: `addgroup/adduser -S`. Debian: `groupadd -r` +
+   `useradd --no-log-init`. Always `COPY --chown=app:app`. See references/.
+3. **Cache mounts**: `RUN --mount=type=cache,target=/root/.cache/pip pip install`.
+   Persists between builds, never added to image layers. Requires BuildKit.
+4. **Compose v2**: No `version:` field. `docker compose` (space). Use
+   `depends_on: condition: service_healthy` with `healthcheck:`.
+5. **Health checks**: `HEALTHCHECK` in Dockerfile or `healthcheck:` in Compose.
+   Always set `start_period` for slow-starting services.
+6. **Base image**: distroless → alpine → debian-slim. Never full untagged images.
+   See references/best-practices.md for selection guide and caveats.
+7. **`.dockerignore`**: Exclude `.git`, `.env`, `node_modules/`, `__pycache__/`,
+   `*.pem`, `*.key`, test/docs directories.
+8. **apt-get**: Chain `update && install` in one `RUN`. `--no-install-recommends`.
+   `rm -rf /var/lib/apt/lists/*`. Or use BuildKit cache mounts.
+9. **Compose secrets**: `secrets:` with file/env source. App reads
+   `/run/secrets/<name>`. Never `environment:` for passwords.
+10. **Compose profiles**: Optional services behind `profiles: [debug]` or
+    `profiles: [monitoring]`. Started only with `--profile <name>`.
+11. **Image scanning**: Trivy or Docker Scout in CI, `--exit-code 1` on
+    CRITICAL/HIGH. Block merges on findings.
+12. **Read-only filesystem**: `--read-only` + `--tmpfs /tmp`. Compose:
+    `read_only: true` + `tmpfs:`. See references/ for tmpfs directory list.
 
 ## Anti-Patterns
 
@@ -158,17 +159,19 @@ Result: Private registry credentials used during build but never stored in any i
 
 ## Troubleshooting
 
+For detailed solutions with Dockerfile/Compose examples → Read references/best-practices.md
+
 ### Error: Docker layer cache invalidated on every build
-Cause: Copying source code before installing dependencies, so any code change invalidates the dependency install layer.
-Solution: Order layers correctly: `COPY requirements.txt .` → `RUN pip install` → `COPY . .`. Dependencies are only reinstalled when requirements change.
+Cause: Source code copied before dependency manifests — any code change invalidates the install layer.
+Solution: Copy manifests first → install deps → copy source. Dependencies reinstall only when manifests change.
 
 ### Error: Container runs as root despite USER directive in Dockerfile
-Cause: The `USER` directive is placed before `COPY` or `RUN` commands that require root, and a subsequent stage doesn't re-set the user.
-Solution: Place `USER app` after all `COPY --chown=app:app` and `RUN` commands that need root. Verify with `docker exec <container> whoami`.
+Cause: `USER` placed before `COPY`/`RUN` commands needing root, or final stage doesn't re-set the user.
+Solution: Place `USER app` last, after all root operations. Verify: `docker run --rm myapp whoami`.
 
 ### Error: Compose service starts before dependency is actually ready
-Cause: Using basic `depends_on` which only waits for container start, not application readiness.
-Solution: Add `healthcheck` to the dependency service and use `depends_on: condition: service_healthy`. Set appropriate `interval`, `timeout`, `retries`, and `start_period`.
+Cause: Basic `depends_on` waits only for container start, not service readiness.
+Solution: Add `healthcheck` to dependency; use `depends_on: condition: service_healthy`.
 
 ## Review Checklist
 
@@ -182,3 +185,8 @@ Solution: Add `healthcheck` to the dependency service and use `depends_on: condi
 - [ ] Health check defined for all long-running services
 - [ ] Compose uses `depends_on: condition: service_healthy`
 - [ ] Image scanned in CI pipeline
+
+---
+
+For full Dockerfile examples, Compose configurations, and detailed patterns
+→ Read references/best-practices.md

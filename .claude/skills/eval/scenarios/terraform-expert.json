@@ -1,0 +1,16 @@
+{
+  "skill": "terraform-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "migrate a Terraform resource from count to for_each without destroying it", "expected": true},
+    {"query": "configure a remote backend with S3 and DynamoDB state locking", "expected": true},
+    {"query": "design a reusable Terraform module for multi-environment deployment", "expected": true},
+    {"query": "how do I import existing AWS resources into Terraform state", "expected": true},
+    {"query": "my Terraform plan wants to destroy resources when I add a new item to a list", "expected": true},
+    {"query": "set up OpenTofu with pinned provider versions in versions.tf", "expected": true},
+    {"query": "how do I design a least-privilege IAM policy for cross-account access", "expected": false},
+    {"query": "optimize Lambda cold starts and right-size the memory configuration", "expected": false},
+    {"query": "configure S3 bucket lifecycle rules and intelligent tiering", "expected": false},
+    {"query": "which AWS instance type should I use for a high-memory analytics workload", "expected": false}
+  ]
+}

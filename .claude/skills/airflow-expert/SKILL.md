@@ -6,12 +6,14 @@ description: >
   workflows, or orchestrating data pipelines with Airflow. Use when: user
   mentions Airflow, creates DAGs, configures operators, or asks about workflow
   orchestration and scheduling.
-  Triggers: "airflow", "dag", "write a dag", "airflow operator", "taskflow api",
-  "schedule pipeline", "airflow connection", "deferrable operator", "XCom",
-  "workflow orchestration", "data pipeline schedule".
-  Do NOT use for Python language-level concerns (python-expert), cloud
-  infrastructure or MWAA (aws-expert, terraform-expert), dbt models
-  (dbt-expert), or container builds (docker-expert).
+  Triggers: "write a dag", "airflow dag", "airflow operator", "taskflow api",
+  "deferrable operator", "airflow connection", "XCom push pull",
+  "schedule pipeline", "workflow orchestration", "data pipeline schedule".
+  Do NOT use for: pure Python scripts, typing, pytest, ruff, mypy, or
+  packaging (python-expert); Spark jobs, distributed processing, or Spark
+  DataFrames (spark-expert); cloud infrastructure or MWAA (aws-expert,
+  terraform-expert); dbt models (dbt-expert); or container builds
+  (docker-expert).
 tools:
   - Read
   - Glob
@@ -57,148 +59,77 @@ best practices.
 ## Core Principles
 
 1. **TaskFlow API is the standard.** Use `@task` and `@dag` decorators for all
-   new Python tasks. Return values wire XCom automatically — no manual
-   `xcom_push`/`xcom_pull`. Use `PythonOperator` only for legacy compatibility.
+   new Python tasks. Return values wire XCom automatically. Use `PythonOperator`
+   only for legacy compatibility.
 2. **Zero top-level side effects.** No `Variable.get()`, DB connections, HTTP
    calls, or heavy imports outside task callables. These run on every scheduler
    heartbeat (~30s). 100 DAGs × 3 calls = 300 DB queries per cycle.
 3. **`catchup=False` on every production DAG.** Set explicitly — never rely on
-   the default. A new DAG with past `start_date` and `catchup=True` creates
-   hundreds of backfill runs instantly.
+   the default. A past `start_date` with `catchup=True` creates hundreds of
+   backfill runs instantly.
 4. **Deferrable over polling.** Use `deferrable=True` for any wait >30 seconds.
-   The worker slot is fully released to the async triggerer. Set
+   Worker slot is fully released to the async triggerer. Set
    `default_deferrable=True` in `airflow.cfg` globally.
 5. **XCom is for metadata only.** File paths, row counts, IDs, small JSON.
-   Never pass DataFrames or large payloads. For large data, write to S3/GCS
-   and pass the path via XCom.
-6. **Idempotency is non-negotiable.** UPSERT not INSERT. Partition by
-   `{{ ds }}`. Use `{{ logical_date }}` not `datetime.now()`. Atomic writes
-   (temp → rename).
+   Never pass DataFrames or large payloads — write to S3/GCS and pass the path.
+6. **Idempotency is non-negotiable.** UPSERT not INSERT. Partition by `{{ ds }}`.
+   Use `{{ logical_date }}` not `datetime.now()`. Atomic writes (temp → rename).
 7. **DAG files are config, not logic.** Keep under ~200 lines. Extract
    transforms, SQL, API clients to `include/` or `plugins/`.
 
 ## Best Practices
 
-1. **TaskFlow `@dag` instantiation**: The `@dag`-decorated function must be
-   called at module bottom to register. Without the call, the DAG is invisible.
-   ```python
-   @dag(schedule="@daily", start_date=pendulum.datetime(2024, 1, 1),
-        catchup=False, tags=["etl"])
-   def my_pipeline():
-       ...
-   my_pipeline()  # Required — registers the DAG
-   ```
-2. **Dynamic Task Mapping**: Use `.expand()` for parallel processing instead
-   of generating N near-identical DAGs. Reduces DAG file count, simplifies
-   monitoring, single scheduler path.
-   ```python
-   @task
-   def get_partitions() -> list[str]:
-       return ["2024-01-01", "2024-01-02"]
+For full TaskFlow code blocks and Dataset/Asset scheduling patterns
+→ Read references/taskflow.md
 
-   @task
-   def process(partition: str) -> str:
-       return f"done_{partition}"
+For operator and sensor selection details, testing code, and performance tuning
+→ Read references/operators.md
 
-   process.expand(partition=get_partitions())
-   ```
+1. **`@dag` instantiation**: Call the decorated function at module bottom to
+   register. Without the call, the DAG is invisible to the scheduler.
+2. **Dynamic Task Mapping**: Use `.expand()` for parallel processing instead of
+   N near-identical DAGs. Reduces DAG file count, simplifies monitoring.
 3. **Provider operators over custom wrappers**: Official provider operators
-   defer heavy imports to `execute()` time. They handle connection management,
-   retries, and logging idiomatically.
-4. **Sensor selection**: Poke mode for short waits (<30s). Deferrable for
-   long waits (minutes–hours). `mode="reschedule"` as middle ground only if
-   deferrable is unavailable.
-5. **Asset/Dataset scheduling** (Airflow 2.4+ / 3.x "Assets"): Preferred
-   pattern for cross-DAG dependencies. Producer declares `outlets`, consumer
-   uses `schedule=[dataset]`. Replaces `ExternalTaskSensor`.
-   ```python
-   orders = Dataset("s3://data-lake/orders/")
-
-   @dag(schedule="@daily", ...)
-   def producer():
-       @task(outlets=[orders])
-       def write_orders(): ...
-
-   @dag(schedule=[orders], ...)  # Triggered by dataset update
-   def consumer():
-       @task
-       def read_orders(): ...
-   ```
+   defer heavy imports to `execute()` time and handle connection management.
+4. **Sensor selection**: Poke mode for short waits (<30s). Deferrable for long
+   waits. `mode="reschedule"` only if deferrable is unavailable.
+5. **Asset/Dataset scheduling** (Airflow 2.4+ / 3.x): Preferred pattern for
+   cross-DAG dependencies. Producer declares `outlets`, consumer uses
+   `schedule=[dataset]`. Replaces `ExternalTaskSensor`.
 6. **Secrets backends**: Never hardcode credentials. Use AWS Secrets Manager,
-   HashiCorp Vault, GCP Secret Manager, or env vars. Lookup order: secrets
-   backend → `AIRFLOW_CONN_*` env vars → metastore DB.
-7. **Variable access**: Inside task callables or Jinja templates
-   (`{{ var.value.key }}`), never at top level. For non-sensitive config that
-   rarely changes, use `os.getenv()` (zero parse overhead).
-8. **`.airflowignore`**: List all non-DAG directories (`helpers/`, `tests/`,
-   `utils/`). Prevents wasted parse cycles — can eliminate 50+ unnecessary
-   attempts per cycle.
-9. **TaskGroups for visual organization**: Replace deprecated SubDAGs. Use
+   HashiCorp Vault, or GCP Secret Manager. Access Variables inside tasks only.
+7. **`.airflowignore`**: List all non-DAG directories. Prevents wasted parse
+   cycles — can eliminate 50+ unnecessary attempts per cycle.
+8. **TaskGroups for visual organization**: Replace deprecated SubDAGs with
    `with TaskGroup("name") as group:` for logical grouping within a DAG.
-10. **Pool management**: Create a pool per external system (DB, API) to cap
-    concurrent connections. Use `pool_slots > 1` for heavier tasks. Monitor
-    via Admin → Pools.
-11. **`max_active_runs=1`** for stateful pipelines to prevent overlapping runs.
-12. **Fixed `start_date`**: Always `pendulum.datetime(2024, 1, 1, tz="UTC")`.
-    Never `datetime.now()` — breaks idempotency and backfills.
-
-## Testing
-
-1. **DAG validation (CI gate)**: DagBag import check must pass before deploy.
-   ```python
-   def test_no_import_errors():
-       dagbag = DagBag(dag_folder="dags/", include_examples=False)
-       assert dagbag.import_errors == {}
-   ```
-2. **Structural tests**: Verify all DAGs have tags, retries >= 1,
-   `catchup=False`, and required default_args.
-3. **Unit tests**: Extract business logic into helper functions. Test the
-   function directly, mock hooks/connections with `unittest.mock.patch`.
-4. **`dag.test()`** (Airflow 2.5+): Run DAG locally without scheduler.
-   Guard with `if __name__ == "__main__": dag.test()`.
-5. **CI integration**: `python -c "from airflow.models import DagBag; ..."`
-   as first pipeline step; `pytest tests/ -v` for unit tests.
-
-## Performance
-
-1. **Target parse time**: Individual DAG < 100–200ms. Use `airflow dags report`
-   to diagnose slow parsers.
-2. **Defer imports**: Move `pandas`, `numpy`, `google.cloud`, etc. inside
-   task callables. Module-level imports run every parse cycle.
-3. **Scheduler tuning**: Increase `min_file_process_interval` (120s for 200+
-   DAGs). Set `parsing_processes=4` for large DAG folders.
-4. **Task count**: Keep under 100–200 tasks per DAG. Scheduler complexity
-   grows ~O(n²). Use Dynamic Task Mapping with concurrency limits for fan-out.
-5. **Database**: PostgreSQL required for non-trivial deployments (2.5x faster
-   than SQLite). Use connection pooling (pgBouncer). Run `airflow db clean`
-   regularly.
-6. **Priority weights**: `priority_weight=10` on SLA-critical tasks to
-   schedule them first when slots are contended.
+9. **Pool management**: Create a pool per external system to cap concurrent
+   connections. Use `pool_slots > 1` for heavier tasks.
+10. **Fixed `start_date`**: Always `pendulum.datetime(2024, 1, 1, tz="UTC")`.
+    Never `datetime.now()`. Set `max_active_runs=1` for stateful pipelines.
 
 ## Anti-Patterns
 
-1. **Top-level `Variable.get()` / DB calls** — runs every ~30s during parsing.
-   Move inside task callables or use Jinja templates.
-2. **Heavy imports at module level** — `import pandas`, `from google.cloud
-   import bigquery` at file top adds 100ms+ per parse cycle per DAG.
-3. **SubDAGs** — deprecated in Airflow 2.0, cause deadlocks by occupying
-   worker slots for lifetime. Use TaskGroups or cross-DAG dependencies.
+1. **Top-level `Variable.get()` / DB calls** — runs every ~30s. Move inside
+   task callables or use Jinja templates.
+2. **Heavy imports at module level** — `import pandas` at file top adds 100ms+
+   per parse cycle per DAG. Defer inside task callables.
+3. **SubDAGs** — deprecated, cause deadlocks. Use TaskGroups or Dataset dependencies.
 4. **`datetime.now()` in DAG definitions** — non-idempotent, breaks backfills.
    Use fixed `pendulum.datetime()`.
-5. **Fat DAGs** — business logic in DAG file. Extract to `include/` or
-   `plugins/`. DAG files should be orchestration config only.
-6. **XCom for large data** — default DB backend degrades above ~1 MB
-   (MySQL hard limit: 64 KB). Pass S3/GCS paths instead.
-7. **Poke-mode sensors for long waits** — holds a worker slot for entire
-   duration. Use `deferrable=True`.
-8. **Missing `catchup=False`** — deploys with past `start_date` trigger
-   hundreds of backfill runs.
-9. **Too many tasks per DAG** — 500+ tasks crater scheduler performance.
-   Split into multiple DAGs with Dataset dependencies.
-10. **Tight task coupling** — tasks reading XComs by string key. Use
-    TaskFlow return-value wiring for explicit data flow.
+5. **Fat DAGs** — business logic in DAG file. Extract to `include/` or `plugins/`.
+6. **XCom for large data** — default DB backend degrades above ~1 MB (MySQL: 64 KB).
+   Pass S3/GCS paths instead.
+7. **Poke-mode sensors for long waits** — holds worker slot for entire duration.
+   Use `deferrable=True`.
+8. **Missing `catchup=False`** — past `start_date` triggers hundreds of backfills.
+9. **Too many tasks per DAG** — 500+ tasks crater scheduler. Split into multiple
+   DAGs with Dataset dependencies.
+10. **Tight task coupling** — tasks reading XComs by string key. Use TaskFlow
+    return-value wiring for explicit data flow.
 
 ## Examples
+
+For full code blocks for each example → Read references/taskflow.md
 
 ### Example 1: Migrate PythonOperator to TaskFlow API
 
@@ -220,7 +151,7 @@ Actions:
 2. Show upstream task that returns the partition list
 3. Add concurrency limits to avoid overwhelming the external system
 
-Result: 50 DAGs replaced by 1 DAG with dynamic parallelism, simpler monitoring and maintenance.
+Result: 50 DAGs replaced by 1 DAG with dynamic parallelism, simpler monitoring.
 
 ### Example 3: Replace ExternalTaskSensor with Dataset scheduling
 
@@ -231,21 +162,27 @@ Actions:
 2. Add `outlets=[dataset]` to the producer task
 3. Set consumer DAG `schedule=[dataset]` to trigger on data availability
 
-Result: Consumer triggers immediately on data availability instead of polling on a schedule.
+Result: Consumer triggers immediately on data availability instead of polling.
 
 ## Troubleshooting
 
 ### Error: DAG not appearing in Airflow UI
-Cause: The `@dag`-decorated function is not called at module level, or the file is in a directory listed in `.airflowignore`, or there is an import error.
-Solution: Ensure the decorated function is called at module bottom (e.g., `my_pipeline()`). Check `airflow dags list-import-errors` for syntax/import issues. Verify the file is not excluded by `.airflowignore`.
+Cause: The `@dag`-decorated function is not called at module level, or the file
+is in a directory listed in `.airflowignore`, or there is an import error.
+Solution: Ensure the decorated function is called at module bottom (e.g.,
+`my_pipeline()`). Check `airflow dags list-import-errors` for syntax/import
+issues. Verify the file is not excluded by `.airflowignore`.
 
 ### Error: XCom too large — "OperationalError: value too long" or MySQL 64KB limit
-Cause: Passing DataFrames, large JSON, or file contents through XCom, which uses the metadata database.
-Solution: Write large data to S3/GCS and pass only the file path via XCom. For structured data, use a custom XCom backend (S3XComBackend). XCom is for metadata only — paths, counts, IDs.
+Cause: Passing DataFrames, large JSON, or file contents through XCom.
+Solution: Write large data to S3/GCS and pass only the file path via XCom. For
+structured data, use a custom XCom backend (S3XComBackend).
 
 ### Error: Scheduler performance degraded — DAGs parsing slowly
-Cause: Top-level `Variable.get()`, heavy imports (`pandas`, `numpy`, cloud SDKs), or too many DAG files without `.airflowignore`.
-Solution: Move all imports and Variable access inside task callables. Add non-DAG directories to `.airflowignore`. Check per-DAG parse time with `airflow dags report`.
+Cause: Top-level `Variable.get()`, heavy imports (`pandas`, `numpy`, cloud SDKs),
+or too many DAG files without `.airflowignore`.
+Solution: Move all imports and Variable access inside task callables. Add non-DAG
+directories to `.airflowignore`. Check per-DAG parse time with `airflow dags report`.
 
 ## Review Checklist
 
@@ -261,3 +198,11 @@ Solution: Move all imports and Variable access inside task callables. Add non-DA
 - [ ] DAG validation tests (DagBag import check) in CI pipeline
 - [ ] Tasks are idempotent (UPSERT, partitioned writes, `{{ logical_date }}`)
 - [ ] Pools configured for external system concurrency limits
+
+---
+
+For operator/sensor selection, testing patterns, and performance tuning
+→ Read references/operators.md
+
+For TaskFlow API full code, dynamic task mapping, Dataset scheduling, and
+secrets patterns → Read references/taskflow.md

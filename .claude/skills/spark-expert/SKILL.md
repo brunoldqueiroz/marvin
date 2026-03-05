@@ -6,11 +6,12 @@ description: >
   jobs, processing big data, or working with Delta Lake. Use when: user mentions
   Spark, PySpark, or distributed data processing, asks about DataFrame API,
   shuffle optimization, partitioning, or memory management.
-  Triggers: "spark", "pyspark", "spark job", "dataframe api", "delta lake",
-  "spark submit", "broadcast join", "shuffle partition", "executor OOM",
-  "distributed processing", "big data pipeline".
-  Do NOT use for Python language-level concerns (python-expert), cloud
-  infrastructure (aws-expert, terraform-expert), or dbt models (dbt-expert).
+  Triggers: "pyspark job", "spark submit", "broadcast join", "shuffle partition",
+  "executor OOM", "delta lake merge", "spark dataframe", "big data pipeline".
+  Do NOT use for: pure Python scripts, typing, pytest, ruff, mypy, packaging,
+  uv, or async/await (python-expert); DAG scheduling, Airflow operators, or
+  workflow orchestration (airflow-expert); cloud infrastructure (aws-expert,
+  terraform-expert); or dbt models (dbt-expert).
 tools:
   - Read
   - Glob
@@ -73,35 +74,33 @@ practices.
 
 ## Best Practices
 
+For detailed AQE config, Delta OPTIMIZE/MERGE patterns, memory sizing,
+partition strategy, caching, explain plan reading, and checkpointing
+→ Read references/optimization.md
+
 1. **Use `withColumns` not `withColumn` in loops.** `withColumn` in a loop
    causes exponential plan growth. `withColumns` (Spark 3.3+) or `select`
    with all expressions at once.
-2. **Broadcast joins**: `broadcast(small_df)` for dimension tables. Default
-   threshold 10MB — raise to 100MB+ for larger dimensions. Don't broadcast
-   tables >2GB (driver memory).
+2. **Broadcast joins** for dimension tables. Default threshold 10MB — raise to
+   100MB+ for larger dimensions. Don't broadcast tables >2GB (driver memory).
 3. **Shuffle partitions**: Set high (2000-4000) for large jobs. AQE coalesces
    empty/small partitions automatically. The default of 200 is wrong for TB+.
-4. **AQE configuration**: Verify `spark.sql.adaptive.enabled=true`,
-   `coalescePartitions.enabled=true`, `skewJoin.enabled=true`. Set
-   `advisoryPartitionSizeInBytes=128m` for large shuffles.
-5. **Delta OPTIMIZE**: Run regularly to compact small files (target 1GB).
-   Use `ZORDER BY` on join/filter columns (max 3-4 columns). Prefer Liquid
-   Clustering on DBR 13.3+.
+4. **AQE configuration**: Verify `adaptive.enabled`, `coalescePartitions.enabled`,
+   `skewJoin.enabled`. Set `advisoryPartitionSizeInBytes=128m` for large shuffles.
+5. **Delta OPTIMIZE**: Compact small files regularly (target 1GB). Use `ZORDER BY`
+   on join/filter columns (max 3-4). Prefer Liquid Clustering on DBR 13.3+.
 6. **Delta MERGE**: Always include partition column in join condition. Use
-   `WHEN MATCHED AND (changed columns)` for selective updates. Enable
-   deletion vectors for write-heavy tables.
-7. **Memory for PySpark**: Set `memoryOverhead` to 20-25% of executor memory
-   (not default 10%). Set `pyspark.memory` explicitly for Pandas UDFs.
-8. **Partition strategy**: Partition on low-cardinality, high-selectivity
-   columns (date, country). Target 128MB-1GB per partition file. Use
-   `partitionOverwriteMode=dynamic` for incremental writes.
+   `WHEN MATCHED AND (changed columns)` for selective updates. Enable deletion vectors.
+7. **Memory for PySpark**: Set `memoryOverhead` to 20-25% of executor memory.
+   Set `pyspark.memory` explicitly for Pandas UDFs.
+8. **Partition strategy**: Partition on low-cardinality, high-selectivity columns
+   (date, country). Target 128MB-1GB per file. Use `partitionOverwriteMode=dynamic`.
 9. **Caching**: Use `persist(MEMORY_AND_DISK)` as safe default. `unpersist()`
    explicitly when done. Never cache Delta tables.
 10. **Small file prevention**: `coalesce()` before write. Enable
     `delta.autoOptimize.optimizeWrite=true`. Run `OPTIMIZE` periodically.
-11. **Explain plans**: Look for `Exchange` (shuffle), `BroadcastHashJoin`
-    (good), `SortMergeJoin` (expensive), nested `Project` chains (loop
-    `withColumn`), `PushedFilters` (predicate pushdown working).
+11. **Explain plans**: Look for `Exchange` (shuffle), `BroadcastHashJoin` (good),
+    `SortMergeJoin` (expensive), nested `Project` chains (loop `withColumn`).
 12. **Checkpointing**: Break deep lineage with `df.checkpoint()` after many
     transformations to prevent StackOverflow and reduce planning time.
 
@@ -190,3 +189,9 @@ Solution: Replace the loop with a single `select()` call containing all column e
 - [ ] No `spark.cache()` on Delta tables
 - [ ] Memory overhead set to 20-25% for PySpark workloads
 - [ ] Small files addressed (coalesce before write, OPTIMIZE scheduled)
+
+---
+
+For AQE configuration details, Delta OPTIMIZE/MERGE patterns, memory sizing,
+partition strategy, caching, explain plan node reference, and checkpointing
+→ Read references/optimization.md

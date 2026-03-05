@@ -3,15 +3,17 @@ name: python-expert
 user-invocable: false
 description: >
   Python expert advisor. Load proactively when writing, reviewing, or debugging
-  Python code. Use when: user writes Python files, asks about typing, async/await,
-  uv/ruff/mypy toolchain, pytest, dataclasses vs Pydantic, packaging, or any
-  Python question. Also activate when editing .py files or fixing lint/type errors.
-  Triggers: "write python", "create python project", "type hint", "pytest fixture",
-  "ruff warning", "mypy error", "uv add", "async await", "fix this python",
-  "add tests", "refactor this function".
-  Do NOT use for distributed computing (spark-expert), Airflow DAGs
-  (airflow-expert), Dockerfiles (docker-expert), documentation files
-  (docs-expert), or infrastructure (aws-expert, terraform-expert).
+  Python code. Use when: user writes or edits .py files, fixes lint or type
+  errors, asks about typing, async/await, uv/ruff/mypy toolchain, pytest,
+  dataclasses vs Pydantic, packaging, or any Python language question.
+  Triggers: "ruff warning", "mypy error", "pytest fixture", "uv add",
+  "type hint", "async await", "fix this python", "add tests",
+  "refactor this function".
+  Do NOT use for: PySpark jobs, Spark DataFrames, or distributed data
+  processing (spark-expert); DAG authoring, Airflow operators, workflow
+  scheduling, or pipeline orchestration (airflow-expert); Dockerfiles
+  (docker-expert); documentation files (docs-expert); or infrastructure
+  (aws-expert, terraform-expert).
 tools:
   - Read
   - Glob
@@ -82,6 +84,10 @@ guidance grounded in current best practices.
 
 ## Best Practices
 
+For full pyproject.toml configs, uv setup, ruff rules, mypy overrides,
+fixture scope patterns, Pydantic v2 serialization, pathlib idioms, match/case
+examples, and context manager patterns → Read references/toolchain.md
+
 1. **Project setup**: `uv init` → `uv add --dev ruff mypy pytest` → configure
    all three in `pyproject.toml`. One config file, one toolchain.
 2. **Typing**: Use `X | Y` unions, built-in generics (`list[str]`), `Protocol`
@@ -130,6 +136,8 @@ guidance grounded in current best practices.
 
 ## Examples
 
+For full code for each example → Read references/toolchain.md
+
 ### Example 1: Modernize type hints
 
 User says: "My codebase uses Optional[str] and List[int] everywhere, how should I update?"
@@ -165,6 +173,8 @@ Result: Project has a single-file configuration for linting, type checking, and 
 
 ## Troubleshooting
 
+For detailed solutions with code examples → Read references/toolchain.md
+
 ### Error: mypy "Module has no attribute" or "Cannot find implementation or library stub"
 Cause: Third-party library has no type stubs or py.typed marker.
 Solution: Add `[[tool.mypy.overrides]]` with `module = "library_name.*"` and `ignore_missing_imports = true`. Install stubs if available (`uv add --dev types-requests`).
@@ -188,3 +198,9 @@ Solution: Remove black and isort. ruff replaces both — use `ruff check --fix` 
 - [ ] Tests use fixtures (not setUp/tearDown), parametrize where applicable
 - [ ] Dependencies managed via uv (pyproject.toml + uv.lock)
 - [ ] Pydantic used at trust boundaries; dataclasses for internals
+
+---
+
+For full pyproject.toml configs, fixture code, Pydantic v2 examples, pathlib
+idioms, match/case patterns, context manager patterns, and troubleshooting
+with code → Read references/toolchain.md

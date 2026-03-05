@@ -1,0 +1,15 @@
+{
+  "skill": "docs-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "write a README for my open source project", "expected": true},
+    {"query": "update the changelog with the new features we shipped this sprint", "expected": true},
+    {"query": "create an ADR documenting our decision to switch from REST to GraphQL", "expected": true},
+    {"query": "improve the docstrings in this module to follow Google style", "expected": true},
+    {"query": "restructure our docs using the Diátaxis framework", "expected": true},
+    {"query": "write API documentation for these endpoints with real examples", "expected": true},
+    {"query": "generate an architecture diagram showing the microservices and their connections", "expected": false},
+    {"query": "draw a sequence diagram for the OAuth2 authorization code flow", "expected": false},
+    {"query": "create a flowchart of the user onboarding process", "expected": false}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "aws-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "design a least-privilege IAM policy for a Lambda reading from S3", "expected": true},
+    {"query": "how do I reduce NAT Gateway costs with VPC endpoints", "expected": true},
+    {"query": "configure S3 Block Public Access at the account level", "expected": true},
+    {"query": "optimize Lambda cold start latency for a Python function", "expected": true},
+    {"query": "set up a multi-account governance structure with SCPs", "expected": true},
+    {"query": "which EC2 instance type should I use for a memory-intensive workload", "expected": true},
+    {"query": "write a Terraform module to provision an S3 bucket with versioning", "expected": false},
+    {"query": "how do I manage Terraform state with remote backend and state locking", "expected": false},
+    {"query": "fix this Dockerfile so it uses a non-root user and multi-stage build", "expected": false},
+    {"query": "configure Docker Compose health checks for service startup ordering", "expected": false}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "skill": "docker-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "write a multi-stage Dockerfile for a Python application", "expected": true},
+    {"query": "configure Docker Compose healthchecks for service startup ordering", "expected": true},
+    {"query": "how do I pass secrets securely during docker build without exposing them in layers", "expected": true},
+    {"query": "reduce my Docker image size using multi-stage builds", "expected": true},
+    {"query": "create a non-root user in my Dockerfile for container security", "expected": true},
+    {"query": "write a .dockerignore file to exclude secrets and node_modules", "expected": true},
+    {"query": "deploy my Docker containers to ECS using Fargate", "expected": false},
+    {"query": "write Terraform to provision an EKS cluster and node groups", "expected": false},
+    {"query": "create an AWS ECR repository and push policy with Terraform", "expected": false}
+  ]
+}

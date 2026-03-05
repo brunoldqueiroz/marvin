@@ -1,0 +1,16 @@
+{
+  "skill": "airflow-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "write an Airflow DAG using the TaskFlow API for a daily ETL", "expected": true},
+    {"query": "how do I use deferrable operators in Airflow to free worker slots", "expected": true},
+    {"query": "my Airflow DAG is not appearing in the UI after deployment", "expected": true},
+    {"query": "configure XCom push pull between tasks in my pipeline", "expected": true},
+    {"query": "replace ExternalTaskSensor with Dataset-based scheduling", "expected": true},
+    {"query": "how do I use dynamic task mapping to process partitions in parallel", "expected": true},
+    {"query": "fix this mypy error in my Python data processing script", "expected": false},
+    {"query": "add pytest fixtures and parametrize tests for this Python class", "expected": false},
+    {"query": "optimize this PySpark job that processes a Delta Lake table", "expected": false},
+    {"query": "my Spark executor keeps running out of memory on large shuffles", "expected": false}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "skill": "spark-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "optimize this Spark DataFrame shuffle partition count", "expected": true},
+    {"query": "my PySpark job hits executor OOM, how do I fix the memory settings", "expected": true},
+    {"query": "write a Delta Lake merge job with partition pruning", "expected": true},
+    {"query": "how do I use broadcast join to speed up a Spark pipeline", "expected": true},
+    {"query": "replace Python row UDFs with built-in pyspark functions", "expected": true},
+    {"query": "my spark-submit job keeps spilling to disk, fix the shuffle config", "expected": true},
+    {"query": "add type hints and fix the mypy errors in this Python module", "expected": false},
+    {"query": "configure ruff linting rules for a Python project", "expected": false},
+    {"query": "create an Airflow DAG to schedule this ETL pipeline daily", "expected": false},
+    {"query": "debug this Airflow task that keeps failing with an XCom error", "expected": false}
+  ]
+}

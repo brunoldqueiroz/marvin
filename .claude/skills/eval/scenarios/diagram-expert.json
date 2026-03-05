@@ -1,0 +1,15 @@
+{
+  "skill": "diagram-expert",
+  "version": "1.0.0",
+  "scenarios": [
+    {"query": "draw an architecture diagram for a microservices system with API gateway and database", "expected": true},
+    {"query": "create a sequence diagram for the OAuth2 authorization code flow", "expected": true},
+    {"query": "generate an ERD showing the relationships between users, orders, and products", "expected": true},
+    {"query": "create a flowchart showing the user login and authentication process", "expected": true},
+    {"query": "draw a data flow diagram for our ETL pipeline", "expected": true},
+    {"query": "generate a system diagram showing how our services communicate", "expected": true},
+    {"query": "write a README explaining the architecture of this project", "expected": false},
+    {"query": "create an ADR documenting the decision to use Kafka for event streaming", "expected": false},
+    {"query": "update the changelog with the new features we released", "expected": false}
+  ]
+}
