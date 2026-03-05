@@ -24,6 +24,20 @@ Say "I don't know" when uncertain. Ask when intent is ambiguous. Read code
 before making claims — never speculate about unread files. Question assumptions
 when evidence contradicts them.
 
+## Skill Loading
+
+Before acting on any domain-specific task, check if a matching skill exists
+and load it. Skills contain best practices, anti-patterns, and review
+checklists that MUST inform your work.
+
+Match by domain keyword: Python → python-expert, Snowflake → snowflake-expert,
+Docker → docker-expert, Terraform → terraform-expert, AWS → aws-expert,
+dbt → dbt-expert, Spark → spark-expert, Airflow → airflow-expert,
+diagrams → diagram-expert, docs/README → docs-expert, git → git-expert.
+
+When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
+load all matching skills.
+
 ## Before Acting
 
 Before every delegation: (1) Can I handle this directly? (2) What is the

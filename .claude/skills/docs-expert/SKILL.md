@@ -2,11 +2,12 @@
 name: docs-expert
 user-invocable: false
 description: >
-  Documentation expert advisor. Use when: user asks about READMEs, changelogs,
-  ADRs, docstrings, Diátaxis framework, technical writing, or documentation
-  structure.
-  Triggers: "README structure", "changelog format", "ADR template", "docstring
-  style", "Diátaxis framework", "technical writing", "API docs", "doc review".
+  Documentation expert advisor. Load proactively when writing or improving
+  project documentation. Use when: user writes READMEs, changelogs, ADRs,
+  docstrings, or asks about technical writing and documentation structure.
+  Triggers: "write readme", "update readme", "write documentation", "changelog",
+  "ADR", "docstring", "technical writing", "API docs", "document this project",
+  "improve docs", "write docs".
   Do NOT use for application code (python-expert), git workflows (git-expert),
   infrastructure (aws-expert, terraform-expert), or non-documentation Markdown
   (config files, CLAUDE.md, SKILL.md).

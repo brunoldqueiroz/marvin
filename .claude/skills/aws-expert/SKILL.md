@@ -2,12 +2,13 @@
 name: aws-expert
 user-invocable: false
 description: >
-  AWS expert advisor. Use when: user asks about IAM, S3, Lambda, VPC, cost
-  optimization, Well-Architected Framework, AWS CLI, or any AWS service
-  configuration.
-  Triggers: "IAM policy", "S3 bucket policy", "Lambda cold start",
-  "VPC endpoint", "cost optimization", "security group", "cross-account
-  access", "SSO setup".
+  AWS expert advisor. Load proactively when working with AWS services, cloud
+  infrastructure, or deploying to AWS. Use when: user mentions AWS, asks about
+  IAM, S3, Lambda, VPC, EC2, RDS, cost optimization, Well-Architected Framework,
+  AWS CLI, or any AWS service configuration.
+  Triggers: "aws", "deploy to aws", "lambda function", "s3 bucket", "IAM policy",
+  "VPC", "ec2 instance", "cloud infrastructure", "aws cost", "security group",
+  "cross-account", "SSO setup", "aws project".
   Do NOT use for HCL/IaC syntax (terraform-expert), container builds
   (docker-expert), or application code (python-expert).
 tools:

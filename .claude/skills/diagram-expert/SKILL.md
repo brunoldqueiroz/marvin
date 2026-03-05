@@ -2,11 +2,12 @@
 name: diagram-expert
 user-invocable: false
 description: >
-  Diagram generation expert. Use when: user asks to create, generate, or draw
-  diagrams, flowcharts, architecture diagrams, ERDs, sequence diagrams, network
-  diagrams, or any visual representation of systems or processes.
-  Triggers: "create diagram", "draw flowchart", "architecture diagram",
-  "sequence diagram", "ERD", "network diagram", "generate diagram".
+  Diagram generation expert. Load proactively when user wants visual
+  representations of systems, processes, or data models. Use when: user asks
+  to create, draw, or generate any kind of diagram.
+  Triggers: "diagram", "draw", "flowchart", "architecture diagram", "sequence
+  diagram", "ERD", "entity relationship", "visualize", "create diagram",
+  "system diagram", "data flow".
   Do NOT use for data charts or plots (antvis/mcp-server-chart),
   documentation files (docs-expert), or infrastructure code (terraform-expert).
 tools:

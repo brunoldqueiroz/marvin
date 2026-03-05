@@ -2,12 +2,13 @@
 name: python-expert
 user-invocable: false
 description: >
-  Python expert advisor. Use when: user asks about Python development, typing,
-  async/await, uv/ruff/mypy toolchain, pytest patterns, dataclasses vs
-  Pydantic, packaging, debugging, standard library, or any Python language
-  question.
-  Triggers: "type hint", "pytest fixture", "ruff warning", "mypy error",
-  "uv add", "dataclass vs pydantic", "async await", "f-string debug".
+  Python expert advisor. Load proactively when writing, reviewing, or debugging
+  Python code. Use when: user writes Python files, asks about typing, async/await,
+  uv/ruff/mypy toolchain, pytest, dataclasses vs Pydantic, packaging, or any
+  Python question. Also activate when editing .py files or fixing lint/type errors.
+  Triggers: "write python", "create python project", "type hint", "pytest fixture",
+  "ruff warning", "mypy error", "uv add", "async await", "fix this python",
+  "add tests", "refactor this function".
   Do NOT use for distributed computing (spark-expert), Airflow DAGs
   (airflow-expert), Dockerfiles (docker-expert), documentation files
   (docs-expert), or infrastructure (aws-expert, terraform-expert).

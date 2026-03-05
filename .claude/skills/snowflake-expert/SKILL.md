@@ -2,12 +2,13 @@
 name: snowflake-expert
 user-invocable: false
 description: >
-  Snowflake expert advisor. Use when: user asks about warehouse sizing, RBAC,
-  Time Travel, streams/tasks, VARIANT/semi-structured data, query optimization,
-  clustering, or Snowflake cost management.
-  Triggers: "warehouse sizing", "resource monitor", "Time Travel cost",
-  "stream task pattern", "VARIANT query", "clustering key", "RBAC setup",
-  "query profile".
+  Snowflake expert advisor. Load proactively when working on Snowflake projects,
+  writing SQL for Snowflake, or managing data warehouses. Use when: user mentions
+  Snowflake, writes SQL queries, asks about warehouse sizing, RBAC, Time Travel,
+  streams/tasks, VARIANT data, query optimization, clustering, or cost management.
+  Triggers: "snowflake", "create warehouse", "snowflake query", "warehouse sizing",
+  "Time Travel", "VARIANT query", "clustering key", "RBAC setup", "snowflake project",
+  "data warehouse", "snowflake SQL".
   Do NOT use for dbt model structure or Jinja (dbt-expert), Python application
   code (python-expert), or IaC (terraform-expert).
 tools:

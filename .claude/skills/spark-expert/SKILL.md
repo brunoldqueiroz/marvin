@@ -2,11 +2,13 @@
 name: spark-expert
 user-invocable: false
 description: >
-  Apache Spark/PySpark expert advisor. Use when: user asks about PySpark
-  DataFrame API, shuffle optimization, partitioning, AQE, Delta Lake, memory
-  management, or distributed computing performance.
-  Triggers: "shuffle partition", "broadcast join", "Delta MERGE", "AQE tuning",
-  "PySpark UDF", "withColumn loop", "executor OOM", "explain plan".
+  Apache Spark/PySpark expert advisor. Load proactively when writing PySpark
+  jobs, processing big data, or working with Delta Lake. Use when: user mentions
+  Spark, PySpark, or distributed data processing, asks about DataFrame API,
+  shuffle optimization, partitioning, or memory management.
+  Triggers: "spark", "pyspark", "spark job", "dataframe api", "delta lake",
+  "spark submit", "broadcast join", "shuffle partition", "executor OOM",
+  "distributed processing", "big data pipeline".
   Do NOT use for Python language-level concerns (python-expert), cloud
   infrastructure (aws-expert, terraform-expert), or dbt models (dbt-expert).
 tools:

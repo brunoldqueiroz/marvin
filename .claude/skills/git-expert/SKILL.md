@@ -2,12 +2,13 @@
 name: git-expert
 user-invocable: false
 description: >
-  Git expert advisor. Use when: user asks about branching strategies, commit
-  conventions, conflict resolution, rebase, history cleanup, git hooks,
-  large repo performance, or any git workflow question.
-  Triggers: "conventional commit", "rebase strategy", "merge conflict",
-  "git hook setup", "force push safety", "branch cleanup", "bisect debug",
-  "sparse checkout".
+  Git expert advisor. Load proactively when managing git workflows, resolving
+  conflicts, or setting up repository conventions. Use when: user asks about
+  branching, commits, rebasing, conflict resolution, git hooks, history cleanup,
+  or repository performance.
+  Triggers: "git workflow", "commit message", "rebase", "merge conflict",
+  "git hook", "branch strategy", "git history", "force push", "bisect",
+  "cherry-pick", "clean up commits".
   Do NOT use for application code (python-expert), documentation files
   (docs-expert), or CI/CD infrastructure (aws-expert, terraform-expert).
 tools:

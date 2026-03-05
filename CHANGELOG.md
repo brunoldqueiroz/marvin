@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add robustness and observability improvements inspired by AIOX
 
+### Changed
+
+- Optimize all 12 skill descriptions for proactive loading with natural-language triggers
+- Add Skill Loading section to CLAUDE.md with domain-to-skill mapping
+- Add Code Skills section to implementer agent for on-demand skill loading
+
 ### Bump
 
 - Version 0.14.0 → 0.15.0

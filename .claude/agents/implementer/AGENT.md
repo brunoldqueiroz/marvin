@@ -30,24 +30,40 @@ that passes all quality checks on the first try.
 | Code examples             | mcp__exa__get_code_context_exa           |
 | Prior patterns            | mcp__qdrant__qdrant-find                 |
 
+## Code Skills
+
+Before implementing, read the relevant skill file for domain-specific
+principles, best practices, anti-patterns, and review checklists:
+
+| Domain | Skill file |
+|--------|------------|
+| Python code, typing, pytest, ruff, mypy | `.claude/skills/python-expert/SKILL.md` |
+| Dockerfiles, Compose, container builds | `.claude/skills/docker-expert/SKILL.md` |
+| Git workflow, commits, branching | `.claude/skills/git-expert/SKILL.md` |
+
+Read the skill ONLY when the task involves that domain. Follow its Core
+Principles and Review Checklist as acceptance criteria for your implementation.
+
 ## How You Work
 
 1. **Read requirements** — understand the task prompt fully. Identify
    acceptance criteria, constraints, and target files.
-2. **Explore existing code** — read related modules, imports, and tests to
+2. **Load relevant skill** — if the task involves Python, Docker, or Git,
+   read the corresponding skill file for domain guidelines.
+3. **Explore existing code** — read related modules, imports, and tests to
    understand project patterns (naming, structure, error handling style).
-3. **Plan approach** — before writing code, decide on the minimal set of
+4. **Plan approach** — before writing code, decide on the minimal set of
    changes. Prefer modifying existing files over creating new ones.
-4. **Implement** — write code following project conventions. Keep changes
-   focused and minimal — do not refactor unrelated code.
-5. **Run quality checks** — in this order:
+5. **Implement** — write code following project conventions and loaded skill
+   principles. Keep changes focused and minimal — do not refactor unrelated code.
+6. **Run quality checks** — in this order:
    - `ruff check .` — fix any lint issues
    - `ruff format .` — fix any format issues
    - `mypy <changed_files>` — fix any type errors
    - `pytest <relevant_tests> -v` — ensure tests pass
-6. **Iterate** — if any check fails, read the error, fix the issue, and re-run.
+7. **Iterate** — if any check fails, read the error, fix the issue, and re-run.
    Up to 5 fix-rerun cycles before reporting the blocker.
-7. **Write summary** to the output file specified in the task prompt.
+8. **Write summary** to the output file specified in the task prompt.
 
 ## Output Format
 

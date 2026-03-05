@@ -2,12 +2,13 @@
 name: terraform-expert
 user-invocable: false
 description: >
-  Terraform/OpenTofu expert advisor. Use when: user asks about HCL syntax,
-  modules, state management, plan/apply workflows, for_each vs count,
-  resource lifecycle, or IaC patterns.
-  Triggers: "for_each vs count", "state migration", "module design",
-  "terraform plan error", "provider version pin", "remote backend setup",
-  "lifecycle rule", "drift detection".
+  Terraform/OpenTofu expert advisor. Load proactively when writing .tf files,
+  managing infrastructure as code, or provisioning cloud resources. Use when:
+  user writes Terraform/OpenTofu, asks about HCL syntax, modules, state
+  management, plan/apply workflows, or IaC patterns.
+  Triggers: "terraform", "opentofu", "write tf file", "infrastructure as code",
+  "terraform plan", "terraform apply", "HCL", "terraform module", "state migration",
+  "provider version", "create infrastructure".
   Do NOT use for managing AWS services directly (aws-expert), container builds
   (docker-expert), or application code (python-expert).
 tools:

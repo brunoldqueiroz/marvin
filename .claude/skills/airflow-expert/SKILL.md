@@ -2,12 +2,13 @@
 name: airflow-expert
 user-invocable: false
 description: >
-  Apache Airflow expert advisor. Use when: user asks about DAG design, TaskFlow
-  API, operators, scheduling, XCom, connections, deferrable operators, dynamic
-  task mapping, or Airflow performance tuning.
-  Triggers: "TaskFlow API", "DAG parse time", "deferrable operator", "dynamic
-  task mapping", "XCom size limit", "catchup backfill", "sensor timeout",
-  "dataset schedule".
+  Apache Airflow expert advisor. Load proactively when writing DAGs, scheduling
+  workflows, or orchestrating data pipelines with Airflow. Use when: user
+  mentions Airflow, creates DAGs, configures operators, or asks about workflow
+  orchestration and scheduling.
+  Triggers: "airflow", "dag", "write a dag", "airflow operator", "taskflow api",
+  "schedule pipeline", "airflow connection", "deferrable operator", "XCom",
+  "workflow orchestration", "data pipeline schedule".
   Do NOT use for Python language-level concerns (python-expert), cloud
   infrastructure or MWAA (aws-expert, terraform-expert), dbt models
   (dbt-expert), or container builds (docker-expert).
