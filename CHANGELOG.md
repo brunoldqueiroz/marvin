@@ -10,20 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add failure philosophy classification to hook authoring rules (fail-closed, fail-open, advisory)
-- Add IDS protocol (Inspect-Decide-Search) to prevent code duplication
-- Add structured handoff protocol for multi-agent workflows
-- Add read protection hook to block partial reads of critical config files
-- Add completion signal protocol for deterministic subagent output validation (SIGNAL:DONE/BLOCKED/PARTIAL)
-- Add session orientation section to CLAUDE.md for context-aware greeting
-- Add checklist-runner skill for generic checklist execution and scoring
-- Enrich pre-compact digest with dirty file list, recent commits, tools, files, and active spec
+- Add robustness and observability improvements inspired by AIOX
 
-### Changed
+### Bump
 
-- Update subagent-stop-gate to detect completion signals before falling back to heuristics
-- Update session-start-reinject to format enriched pre-compaction state as human-readable text
-- Update all 5 agents with completion signal instructions
+- Version 0.14.0 → 0.15.0
 
 ## [0.14.0] - 2026-03-04
 
