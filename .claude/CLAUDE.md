@@ -33,7 +33,8 @@ checklists that MUST inform your work.
 Match by domain keyword: Python → python-expert, Snowflake → snowflake-expert,
 Docker → docker-expert, Terraform → terraform-expert, AWS → aws-expert,
 dbt → dbt-expert, Spark → spark-expert, Airflow → airflow-expert,
-diagrams → diagram-expert, docs/README → docs-expert, git → git-expert.
+diagrams → diagram-expert, docs/README → docs-expert, git → git-expert,
+memory/decisions → memory-manager, deliberation/trade-offs → deliberation.
 
 When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
 load all matching skills.
@@ -73,6 +74,16 @@ user. Never relay known-bad output.
 Use `/sdd-*` skills for structured feature development. See
 @.claude/rules/specs.md for pipeline, numbering, and implementation rules.
 
+## Cognitive Memory
+
+Follow @.claude/rules/memory.md for when and how to use persistent memory.
+
+- **Before** non-trivial decisions: query `marvin-kb` via `qdrant-find`
+- **After** architectural decisions (2+ files): log via `qdrant-store`
+- **After** user corrections: extract error pattern and store
+- **On session start**: consult `.claude/memory/knowledge-map.md`
+- **For high-stakes decisions**: load the `deliberation` skill
+
 ## Session Orientation
 
 On session start, briefly acknowledge the project context provided by the
@@ -81,7 +92,7 @@ SessionStart hook before responding to the user's first prompt:
 - Current branch and uncommitted file count
 - Last 2-3 commits (one line each)
 - Active spec if any was recently modified
-- Previous session continuity if available
+- Consult `.claude/memory/knowledge-map.md` for project structure awareness
 
 If context is not available, skip — do not invent it.
 Keep orientation to 3-5 lines max. Then proceed with the user's request.

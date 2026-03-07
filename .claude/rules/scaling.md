@@ -8,7 +8,7 @@ paths:
 ## Hierarchical Routing Taxonomy
 
 When the skill library grows beyond flat selection capacity, organize skills
-into these 5 categories for two-stage routing (category → skill):
+into these 6 categories for two-stage routing (category → skill):
 
 | Category | Skills |
 |----------|--------|
@@ -16,6 +16,7 @@ into these 5 categories for two-stage routing (category → skill):
 | Cloud/Infrastructure | aws-expert, terraform-expert, docker-expert |
 | Development | python-expert, git-expert |
 | Documentation | docs-expert, diagram-expert |
+| Cognitive | memory-manager, deliberation |
 | Workflow | sdd-constitution, sdd-specify, sdd-plan, sdd-tasks, checklist-runner |
 
 ## Activation Criteria
@@ -30,7 +31,7 @@ inflection starts at ~30):
 | 40 | **Plan**: Design hierarchical routing implementation. Test category taxonomy. |
 | 50 | **Activate**: Switch to two-stage routing (category → skill). |
 
-Current count: 16 skills. Flat selection is optimal.
+Current count: 18 skills. Flat selection is optimal.
 
 ## New Skill Addition Checklist
 
