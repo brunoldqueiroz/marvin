@@ -9,7 +9,8 @@ description: >
   Triggers: "deliberate", "think carefully", "evaluate options", "pre-mortem",
   "devil's advocate", "should we", "trade-offs", "weigh alternatives".
   Do NOT use for: simple refactors (python-expert), documentation changes
-  (docs-expert), memory storage (memory-manager), or one-file fixes.
+  (docs-expert), memory storage (memory-manager), candidate scoring
+  (self-consistency), or one-file fixes.
 tools:
   - Read
   - Glob
@@ -71,6 +72,8 @@ Produces a decision record stored in Qdrant for cross-session continuity.
 
 2. GENERATE   — List 2–3 viable approaches. Each must be genuinely viable —
                 no strawmen. Include "do nothing" when appropriate.
+                Optional: invoke /verify to generate and score candidates
+                with rubric-based evaluation instead of manual listing.
 
 3. ATTACK     — For each approach, write the devil's advocate objection.
                 Rules: (a) challenge the premise, not just details;

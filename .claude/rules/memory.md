@@ -35,6 +35,17 @@ Consult `knowledge-map.md` on:
 - Session start for quick project orientation
 - Before making architectural decisions to check existing conventions
 
+## Self-Consistency Triggers
+
+Consider self-consistency (`/verify`) when:
+- Complex code generation or architectural decisions with MED/LOW confidence
+- Choosing between 2+ viable approaches where trade-offs are unclear
+- User explicitly requests comparison ("compare", "alternatives", "verify")
+
+After self-consistency evaluation:
+- Log the evaluation record to Qdrant with `type: evaluation`
+- Include all candidates, scores, rubric used, winner, and confidence
+
 ## General Rules
 
 - Use `qdrant-store` to write memories, `qdrant-find` to retrieve them.
@@ -42,7 +53,7 @@ Consult `knowledge-map.md` on:
 - Content field: synthesized 2-3 sentence summary (embedding quality depends on conciseness).
 - Always include metadata: `type`, `project`, `domain`, `timestamp`, `confidence`
   (0.0–1.0), `session_id`, `files_affected`, `outcome`.
-- Valid types: `decision`, `error-pattern`, `knowledge`, `deliberation`.
+- Valid types: `decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`.
 - **Retrieve before storing** — avoid duplicate records; escalate confidence instead.
 - **Graceful degradation**: if Qdrant is unavailable, continue without memory queries.
 - MUST NOT block on memory operations for simple, single-file, or mechanical tasks.

@@ -34,7 +34,8 @@ Match by domain keyword: Python → python-expert, Snowflake → snowflake-exper
 Docker → docker-expert, Terraform → terraform-expert, AWS → aws-expert,
 dbt → dbt-expert, Spark → spark-expert, Airflow → airflow-expert,
 diagrams → diagram-expert, docs/README → docs-expert, git → git-expert,
-memory/decisions → memory-manager, deliberation/trade-offs → deliberation.
+memory/decisions → memory-manager, deliberation/trade-offs → deliberation,
+verify/compare → self-consistency.
 
 When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
 load all matching skills.
@@ -83,6 +84,7 @@ Follow @.claude/rules/memory.md for when and how to use persistent memory.
 - **After** user corrections: extract error pattern and store
 - **On session start**: consult `.claude/memory/knowledge-map.md`
 - **For high-stakes decisions**: load the `deliberation` skill
+- **For comparing alternatives**: load the `self-consistency` skill
 
 ## Session Orientation
 

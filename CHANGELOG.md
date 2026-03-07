@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.19.0] - 2026-03-07
+
+### Added
+
+- Implement self-consistency & verification system (spec 003)
+  - Self-consistency skill with parallel 3-candidate generation and rubric scoring
+  - Default rubric (correctness, simplicity, maintainability, performance) + domain overrides
+  - Confidence scoring from score spread with explicit formula
+  - Activation/skip heuristics for cost-effective usage (~15% of tasks)
+  - `evaluation` memory type added to Qdrant schema
+  - Integration hooks with deliberation (GENERATE step) and implementer workflows
+
+### Changed
+
+- Update memory rules with self-consistency triggers and `evaluation` type
+- Update deliberation and memory-manager skills with symmetric cross-references
+- Update CLAUDE.md with verify/compare skill mapping
+- Update scaling.md with Cognitive category (19 skills)
+
+### Bump
+
+- Version 0.18.0 → 0.19.0
+
 ## [0.18.0] - 2026-03-07
 
 ### Added

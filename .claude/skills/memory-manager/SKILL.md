@@ -9,8 +9,8 @@ description: >
   Triggers: "remember this", "what did we decide", "past decision", "error
   pattern", "knowledge map", "log decision", "reflect on errors".
   Do NOT use for: web research (researcher agent), code implementation
-  (implementer agent), deliberation process (deliberation skill), or
-  documentation writing (docs-expert).
+  (implementer agent), deliberation process (deliberation skill), candidate
+  comparison (self-consistency), or documentation writing (docs-expert).
 tools:
   - mcp__qdrant__qdrant-store
   - mcp__qdrant__qdrant-find
@@ -41,7 +41,7 @@ using Qdrant MCP.
 ## Core Principles
 
 1. **Single collection**: all memory types live in `marvin-kb`. Distinguish
-   by `type` metadata (`decision`, `error-pattern`, `knowledge`, `deliberation`).
+   by `type` metadata (`decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`).
 2. **Content is a synthesized summary**: 2-3 sentences max. Embedding quality
    degrades sharply beyond 512 tokens — keep it tight.
 3. **Full metadata payload**: every record MUST include `type`, `project`,

@@ -5,7 +5,7 @@
 
 - `.claude/` — Claude Code configuration: agents, skills, rules, hooks, memory, settings
 - `.claude/agents/` — 5 specialist agents (implementer, reviewer, tester, researcher, security)
-- `.claude/skills/` — 18 skill files covering domain expertise and SDD workflows
+- `.claude/skills/` — 19 skill files covering domain expertise and SDD workflows
 - `.claude/rules/` — 9 governance rules files (delegation, memory, specs, hooks, etc.)
 - `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
@@ -15,7 +15,7 @@
 - `docs/` — project documentation: `development-standard.md`
 - `.venv/` — Python 3.13 virtual environment managed by uv
 
-## Skills (18)
+## Skills (19)
 
 - `python-expert` — advisory — Python 3.11+, typing, pytest, ruff, mypy
 - `docker-expert` — advisory — Dockerfiles, Compose, container builds
@@ -31,6 +31,7 @@
 - `checklist-runner` — workflow — structured checklist execution
 - `memory-manager` — advisory — Qdrant memory store/retrieve patterns
 - `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions
+- `self-consistency` — workflow — parallel candidate generation + rubric scoring
 - `sdd-constitution` — workflow — SDD project constitution creation
 - `sdd-specify` — workflow — SDD spec authoring (`/sdd-specify`)
 - `sdd-plan` — workflow — SDD plan authoring (`/sdd-plan`)
@@ -72,7 +73,7 @@
 - Agent output signals: `SIGNAL:DONE`, `SIGNAL:BLOCKED`, `SIGNAL:PARTIAL` — exactly one per response
 - Tool allowlists are explicit — no wildcards in agent `tools` field
 - Qdrant collection: `marvin-kb`; memory metadata MUST include type, project, domain, timestamp, confidence
-- Memory types: `decision`, `error-pattern`, `knowledge`, `deliberation`
+- Memory types: `decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`
 
 ## Active Conventions
 
@@ -90,6 +91,8 @@
   added required frontmatter fields (user-invocable, triggers, metadata.category)
 - 2026-03-07 — Spec 002 (cognitive memory): Qdrant as persistent memory backend;
   knowledge-map.md as human-editable structural orientation file in `.claude/memory/`
+- 2026-03-07 — Spec 003 (self-consistency): parallel candidate generation + rubric
+  scoring workflow; `evaluation` memory type added to Qdrant schema
 
 ## Error Patterns
 
