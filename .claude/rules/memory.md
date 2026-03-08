@@ -76,6 +76,28 @@ domain (`type: error-pattern`, filtered by `domain` and `project`):
 Calibration is advisory — override when context warrants it. Update calibration
 data by running `/reflect` periodically.
 
+## Session Confidence
+
+Ephemeral per-domain tracker. Resets on session start; never persisted to Qdrant.
+
+**Levels** (per domain: python, architecture, testing, terraform, data-engineering):
+- **NEUTRAL** (default): no corrections this session. Execute normally, zero overhead.
+- **CAUTIOUS** (1 correction): query Qdrant for error patterns in this domain before the next task. Note elevated caution in output.
+- **DELIBERATE** (2+ corrections): load `deliberation` or `self-consistency` skill before acting. Tell the user: "Session confidence in {domain} is low — deliberating before proceeding."
+
+**Degrades one level when**:
+- User corrects output in that domain
+- Reviewer agent requests changes to work in that domain
+- A task produces output requiring backtracking
+
+**Domain scoping**: corrections without a clear domain map to `general`, which affects all non-trivial tasks.
+
+**Cross-session integration**: if Adaptive Calibration already flags a domain as high-error (3+ Qdrant patterns), session confidence starts at CAUTIOUS instead of NEUTRAL. Conversely, if session confidence degrades to DELIBERATE in a domain with 0 Qdrant patterns, deliberation is still triggered — session evidence takes precedence.
+
+**Zero overhead**: when no corrections occur, the tracker is silent — no queries, no skill loading, no output.
+
+**Example**: User corrects a Python typing error → `python` degrades to CAUTIOUS. Next Python task: query Qdrant for python error patterns, note elevated caution. User corrects another Python output → `python` degrades to DELIBERATE. Next Python task: load deliberation before acting. Meanwhile, a Terraform task remains at NEUTRAL throughout.
+
 ## General Rules
 
 - Use `qdrant-store` to write memories, `qdrant-find` to retrieve them.
@@ -83,6 +105,7 @@ data by running `/reflect` periodically.
 - Content field: synthesized 2-3 sentence summary (embedding quality depends on conciseness).
 - Always include metadata: `type`, `project`, `domain`, `timestamp`, `confidence`
   (0.0–1.0), `session_id`, `files_affected`, `outcome`.
+- Deliberation records may include optional `confidence_dimensions: {feasibility: 0.0-1.0, cost: 0.0-1.0, risk: 0.0-1.0}`. Existing records without this field remain valid.
 - Valid types: `decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`.
 - **Retrieve before storing** — avoid duplicate records; escalate confidence instead.
 - **Graceful degradation**: if Qdrant is unavailable, continue without memory queries.

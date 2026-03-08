@@ -9,9 +9,9 @@
 - `.claude/rules/` — 9 governance rules files (delegation, memory, specs, hooks, etc.)
 - `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
-- `.specify/` — SDD workspace: templates + 4 active specs (001, 002, 003, 004); sub-specs supported
-- `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks); plan includes Dependency Graph and Sub-Specs sections
-- `.specify/specs/` — 4 specs: 001-skill-architecture-improvements (done), 002-cognitive-memory (done), 003-self-consistency (done), 004-recursive-decomposition (active); sub-spec nesting supported
+- `.specify/` — SDD workspace: templates + 10 active specs (001–010); sub-specs supported
+- `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks); plan includes Dependency Graph and Sub-Specs sections; tasks template includes execution phases and dependency graph sections
+- `.specify/specs/` — 10 specs: 001-skill-architecture-improvements (done), 002-cognitive-memory (done), 003-self-consistency (done), 004-recursive-decomposition (done), 005-feedback-learning (done), 006-task-dependency-graph (done), 007-dynamic-replanning (done), 008-intra-session-adaptation (done), 009-multidimensional-confidence (done), 010-tdd-guidance (active); sub-spec nesting supported
 - `docs/` — project documentation: `development-standard.md`
 - `.venv/` — Python 3.13 virtual environment managed by uv
 
@@ -30,13 +30,13 @@
 - `docs-expert` — advisory — README and documentation authoring
 - `checklist-runner` — workflow — structured checklist execution
 - `memory-manager` — advisory — Qdrant memory store/retrieve patterns
-- `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions
+- `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions; dimensional confidence (feasibility/cost/risk)
 - `self-consistency` — workflow — parallel candidate generation + rubric scoring
 - `reflect` — advisory — periodic memory audit, pattern consolidation, error density analysis, adaptive calibration
 - `sdd-constitution` — workflow — SDD project constitution creation
 - `sdd-specify` — workflow — SDD spec authoring (`/sdd-specify`)
 - `sdd-plan` — workflow — SDD plan authoring (`/sdd-plan`)
-- `sdd-tasks` — workflow — SDD tasks authoring (`/sdd-tasks`)
+- `sdd-tasks` — workflow — SDD tasks authoring (`/sdd-tasks`); validates dependency graphs (cycles, missing refs, self-refs; isolated-task warnings); TDD assessment with [TEST-FIRST] task pattern
 
 ## Agents (5)
 
@@ -48,12 +48,12 @@
 
 ## Rules (9)
 
-- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns
+- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns; dependency-aware task execution with DAG parsing, parallel dispatch, blocked task handling; plan checkpoints with deviation detection
 - `agents.md` — agent authoring: frontmatter fields, body structure, signals
 - `skills.md` — skill authoring: frontmatter fields, section order, body budget
 - `handoff.md` — structured handoff format between sequential agents (max 500 tokens)
 - `research.md` — parallel research delegation: decompose → N researchers → synthesize
-- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates; adaptive calibration rules; rework tracking fields (task_type, correction_count, last_corrected); error density query pattern
+- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates; adaptive calibration rules; rework tracking fields (task_type, correction_count, last_corrected); error density query pattern; session confidence tracking (NEUTRAL → CAUTIOUS → DELIBERATE)
 - `hooks.md` — hook authoring constraints and lifecycle event reference
 - `scaling.md` — effort scaling heuristics for agent selection and task decomposition
 - `ids.md` — ID generation conventions for specs and other artifacts
@@ -97,6 +97,11 @@
   scoring workflow; `evaluation` memory type added to Qdrant schema
 - 2026-03-07 — Spec 004 (recursive decomposition): sub-spec suggestions in /sdd-plan with complexity heuristics; spike-first pattern; Mermaid dependency graphs in plans; [SUB-SPEC] task type in /sdd-tasks
 - 2026-03-07 — Spec 005 (feedback learning): /reflect skill for periodic memory audit; rework tracking fields (task_type, correction_count, last_corrected); adaptive calibration rules in memory.md; error density query pattern
+- 2026-03-07 — Spec 006 (task dependency graph): dependency-aware task execution rules in specs.md; DAG validation in sdd-tasks; execution phases and dependency graph sections in tasks template
+- 2026-03-07 — Spec 007 (dynamic replanning): lightweight plan checkpoints in Task Execution; three signal checks (failure, contradiction, coherence); suggest-only plan adjustments with phase-derivation restart on approval
+- 2026-03-07 — Spec 008 (intra-session adaptation): ephemeral session confidence tracker in memory.md; three levels (NEUTRAL, CAUTIOUS, DELIBERATE); domain-scoped degradation; complements cross-session Adaptive Calibration
+- 2026-03-07 — Spec 009 (multidimensional confidence): dimensional confidence scoring in deliberation skill (feasibility 0.40, cost 0.30, risk 0.30); dimension-based calibration thresholds; targeted follow-up guidance; optional confidence_dimensions in Qdrant metadata
+- 2026-03-07 — Spec 010 (TDD guidance): advisory TDD heuristic in sdd-tasks (complex logic, APIs, bug fixes, data transformations); [TEST-FIRST] 3-task pattern; test-first dispatch note in specs.md Task Execution
 
 ## Error Patterns
 

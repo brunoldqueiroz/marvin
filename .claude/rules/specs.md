@@ -44,6 +44,61 @@ When the user requests implementation of a feature that has a `tasks.md` in
 MUST load the full spec context before delegating. MUST NOT skip the
 reviewer or tester phases.
 
+### Task Execution
+
+After reading spec context (steps 1–3) and before delegating (step 4), parse
+`tasks.md` and execute tasks dependency-aware:
+
+**DAG parsing** — Read all tasks. Extract each task's `Depends on:` field.
+Tasks without `Depends on:` are treated as `Depends on: none`. Build an
+in-memory dependency map keyed by task ID (T-01, T-02, ...).
+
+**Phase derivation** — Phase 1 = tasks with `Depends on: none`. Phase N =
+tasks whose all dependencies are completed in prior phases. Log the full phase
+plan in conversation before execution begins so the user can review it.
+
+**Parallel dispatch** — Within each phase, launch ready tasks in parallel via
+Agent calls. Constraints: max 4 agents per batch; tasks modifying the same
+file MUST NOT run in parallel (conflict risk). PREFER batching tasks of the
+same agent type together (per each task's `Agent:` field). Parallelization
+trades token cost for wall-clock
+time — if cost is a concern, ask the user before dispatching the first
+parallel batch.
+
+**Test-first dispatch** — Tasks annotated with `[TEST-FIRST]` use a tester →
+implementer → tester sequence (write test, implement, verify). This is handled
+naturally by task dependencies — no special execution logic needed. The
+annotation is advisory; it is applied by `sdd-tasks` and can be removed by the
+user during task confirmation.
+
+**Re-evaluation loop** — After each batch completes, edit `tasks.md` to mark
+finished tasks `[x]`, then derive the next batch of ready tasks and repeat.
+
+**Plan checkpoint** — Before deriving the next batch, run three signal checks.
+_Failure_: any task in the batch marked `[-]` or returned SIGNAL:BLOCKED.
+_Contradiction_: reviewer requested structural changes, implementer modified
+files outside the task's `Files:` field, or implementer used an alternative
+approach. _Coherence_: a next-batch task references a file renamed/deleted in
+this batch or assumes a changed approach. If all pass, continue silently. If
+any fail, present a deviation report and use AskUserQuestion:
+`## Plan Checkpoint — Deviation Detected` / `**After**: {batch, e.g., "Phase 2 (T-05)"}` /
+`**Signal**: {failure|contradiction|coherence}` / `**Evidence**: {specifics}` /
+`**Affected tasks**: {IDs}` / `**Options**: (a) Continue as-is (b) Adjust plan — propose specific edits to plan.md and tasks.md (c) Abort`.
+If (b), propose edits to `plan.md` and `tasks.md`, apply after approval, then
+restart phase derivation from the updated `tasks.md`.
+
+**Blocked task handling** — If a task's dependency is marked `[-]` (skipped)
+or failed, report which task is blocked and which dependency is unmet. Ask the
+user: skip this task too (`[-]`), retry the failed dependency, or abort spec
+execution. Never silently proceed past a blocked task.
+
+**Deadlock detection** — If no tasks are ready but uncompleted tasks remain,
+report a deadlock (likely circular dependency or failed prerequisite) and halt.
+
+**Graceful fallback** — If `tasks.md` parsing fails (malformed format), fall
+back to sequential top-to-bottom execution with a warning. Never block on a
+parse error (NFR-04). Task markers: `[ ]` pending, `[x]` completed, `[-]` skipped.
+
 ## Research Integration
 
 When `/sdd-specify` identifies unknowns (unfamiliar technology, external APIs,
