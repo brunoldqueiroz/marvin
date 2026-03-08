@@ -9,9 +9,9 @@
 - `.claude/rules/` — 9 governance rules files (delegation, memory, specs, hooks, etc.)
 - `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
-- `.specify/` — SDD workspace: templates + 2 active specs (001, 002)
-- `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks)
-- `.specify/specs/` — 2 specs: 001-skill-architecture-improvements (done), 002-cognitive-memory (active)
+- `.specify/` — SDD workspace: templates + 4 active specs (001, 002, 003, 004); sub-specs supported
+- `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks); plan includes Dependency Graph and Sub-Specs sections
+- `.specify/specs/` — 4 specs: 001-skill-architecture-improvements (done), 002-cognitive-memory (done), 003-self-consistency (done), 004-recursive-decomposition (active); sub-spec nesting supported
 - `docs/` — project documentation: `development-standard.md`
 - `.venv/` — Python 3.13 virtual environment managed by uv
 
@@ -47,7 +47,7 @@
 
 ## Rules (9)
 
-- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow
+- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns
 - `agents.md` — agent authoring: frontmatter fields, body structure, signals
 - `skills.md` — skill authoring: frontmatter fields, section order, body budget
 - `handoff.md` — structured handoff format between sequential agents (max 500 tokens)
@@ -70,6 +70,7 @@
 - MUST enter plan mode for multi-file changes or uncertain approach
 - SDD pipeline order: constitution → specify → plan → tasks → implement → review → test
 - Spec IDs are zero-padded 3-digit integers; slugs are kebab-case
+- Sub-spec nesting is max 2 levels deep (spec → sub-spec only; no further decomposition)
 - Agent output signals: `SIGNAL:DONE`, `SIGNAL:BLOCKED`, `SIGNAL:PARTIAL` — exactly one per response
 - Tool allowlists are explicit — no wildcards in agent `tools` field
 - Qdrant collection: `marvin-kb`; memory metadata MUST include type, project, domain, timestamp, confidence
@@ -93,6 +94,7 @@
   knowledge-map.md as human-editable structural orientation file in `.claude/memory/`
 - 2026-03-07 — Spec 003 (self-consistency): parallel candidate generation + rubric
   scoring workflow; `evaluation` memory type added to Qdrant schema
+- 2026-03-07 — Spec 004 (recursive decomposition): sub-spec suggestions in /sdd-plan with complexity heuristics; spike-first pattern; Mermaid dependency graphs in plans; [SUB-SPEC] task type in /sdd-tasks
 
 ## Error Patterns
 

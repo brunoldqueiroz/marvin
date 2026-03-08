@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.20.0] - 2026-03-07
+
+### Added
+
+- Implement recursive decomposition for SDD pipeline (spec 004)
+  - Complexity heuristics in `/sdd-plan` (4 criteria, threshold 2+) with semi-automatic sub-spec suggestions
+  - Sub-spec directory structure with full SDD lifecycle and depth limit (max 2 levels)
+  - Spike-first pattern for high-risk components (15-min time-box, worktree isolation, findings report)
+  - Mermaid dependency graphs in plan template (components, edges, subgraphs, spike markers)
+  - `[SUB-SPEC]` task type in `/sdd-tasks` that blocks downstream parent tasks
+
+### Changed
+
+- Update specs.md rules with Sub-Specs and Spike-First Pattern sections
+- Update plan template with optional Dependency Graph and Sub-Specs sections
+- Update knowledge-map with spec 004 capabilities and decisions
+
+### Bump
+
+- Version 0.19.0 → 0.20.0
+
 ## [0.19.0] - 2026-03-07
 
 ### Added

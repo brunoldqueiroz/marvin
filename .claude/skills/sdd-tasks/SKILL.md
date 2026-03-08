@@ -42,6 +42,16 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
    - Assign the appropriate agent (implementer, reviewer, tester, security)
    - Declare dependencies on other tasks
    - Are small enough to be completed in one agent delegation
+
+   If the plan contains a "Sub-Specs" section, check each listed sub-spec and
+   emit one task per sub-spec with type `[SUB-SPEC]`:
+
+   > `**T-XX: [SUB-SPEC] {sub-spec name}** — Full SDD cycle for {description}. Blocks: {downstream task IDs}.`
+
+   Sub-spec tasks represent the complete SDD lifecycle (specify → plan → tasks →
+   implement → review → test) and are driven by the user, not assigned to a
+   single agent. They MUST be placed before any downstream tasks that depend on
+   their output.
 5. **Add acceptance criteria**: Derive from the spec's requirements and the
    constitution's quality standards.
 6. **Write tasks**: Create `.specify/specs/{id}-{slug}/tasks.md`.
@@ -63,3 +73,8 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
 - MUST include acceptance criteria derived from the spec
 - MUST NOT include implementation details — tasks describe what, not how
 - MUST ask the user for approval before finalizing
+- MUST emit a `[SUB-SPEC]` task for each sub-spec listed in the plan's
+  "Sub-Specs" section — do not flatten sub-spec work into regular tasks
+- Sub-spec tasks MUST list the IDs of all downstream tasks they block
+- Sub-spec tasks MUST NOT be assigned to a single agent — they represent the
+  full SDD lifecycle driven by the user

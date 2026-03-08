@@ -50,7 +50,63 @@ components, defining execution order, and identifying risks.
    - Risks and mitigations
    - Testing strategy
    - Alternatives considered (and why rejected)
-6. **Write plan**: Create `.specify/specs/{id}-{slug}/plan.md`.
+
+5a. **Complexity check**: For each component, evaluate against these heuristics:
+   - (a) Touches 5+ files
+   - (b) Involves 2+ architectural decisions
+   - (c) Introduces a new technology or dependency not in the project
+   - (d) Requires research that hasn't been done yet
+
+   A component matching **2 or more** heuristics is flagged as **complex**.
+   A component matching heuristic (c) or (d) is also annotated as **spike-first**
+   (uncertain feasibility, new tech, or performance-critical path — validate
+   approach before full implementation).
+
+5b. **Sub-spec suggestion**: For each complex component:
+   1. Check the current spec's path depth. Count how many parent directories
+      sit between `.specify/specs/` and this spec's directory:
+      - Depth 1 (e.g., `specs/001-foo/`) — at root level, sub-specs allowed.
+      - Depth 2 (e.g., `specs/001-foo/001-bar/`) — at child level, sub-specs
+        allowed (grandchild is the limit).
+      - Depth 3+ — at grandchild level. Sub-specs are **not** allowed. Propose
+        a separate top-level spec instead and skip to step 5c.
+   2. For each complex component within the depth limit, present to the user
+      via `AskUserQuestion`:
+      - Component name
+      - Which heuristics triggered
+      - What the sub-spec would cover
+      Ask the user to approve or reject each sub-spec individually.
+
+5c. **Create approved sub-specs**: For each user-approved sub-spec:
+   - Determine the next available sub-ID by listing
+     `.specify/specs/{parent-id}-{slug}/` (zero-padded 3-digit, e.g., `001`).
+   - Create `.specify/specs/{parent-id}-{slug}/{sub-id}-{sub-slug}/spec.md`
+     following the spec template structure.
+   - The sub-spec's scope is exactly the complex component it replaces.
+
+6. **Write plan**: Create `.specify/specs/{id}-{slug}/plan.md`. The plan MUST
+   include:
+   - All standard sections from the template
+   - A **Sub-Specs** section listing any sub-specs created, with their paths
+     and the components they cover
+   - A **Dependency Graph** section with a Mermaid `graph TD` diagram:
+     - Each component is a node
+     - Dependencies are directed edges
+     - Sub-specs appear as `subgraph` blocks
+     - Spike-first components use a distinct shape (e.g., `[/component/]`) or
+       a `:::spike` class annotation
+
+   Example graph shape (structure only — adapt to actual components):
+   ```
+   graph TD
+     subgraph sub["001-auth-core (sub-spec)"]
+       B[JWT handler]
+     end
+     A[API layer] --> B
+     C[/Token refresh/]:::spike --> B
+     classDef spike fill:#ffe0b2
+   ```
+
 7. **Confirm**: Show the user the plan summary and ask for approval.
 
 ## Output
@@ -68,3 +124,9 @@ components, defining execution order, and identifying risks.
 - MUST define execution order — parallel-safe steps should be noted
 - MUST NOT include code — the plan describes strategy, not implementation
 - MUST ask the user for approval before finalizing
+- MUST run complexity check (step 5a) on every component before writing the plan
+- MUST annotate spike-first components in the Mermaid graph and in the plan text
+- MUST NOT create sub-specs beyond depth 2 (grandchild level) — escalate to a
+  new top-level spec instead
+- MUST include a Dependency Graph (Mermaid) and Sub-Specs section in plan.md
+  (Sub-Specs section may note "None" if no sub-specs were created)

@@ -27,6 +27,35 @@
 2. {step_2}
 3. {step_3}
 
+## Dependency Graph
+
+> Optional — omit for simple plans without complex dependencies.
+
+```mermaid
+graph TD
+    C1[Component 1]
+    C2[Component 2]
+    C3{{Component 3 - spike}}
+
+    C1 --> C2
+    C1 --> C3
+
+    subgraph sub_spec_1[Sub-Spec: name]
+        C2
+        C3
+    end
+```
+
+## Sub-Specs
+
+> Optional — omit if no sub-specs were suggested.
+
+| ID | Component | Status | Notes |
+|----|-----------|--------|-------|
+| {sub_001} | {component name} | pending | {notes} |
+
+Status values: `pending` \| `in-progress` \| `complete`
+
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |

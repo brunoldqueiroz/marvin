@@ -51,21 +51,56 @@ multiple viable approaches), delegate to the `researcher` agent following
 `@.claude/rules/research.md`. Save research output to
 `.specify/specs/{id}-{slug}/research.md`.
 
+## Sub-Specs
+
+Use sub-specs when a single task in a parent plan is itself complex enough to
+warrant the full SDD cycle.
+
+- Sub-spec path: `.specify/specs/{parent-id}-{slug}/{sub-id}-{sub-slug}/`
+- Sub-spec IDs are zero-padded 3-digit, scoped to parent — e.g.,
+  `004-recursive-decomposition/001-complexity-engine/`
+- Sub-specs follow the full SDD cycle independently: specify → plan → tasks →
+  implement → review → test
+- When a sub-spec completes, the parent task that spawned it is marked done
+- Parent plan references sub-spec outputs (not sub-spec internals)
+- **Depth limit: max 2 levels** (parent → child → grandchild). If a grandchild
+  spec is still too complex, escalate to a new top-level spec instead.
+
+## Spike-First Pattern
+
+Run a spike before planning when the approach is uncertain.
+
+- **When to spike**: (a) new technology not used in the project, (b) uncertain
+  feasibility, (c) performance-critical path needing validation
+- Spikes are **time-boxed**: max 15 minutes of agent time
+- Spike tasks use worktree isolation (`isolation: "worktree"`)
+- Findings written to `.specify/specs/{id}-{slug}/spike-{component}.md`
+- Findings format: feasibility (yes/no), approach validated, risks discovered,
+  recommendation
+- If spike invalidates the planned approach, plan **MUST** be updated before
+  implementation proceeds
+- If spike exceeds the time-box, report partial findings — user decides next step
+
 ## Directory Structure
 
 ```
 .specify/
 ├── memory/
-│   └── constitution.md          # project principles (created by /sdd-constitution)
+│   └── constitution.md              # project principles (created by /sdd-constitution)
 ├── specs/
 │   ├── 001-feature-name/
-│   │   ├── spec.md              # what + why
-│   │   ├── research.md          # optional: pre-spec research
-│   │   ├── plan.md              # how (implementation strategy)
-│   │   └── tasks.md             # actionable checklist
+│   │   ├── spec.md                  # what + why
+│   │   ├── research.md              # optional: pre-spec research
+│   │   ├── plan.md                  # how (implementation strategy)
+│   │   ├── tasks.md                 # actionable checklist
+│   │   ├── spike-{component}.md     # spike findings (optional)
+│   │   └── 001-sub-feature/         # sub-spec (optional)
+│   │       ├── spec.md
+│   │       ├── plan.md
+│   │       └── tasks.md
 │   └── 002-another-feature/
 │       └── ...
-└── templates/                   # templates used by /sdd-* skills
+└── templates/                       # templates used by /sdd-* skills
     ├── constitution.md
     ├── research.md
     ├── spec.md
