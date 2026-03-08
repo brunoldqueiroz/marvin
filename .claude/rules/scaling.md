@@ -16,7 +16,7 @@ into these 6 categories for two-stage routing (category → skill):
 | Cloud/Infrastructure | aws-expert, terraform-expert, docker-expert |
 | Development | python-expert, git-expert |
 | Documentation | docs-expert, diagram-expert |
-| Cognitive | memory-manager, deliberation, self-consistency |
+| Cognitive | memory-manager, deliberation, self-consistency, reflect |
 | Workflow | sdd-constitution, sdd-specify, sdd-plan, sdd-tasks, checklist-runner |
 
 ## Activation Criteria
@@ -31,7 +31,7 @@ inflection starts at ~30):
 | 40 | **Plan**: Design hierarchical routing implementation. Test category taxonomy. |
 | 50 | **Activate**: Switch to two-stage routing (category → skill). |
 
-Current count: 19 skills. Flat selection is optimal.
+Current count: 20 skills. Flat selection is optimal.
 
 ## New Skill Addition Checklist
 

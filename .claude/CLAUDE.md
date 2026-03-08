@@ -35,7 +35,7 @@ Docker → docker-expert, Terraform → terraform-expert, AWS → aws-expert,
 dbt → dbt-expert, Spark → spark-expert, Airflow → airflow-expert,
 diagrams → diagram-expert, docs/README → docs-expert, git → git-expert,
 memory/decisions → memory-manager, deliberation/trade-offs → deliberation,
-verify/compare → self-consistency.
+verify/compare → self-consistency, reflect/audit → reflect.
 
 When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
 load all matching skills.
@@ -85,6 +85,7 @@ Follow @.claude/rules/memory.md for when and how to use persistent memory.
 - **On session start**: consult `.claude/memory/knowledge-map.md`
 - **For high-stakes decisions**: load the `deliberation` skill
 - **For comparing alternatives**: load the `self-consistency` skill
+- **Periodically**: run `/reflect` to consolidate patterns and prune stale records
 
 ## Session Orientation
 

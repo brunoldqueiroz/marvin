@@ -16,6 +16,11 @@ Query past decisions before:
 Store an error pattern when:
 - The user corrects output — extract the **class** of error, not the instance
 - A task produces a wrong result that required backtracking
+- Include `task_type` (implementation | architecture | testing | review |
+  planning), `correction_count` (starts at 1), and `last_corrected` (ISO
+  timestamp) in error-pattern metadata
+- On re-occurrence of an existing pattern: increment `correction_count` and
+  update `last_corrected` instead of creating a duplicate
 
 Query error patterns before:
 - Acting on a task in a domain where past mistakes are likely (check by domain + project)
@@ -45,6 +50,31 @@ Consider self-consistency (`/verify`) when:
 After self-consistency evaluation:
 - Log the evaluation record to Qdrant with `type: evaluation`
 - Include all candidates, scores, rubric used, winner, and confidence
+
+## Reflection Triggers
+
+Run `/reflect` when:
+- User explicitly invokes `/reflect`
+- After completing a spec implementation with 5+ tasks (suggest to user)
+- When 10+ memory records have been stored in the current session (suggest to user)
+
+These triggers are **advisory** — suggest to the user, do not force. Reflection
+audits stored records, prunes stale patterns, and consolidates weak signals.
+
+## Adaptive Calibration
+
+Before acting on a non-trivial task, query error patterns for the relevant
+domain (`type: error-pattern`, filtered by `domain` and `project`):
+
+- **3+ high-confidence (>0.65) error patterns**: high-error domain. Bias toward
+  loading `deliberation` and/or `self-consistency` skills. Slow down.
+- **1-2 error patterns**: moderate awareness. Query patterns before acting but
+  no forced skill loading.
+- **0 error patterns**: clean domain. Allow fast execution without forced
+  deliberation.
+
+Calibration is advisory — override when context warrants it. Update calibration
+data by running `/reflect` periodically.
 
 ## General Rules
 

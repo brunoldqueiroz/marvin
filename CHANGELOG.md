@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.21.0] - 2026-03-07
+
+### Added
+
+- Implement feedback learning system (spec 005)
+  - `/reflect` skill for periodic memory audit: stale detection, weak pattern consolidation, duplicate merging, domain error density reporting
+  - Rework tracking fields (`task_type`, `correction_count`, `last_corrected`) in error-pattern records
+  - Adaptive calibration rules: 3+ high-confidence error patterns in a domain biases toward deliberation
+  - Error density query pattern in memory-manager for pre-task domain awareness
+  - Reflection triggers (post-spec 5+ tasks, session density 10+ records, explicit)
+  - 7-section structured reflection report format (FR-06)
+
+### Changed
+
+- Update memory-manager with reflect integration, rework fields, and symmetric cross-references
+- Update memory rules with Reflection Triggers and Adaptive Calibration sections
+- Update CLAUDE.md with reflect/audit skill mapping
+- Update scaling.md: skill count 19 → 20, reflect in Cognitive category
+
+### Bump
+
+- Version 0.20.0 → 0.21.0
+
 ## [0.20.0] - 2026-03-07
 
 ### Added

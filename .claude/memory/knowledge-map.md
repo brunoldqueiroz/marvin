@@ -5,7 +5,7 @@
 
 - `.claude/` — Claude Code configuration: agents, skills, rules, hooks, memory, settings
 - `.claude/agents/` — 5 specialist agents (implementer, reviewer, tester, researcher, security)
-- `.claude/skills/` — 19 skill files covering domain expertise and SDD workflows
+- `.claude/skills/` — 20 skill files covering domain expertise and SDD workflows
 - `.claude/rules/` — 9 governance rules files (delegation, memory, specs, hooks, etc.)
 - `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
@@ -15,7 +15,7 @@
 - `docs/` — project documentation: `development-standard.md`
 - `.venv/` — Python 3.13 virtual environment managed by uv
 
-## Skills (19)
+## Skills (20)
 
 - `python-expert` — advisory — Python 3.11+, typing, pytest, ruff, mypy
 - `docker-expert` — advisory — Dockerfiles, Compose, container builds
@@ -32,6 +32,7 @@
 - `memory-manager` — advisory — Qdrant memory store/retrieve patterns
 - `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions
 - `self-consistency` — workflow — parallel candidate generation + rubric scoring
+- `reflect` — advisory — periodic memory audit, pattern consolidation, error density analysis, adaptive calibration
 - `sdd-constitution` — workflow — SDD project constitution creation
 - `sdd-specify` — workflow — SDD spec authoring (`/sdd-specify`)
 - `sdd-plan` — workflow — SDD plan authoring (`/sdd-plan`)
@@ -52,7 +53,7 @@
 - `skills.md` — skill authoring: frontmatter fields, section order, body budget
 - `handoff.md` — structured handoff format between sequential agents (max 500 tokens)
 - `research.md` — parallel research delegation: decompose → N researchers → synthesize
-- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates
+- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates; adaptive calibration rules; rework tracking fields (task_type, correction_count, last_corrected); error density query pattern
 - `hooks.md` — hook authoring constraints and lifecycle event reference
 - `scaling.md` — effort scaling heuristics for agent selection and task decomposition
 - `ids.md` — ID generation conventions for specs and other artifacts
@@ -95,6 +96,7 @@
 - 2026-03-07 — Spec 003 (self-consistency): parallel candidate generation + rubric
   scoring workflow; `evaluation` memory type added to Qdrant schema
 - 2026-03-07 — Spec 004 (recursive decomposition): sub-spec suggestions in /sdd-plan with complexity heuristics; spike-first pattern; Mermaid dependency graphs in plans; [SUB-SPEC] task type in /sdd-tasks
+- 2026-03-07 — Spec 005 (feedback learning): /reflect skill for periodic memory audit; rework tracking fields (task_type, correction_count, last_corrected); adaptive calibration rules in memory.md; error density query pattern
 
 ## Error Patterns
 

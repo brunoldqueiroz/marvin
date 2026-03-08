@@ -10,7 +10,8 @@ description: >
   pattern", "knowledge map", "log decision", "reflect on errors".
   Do NOT use for: web research (researcher agent), code implementation
   (implementer agent), deliberation process (deliberation skill), candidate
-  comparison (self-consistency), or documentation writing (docs-expert).
+  comparison (self-consistency), periodic memory audit/consolidation (reflect),
+  or documentation writing (docs-expert).
 tools:
   - mcp__qdrant__qdrant-store
   - mcp__qdrant__qdrant-find
@@ -46,7 +47,8 @@ using Qdrant MCP.
    degrades sharply beyond 512 tokens — keep it tight.
 3. **Full metadata payload**: every record MUST include `type`, `project`,
    `domain`, `timestamp`, `confidence` (0.0–1.0), `session_id`,
-   `files_affected`, `outcome`.
+   `files_affected`, `outcome`. Error-pattern records additionally include
+   `task_type`, `correction_count` (integer), `last_corrected` (ISO timestamp).
 4. **Chunk sizes**: 256 tokens for facts and patterns; 512 tokens for session
    summaries. Never store raw conversation turns.
 5. **Confidence escalation**: similarity > 0.85 → update existing record,
@@ -61,7 +63,7 @@ using Qdrant MCP.
 9. **Store why, not just what**: rationale and rejected alternatives are more
    reusable than the decision itself. The "what" is usually in git.
 10. **Prune periodically**: stale records with outdated `outcome` fields
-    mislead future queries. Review on `/reflect` sessions.
+    mislead future queries. Run `/reflect` to audit and consolidate.
 
 ## Best Practices
 
@@ -84,7 +86,13 @@ using Qdrant MCP.
    Correct Approach: [what to do instead]
    Domain: [domain tag]
    Confidence: [0.5 initial, escalate per confirmation]
+   Task Type: [implementation | architecture | testing | review | planning]
+   Correction Count: [1 initial, increment on re-occurrence]
+   Last Corrected: [ISO timestamp of most recent occurrence]
    ```
+   Fields `task_type`, `correction_count`, and `last_corrected` are required
+   for new error-pattern records. Existing records without these fields remain
+   valid (backward-compatible).
 
 3. **Pre-decision query pattern**: search with a phrase capturing the
    task context (e.g., "module reorganization python"), filter by
@@ -120,6 +128,21 @@ using Qdrant MCP.
 10. **Periodic review**: during `/reflect` sessions, query all records for
     the project, identify contradictions or stale outcomes, and prune or
     update them. Recalibrate confidence scores based on recent evidence.
+
+11. **Error density query pattern**: before acting in a domain, query
+    `marvin-kb` filtered by `domain` and `type: error-pattern`. Count results
+    with `confidence > 0.65`. If 3+ high-confidence patterns exist, load the
+    deliberation and/or self-consistency skill before proceeding. This is the
+    adaptive calibration input — high error density signals a domain where
+    extra verification is warranted.
+
+12. **Reflect integration**: suggest `/reflect` to the user when: (a) a
+    multi-task spec completes (5+ tasks), (b) 10+ records have been stored in
+    the current session, (c) the user explicitly asks about memory health.
+    After reflection, updated confidence scores and pruned records apply to
+    all future queries in the session. When re-encountering a known error
+    pattern, increment `correction_count` and update `last_corrected` instead
+    of creating a new record.
 
 ## Anti-Patterns
 
