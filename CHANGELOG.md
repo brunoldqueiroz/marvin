@@ -6,91 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [0.21.0] - 2026-03-07
-
-### Added
-
-- Implement feedback learning system (spec 005)
-  - `/reflect` skill for periodic memory audit: stale detection, weak pattern consolidation, duplicate merging, domain error density reporting
-  - Rework tracking fields (`task_type`, `correction_count`, `last_corrected`) in error-pattern records
-  - Adaptive calibration rules: 3+ high-confidence error patterns in a domain biases toward deliberation
-  - Error density query pattern in memory-manager for pre-task domain awareness
-  - Reflection triggers (post-spec 5+ tasks, session density 10+ records, explicit)
-  - 7-section structured reflection report format (FR-06)
-
-### Changed
-
-- Update memory-manager with reflect integration, rework fields, and symmetric cross-references
-- Update memory rules with Reflection Triggers and Adaptive Calibration sections
-- Update CLAUDE.md with reflect/audit skill mapping
-- Update scaling.md: skill count 19 → 20, reflect in Cognitive category
-
-### Bump
-
-- Version 0.20.0 → 0.21.0
-
-## [0.20.0] - 2026-03-07
-
-### Added
-
-- Implement recursive decomposition for SDD pipeline (spec 004)
-  - Complexity heuristics in `/sdd-plan` (4 criteria, threshold 2+) with semi-automatic sub-spec suggestions
-  - Sub-spec directory structure with full SDD lifecycle and depth limit (max 2 levels)
-  - Spike-first pattern for high-risk components (15-min time-box, worktree isolation, findings report)
-  - Mermaid dependency graphs in plan template (components, edges, subgraphs, spike markers)
-  - `[SUB-SPEC]` task type in `/sdd-tasks` that blocks downstream parent tasks
-
-### Changed
-
-- Update specs.md rules with Sub-Specs and Spike-First Pattern sections
-- Update plan template with optional Dependency Graph and Sub-Specs sections
-- Update knowledge-map with spec 004 capabilities and decisions
-
-### Bump
-
-- Version 0.19.0 → 0.20.0
-
-## [0.19.0] - 2026-03-07
-
-### Added
-
-- Implement self-consistency & verification system (spec 003)
-  - Self-consistency skill with parallel 3-candidate generation and rubric scoring
-  - Default rubric (correctness, simplicity, maintainability, performance) + domain overrides
-  - Confidence scoring from score spread with explicit formula
-  - Activation/skip heuristics for cost-effective usage (~15% of tasks)
-  - `evaluation` memory type added to Qdrant schema
-  - Integration hooks with deliberation (GENERATE step) and implementer workflows
-
-### Changed
-
-- Update memory rules with self-consistency triggers and `evaluation` type
-- Update deliberation and memory-manager skills with symmetric cross-references
-- Update CLAUDE.md with verify/compare skill mapping
-- Update scaling.md with Cognitive category (19 skills)
-
-### Bump
-
-- Version 0.18.0 → 0.19.0
-
-## [0.18.0] - 2026-03-07
+## [0.22.0] - 2026-03-10
 
 ### Added
 
 - Implement cognitive memory system (spec 002)
-  - Memory-manager skill with Qdrant store/retrieve patterns for decisions, error patterns, knowledge, and deliberation records
-  - Deliberation skill with 7-step structured decision process (FRAME → GENERATE → ATTACK → COST CHECK → PREMORTEM → DECIDE → LOG)
-  - Knowledge map at `.claude/memory/knowledge-map.md` for session orientation
-  - Memory rules at `.claude/rules/memory.md` with triggers for decision logging, error extraction, and knowledge map updates
-  - Cognitive Memory section in CLAUDE.md with Qdrant integration (`marvin-kb`)
-
-### Changed
-
-- Update scaling.md with Cognitive category and skill count to 18
+- Implement self-consistency & verification system (spec 003)
+- Implement recursive decomposition for SDD pipeline (spec 004)
+- Implement feedback learning system (spec 005)
+- Implement self-improvement specs 006-010
 
 ### Bump
 
 - Version 0.17.0 → 0.18.0
+- Version 0.18.0 → 0.19.0
+- Version 0.21.0 → 0.22.0
 
 ## [0.17.0] - 2026-03-05
 
