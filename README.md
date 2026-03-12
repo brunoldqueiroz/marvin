@@ -11,26 +11,11 @@ and observability through hooks, specialist agents, and structured reasoning.
 
 ## Install
 
-```bash
-# From a clone
-git clone https://github.com/brunoldqueiroz/marvin && cd marvin
-./install.sh
-
-# Or one-liner (downloads from GitHub)
+```shell
 curl -fsSL https://raw.githubusercontent.com/brunoldqueiroz/marvin/main/install.sh | bash
 ```
 
-No dependencies required — just `bash` and `curl`.
 
-## Usage
-
-```bash
-./install.sh                  # Install .claude/ in current directory
-./install.sh /path/to/project # Install in specific directory
-./install.sh --force          # Overwrite existing .claude/
-./install.sh --latest         # Download latest from GitHub
-./install.sh --ref v0.24.0    # Download specific version
-```
 
 ## MCP Servers
 
@@ -55,4 +40,3 @@ Marvin operates on an **Orient → Think → Work → Persist** cycle:
 3. **Work** — Delegate with structured handoffs, evaluate output, recover from failures
 4. **Persist** — Write session log for continuity across sessions
 
-Session telemetry (metrics + logs) is stored in `.claude/dev/` (gitignored).
