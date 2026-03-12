@@ -4,7 +4,7 @@
 > this document. It codifies empirically validated patterns for evolving
 > AI-augmented development projects.
 
-**Version:** 1.2 — February 2026
+**Version:** 2.0 — March 2026
 **Applies to:** all files under `.claude/` and project-level configuration.
 
 ---
@@ -27,7 +27,8 @@ their purposes causes failures.
 ### 1.2 Core Axioms
 
 1. **Context window is the primary constraint.** Every design decision serves
-   to preserve context budget for actual work.
+   to preserve context budget for actual work. (Most agent failures are context
+   failures, not model failures — Anthropic, Sep 2025)
 2. **`description` field is the routing signal.** Separate routing (when to
    call) from behavior (how to act). Never mix them.
 3. **Filesystem handoff > conversational relay.** Write to `.artifacts/`, read
@@ -44,6 +45,14 @@ their purposes causes failures.
    pays a fixed cost every turn. Just-in-time costs more per retrieval but
    preserves budget for the 90% of turns that don't need it.
 
+   Progressive disclosure follows three layers: discovery (~100 tokens, always
+   loaded) → activation (full instructions on relevance) → execution (examples
+   and references on demand).
+
+8. **Diversity beats quantity.** Two diverse agents outperform sixteen
+   homogeneous ones. Optimize for reasoning diversity (different models,
+   prompts, strategies), not agent count.
+
 ### 1.3 Evidence Base
 
 | Claim | Source |
@@ -57,6 +66,16 @@ their purposes causes failures.
 | Above 45% single-agent accuracy, adding agents degrades performance | arXiv:2512.08296, capability ceiling effect |
 | Skill selection degrades sharply beyond ~50-100 skills | arXiv:2601.04748, phase transition, Jan 2026 |
 | Single-agent + skills is competitive, not a degraded fallback | arXiv:2601.12307, Jan 2026 |
+| Most agent failures are context failures, not model failures | Anthropic context engineering blog, Sep 2025 |
+| 2 diverse agents outperform 16 homogeneous agents | arXiv:2602.03794, diversity scaling, Feb 2026 |
+| Trajectory diversity yields larger gains than trajectory quantity | arXiv:2602.03219, TDScaling, Feb 2026 |
+| LLMs do not naturally self-compress context; scaffolding required | arXiv:2601.07190, Focus agent, Jan 2026 |
+| Memory poisoning: stale RAG entries corrupt future reasoning | arXiv:2601.11653, ACC framework, Jan 2026 |
+| Observation masking equals LLM summarization at ~50% cost | JetBrains NeurIPS 2025 DL4C workshop |
+| 98% per-step accuracy → &lt;67% success at 20 steps (compounding) | arXiv:2601.16649, LUMINA, Jan 2026 |
+| LLM judges are systematically overconfident; ensemble +47% accuracy | arXiv:2508.06225, LLM-as-a-Fuser, Aug 2025 |
+| Agentic faults traverse architectural boundaries (37 fault categories) | arXiv:2603.06847, fault taxonomy, Mar 2026 |
+| Automated failure attribution: 53.5% agent, 14.2% step accuracy | arXiv:2505.00212, ICML 2025 Spotlight |
 
 ---
 
@@ -86,11 +105,15 @@ Observe (metrics.jsonl)
 | Format | MUST/MUST NOT at the top. Flat structure, no deep nesting. |
 | Imports | Use `@path` for on-demand detail (max 5 hops) |
 | Authorship | Human-written, pruned. Never LLM-generated. |
+| HTML comments | `<!-- -->` invisible to Claude in auto-injection; use for maintenance annotations only |
+| Attention | Critical rules at top AND bottom of file; middle content suffers ~30% attention loss (U-shaped) |
 
 **Anti-patterns:**
 - Kitchen-sink CLAUDE.md (> 100 lines) — middle rules get ignored
 - Duplicating rules between CLAUDE.md and `.claude/rules/`
 - Using CLAUDE.md for domain knowledge (use skills instead)
+- Code style rules in CLAUDE.md (belong in linters + hooks)
+- Code snippets in CLAUDE.md (become stale; use file:line pointers instead)
 
 ### 3.2 AGENT.md
 
@@ -112,9 +135,9 @@ maxTurns: <10-30>
 | Property | Guideline |
 |----------|-----------|
 | Body budget | < 100 lines |
-| description | Lead with role. "Use for:" / "Does NOT:" pattern. |
+| description | ~140 chars max, action-oriented. Lead with role. "Use for:" / "Does NOT:" pattern. |
 | tools | Allowlist only. List each tool explicitly. |
-| model | Match to task complexity (see §8). |
+| model | Match to task complexity (see §8). `haiku\|sonnet\|opus\|inherit`; full model IDs also accepted (e.g., `claude-opus-4-5`) |
 | maxTurns | Start at 10-20; increase only with evidence. |
 | Tool selection | Include a `Tool Selection` table mapping question types to tools when agent has 3+ tools |
 
@@ -134,6 +157,15 @@ maxTurns: <10-30>
 
 **Anti-pattern:** Tool description that says "Use this tool to do X" without
 input format, constraints, or when NOT to use it.
+
+**Tool permission tiers (community consensus):**
+
+| Role | Recommended tools |
+|------|-------------------|
+| Read-only (reviewers, auditors) | Read, Grep, Glob |
+| Research | Read, Grep, Glob, WebFetch, WebSearch |
+| Writer (implementers) | Read, Write, Edit, Bash, Glob, Grep |
+| Documentation | Read, Write, Edit, Glob, Grep, WebFetch, WebSearch |
 
 ### 3.3 SKILL.md
 
@@ -162,7 +194,7 @@ tools:
 metadata:
   author: <owner>
   version: <semver>
-  category: <advisory|workflow>
+  category: <advisory|workflow|knowledge|orchestration>
 ---
 ```
 
@@ -174,6 +206,9 @@ metadata:
 | tools | Explicit per-tool list. Use `Bash(pattern*)` for scoped shell access. List each MCP tool individually |
 | metadata | `author`, `version` (semver), `category` (`advisory` or `workflow`) |
 | Side effects | Add `disable-model-invocation` for skills with side effects |
+| Routing | Cause of phase transition is semantic confusability, not raw count |
+| Scaling | Beyond 30 skills, adopt hierarchical namespacing to recover 37-40% routing accuracy |
+| Category values | `advisory` (best practices), `workflow` (user-triggered), `knowledge` (safe in agent `skills:` field), `orchestration` (NOT safe in agent `skills:` field — circular delegation risk) |
 
 **Body structure (advisory skills):**
 
@@ -201,6 +236,36 @@ metadata:
 | Exit codes | 0 = proceed, 2 = block with message, other = fail-open |
 | Observability | Always fail-open: wrap in `{ ... } 2>/dev/null` blocks |
 | Testing | `echo '{}' \| bash hook.sh` must not block |
+| Timeout | 10 minutes (extended from 60s in v2.1.3) — supports long-running validation hooks |
+
+**Lifecycle events (12 total):**
+
+| Event | Since | Can block? | Notes |
+|-------|-------|------------|-------|
+| PreToolUse | Original | Yes | Matcher-scoped; use `hookSpecificOutput.permissionDecision` |
+| PostToolUse | Original | No | Matcher-scoped; prefer `async: true` for observability |
+| Stop | Original | No | Fires when Claude finishes |
+| SubagentStop | Original | No | Fires when subagent finishes |
+| SessionStart | Original | No | Fields: source, model, agent_type |
+| SessionEnd | Original | No | Field: reason |
+| PreCompact | Original | No | Fields: trigger, custom_instructions |
+| Notification | Original | No | System notifications |
+| SubagentStart | v2.0+ | No | Can inject additionalContext |
+| UserPromptSubmit | v2.0+ | No | stdout added as Claude-visible context |
+| PermissionRequest | v2.0.45+ | Yes | Auto-approve/deny permission dialogs |
+| Setup | v2.1.10+ | No | Triggered by --init, --maintenance |
+
+**Async hooks:** Add `"async": true` for PostToolUse observability hooks
+(logging, metrics). Async hooks run in background without blocking Claude.
+Do NOT use async for hooks that block or inject context.
+
+**HTTP hooks:** `"type": "http"` hooks POST JSON to a URL instead of running
+shell commands. Non-2xx = non-blocking error; 2xx + JSON body = parsed same
+as command hooks.
+
+**Deprecated output format:** Top-level `decision`/`reason` fields are
+deprecated. Use `hookSpecificOutput.permissionDecision` and
+`hookSpecificOutput.permissionDecisionReason` for PreToolUse blocking.
 
 **Hook lifecycle for new constraints:**
 
@@ -208,6 +273,16 @@ metadata:
 2. Start as **warning** (exit 0 with logged message)
 3. Promote to **hard gate** (exit 2) after confirming accuracy
 4. Validate with metrics — confirm block rate drops
+
+**Hook escalation ladder:**
+
+| Level | Pattern | Risk |
+|-------|---------|------|
+| 1 | Auto-format on save (PostToolUse) | None |
+| 2 | Block dangerous commands (PreToolUse) | Low |
+| 3 | Block protected file edits (PreToolUse) | Low |
+| 4 | Prompt enhancement (UserPromptSubmit) | Medium |
+| 5 | AI review gate (PostToolUse subagent) | High |
 
 **Anti-patterns:**
 - Constraint without hook (< 20% compliance after 10 messages)
@@ -237,6 +312,19 @@ metadata:
 | Threshold | 3.0 default; 4.0 for security/compliance agents |
 | Judge model | Always cheaper than evaluated agent (Haiku judges Sonnet) |
 
+**Judge reliability:** LLM judges are systematically overconfident; scoring
+confidence exceeds accuracy. Consider ensemble judging (LLM-as-a-Fuser) for
+high-stakes evaluation.
+
+**Two-tier evaluation:**
+
+| Tier | Type | Examples |
+|------|------|----------|
+| 1 | Rule-based (deterministic) | Tool validity, schema compliance, file existence, test pass/fail |
+| 2 | LLM-as-judge (probabilistic) | Planning quality, task completion, reasoning coherence |
+
+Target 0.80+ Spearman correlation with human judgment for Tier 2 rubrics.
+
 ### 3.6 settings.json
 
 | Property | Guideline |
@@ -257,6 +345,7 @@ Choose the simplest pattern that meets the task requirements.
 | Parallelization | Independent subtasks with no shared state | Multiple parallel agent calls; sectioning or voting |
 | Orchestrator-Workers | Subtask count unknown until runtime | Orchestrator dynamically spawning sub-agents |
 | Evaluator-Optimizer | Output needs iterative refinement against criteria | Agent + rubric loop (generate → judge → refine) |
+| Initializer + Coder | Task spans multiple context windows | Initializer writes TODO.md + progress log; Coder reads and advances incrementally |
 
 **Decision rule:** Start at the top. Move down only when the pattern above
 cannot meet quality, latency, or complexity requirements.
@@ -264,16 +353,21 @@ cannot meet quality, latency, or complexity requirements.
 **Anti-pattern:** Jumping to Orchestrator-Workers for a task that prompt
 chaining would solve. Each layer adds ~4x token cost.
 
+> **Scaling insight:** Diversity of reasoning, not agent count, determines MAS
+> effectiveness. Two agents with different models/strategies outperform sixteen
+> homogeneous agents (arXiv:2602.03794).
+
 ### 3.8 Long-Horizon Strategies
 
 For tasks that approach or exceed the context window:
 
 | Strategy | Mechanism | When to use |
 |----------|-----------|-------------|
-| Compaction | Pre-compact hooks save state; post-compact hooks reinject | Session exceeds 60% context; automated via hooks |
+| Compaction | Pre-compact hooks save state; post-compact hooks reinject | Session exceeds 64-75% context (auto-triggered) |
 | Structured notes | Write progress and decisions to `.artifacts/` | Multi-step task where losing intermediate state is costly |
 | Sub-agent decomposition | Delegate bounded subtasks with isolated context | Clear decomposition points; main context is saturated |
 | Checkpoint files | Periodic writes with completed/remaining items | Long implementation tasks (10+ files) |
+| Observation masking | Strip environment observations; preserve action + reasoning history | Prefer over LLM summarization: same efficacy, reversible, lower cost |
 
 **Decision rule:** Use compaction hooks (already automated) as baseline.
 Add structured notes when task state is non-trivial. Decompose into sub-agents
@@ -281,6 +375,35 @@ when a single context window cannot hold all relevant files simultaneously.
 
 **Anti-pattern:** Continuing a long session without compaction or notes,
 relying on the model to "remember" — compliance drops below 20% after context fills.
+
+> **Error compounding warning:** 98% per-step accuracy compounds to &lt;67% success
+> at 20 steps (LUMINA, arXiv:2601.16649). For specs with 5+ tasks, write a
+> `claude-progress.txt` updated after each task to prevent redundant work on
+> session restart.
+
+### 3.9 Context Engineering Framework
+
+Every piece of information in an agent's context belongs to one of four buckets.
+Audit context by bucket to identify waste and gaps.
+
+| Bucket | Definition | Marvin primitives |
+|--------|-----------|-------------------|
+| **Write** | Save information outside the context window | `.artifacts/` handoff, checkpoint files, `claude-progress.txt` |
+| **Select** | Pull relevant information into context | Skills (on-demand), `@path` imports, Qdrant `qdrant-find` |
+| **Compress** | Reduce tokens while preserving semantics | PreCompact hooks, observation masking, auto-compact |
+| **Isolate** | Split context across agents/sessions | Subagent delegation, worktree isolation, `context: fork` |
+
+**Decision rule:** Default to Write (reversible, zero information loss). Use
+Select for retrieval. Use Compress only when Write + Select are insufficient.
+Use Isolate when a single context window cannot hold all relevant files.
+
+**Progressive disclosure (3-layer pattern):**
+
+| Layer | What loads | Token cost | When |
+|-------|-----------|------------|------|
+| Discovery | name + description | ~100 tokens | Always (routing) |
+| Activation | Full skill/rule body | 1-5K tokens | On relevance match |
+| Execution | Examples, reference files | Variable | On demand |
 
 ---
 
@@ -430,6 +553,11 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 | Premature multi-agent | Above 45% single-agent accuracy, agents degrade performance | Exhaust single-agent + skills first |
 | Skill library sprawl (> 50 skills) | Selection accuracy degrades sharply (phase transition) | Curate; promote overloaded areas to agents |
 | Context pollution in subagents | Injecting orchestrator context defeats isolation purpose | Subagent value comes from clean, bounded context |
+| Memory poisoning via stale RAG | Stale/incorrect memories accumulate and corrupt future reasoning | Periodic `/reflect` audits; confidence decay; fresh session + enriched context |
+| Homogeneous agent teams | Correlated outputs = one effective reasoning channel regardless of count | Ensure diversity: different models, prompts, or strategies per agent |
+| Uncalibrated LLM-as-judge | Overconfident scoring; false early termination in eval loops | Ensemble judging; 0.80+ Spearman correlation target with human judgment |
+| Code style rules in CLAUDE.md | Expensive, slow, wastes context; linters are deterministic and free | Move to hooks (PostToolUse formatters/linters) |
+| Infinite retry without session reset | Failed attempts contaminate context; error compounds each iteration | Max 2 retries, then `/clear` or fresh session with enriched context |
 
 ---
 
@@ -467,6 +595,8 @@ Before committing changes to any `.claude/` file:
 
 - [Anthropic: Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) — canonical orchestration patterns
 - [Anthropic: Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — context management strategies
+- [Anthropic: Effective Harnesses for Long-Running Agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) — Initializer + Coder pattern
+- [Anthropic: Demystifying Evals for AI Agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents) — evaluation strategies
 - arXiv:2511.12884 — "Context debt" and instruction decay empirics
 - arXiv:2602.11988 — ETH Zurich study on LLM-generated instruction files
 - Lost in the Middle (TACL 2024) — positional attention bias in LLMs
@@ -477,3 +607,13 @@ Before committing changes to any `.claude/` file:
 - arXiv:2601.04748 — single-agent + skills vs MAS; phase transition at ~50-100 skills
 - arXiv:2601.12307 — single-agent + skills competitive with multi-agent workflows
 - arXiv:2503.13657 — MAS failure modes; context pollution as primary failure cause
+- arXiv:2602.03794 — agent scaling via diversity; 2 diverse > 16 homogeneous
+- arXiv:2602.03219 — trajectory diversity scaling for code agents
+- arXiv:2601.07190 — active context compression; scaffolded compaction
+- arXiv:2601.11653 — memory poisoning as distinct failure mode
+- arXiv:2601.16649 — LUMINA; error compounding in long-horizon tasks
+- arXiv:2508.06225 — LLM-as-judge overconfidence; ensemble +47% accuracy
+- arXiv:2603.06847 — agentic fault taxonomy; 37 categories across boundaries
+- arXiv:2505.00212 — failure attribution in MAS; ICML 2025 Spotlight
+- [JetBrains: Efficient Context Management](https://blog.jetbrains.com/research/2025/12/efficient-context-management/) — observation masking, NeurIPS 2025
+- [Phil Schmid: Context Engineering](https://www.philschmid.de/context-engineering) — 4-bucket taxonomy
