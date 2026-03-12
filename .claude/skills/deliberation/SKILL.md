@@ -19,7 +19,7 @@ tools:
   - mcp__qdrant__qdrant-find
 metadata:
   author: bruno
-  version: 1.1.0
+  version: 1.2.0
   category: workflow
 ---
 
@@ -54,10 +54,8 @@ Produces a decision record stored in Qdrant for cross-session continuity.
    pre-mortems ("it might not work out") do not count.
 6. **Every deliberation produces a decision record** — stored in Qdrant via
    the memory-manager pattern with `type: deliberation`. No undocumented decisions.
-7. **Confidence scoring is explicit and dimensional** — Confidence is scored
-   across 3 dimensions: feasibility (weight 0.40), cost (weight 0.30), and
-   risk (weight 0.30). Overall confidence is a weighted aggregate of the three.
-   Thresholds are dimension-based (see §10 Confidence Calibration).
+7. **Confidence scoring is explicit** — Confidence is a single scalar score
+   (0.0–1.0) with a label: HIGH (≥0.70), MED (0.40–0.69), LOW (<0.40).
    Confidence below 0.60 after deliberation means reframe the question.
 8. **Query past decisions before generating alternatives** — don't re-derive
    what has already been decided. Retrieve first; generate only if no match.
@@ -96,12 +94,8 @@ Produces a decision record stored in Qdrant for cross-session continuity.
                 can't name one, the approach is underspecified.
 
 6. DECIDE     — State the chosen approach. Assign confidence:
-                  Overall: [HIGH|MED|LOW] ([score])
-                    Feasibility: [HIGH|MED|LOW] ([score]) — [justification]
-                    Cost: [HIGH|MED|LOW] ([score]) — [justification]
-                    Risk: [HIGH|MED|LOW] ([score]) — [justification]
-                  Include a clear next action. If any dimension is LOW,
-                  note targeted follow-up for that dimension.
+                  [HIGH|MED|LOW] ([score])
+                  Include a clear next action.
 
 7. LOG        — Store as a decision record in Qdrant (type: deliberation).
                 Use the memory-manager decision record template.
@@ -168,9 +162,6 @@ Alternatives: [rejected options with objections]
 Rationale: [why the winner beats the alternatives]
 Pre-mortem failure mode: [what could go wrong]
 Confidence: [HIGH|MED|LOW] ([score])
-  Feasibility: [HIGH|MED|LOW] ([score]) — [justification]
-  Cost: [HIGH|MED|LOW] ([score]) — [justification]
-  Risk: [HIGH|MED|LOW] ([score]) — [justification]
 Domain: [domain tag]
 Project: [project name]
 Files Affected: [list or "TBD"]
@@ -178,20 +169,9 @@ Files Affected: [list or "TBD"]
 
 ### 10. Confidence Calibration
 
-Dimension-based thresholds for the overall score:
-- **HIGH overall**: all dimensions ≥ 0.70 — objections addressed, pre-mortem
-  failure mode has a known mitigation.
-- **MED overall**: at least one dimension < 0.70, none < 0.40 — objections
-  partially addressed or pre-mortem reveals residual risk without full mitigation.
-- **LOW overall**: any dimension < 0.40 — return to GENERATE or escalate.
-
-Targeted follow-up by dimension:
-- **Feasibility LOW** → run a spike or prototype before committing.
-- **Cost LOW** → research implementation effort and maintenance burden.
-- **Risk LOW** → revisit pre-mortem, add mitigations, or consider alternatives.
-
-If a dimension cannot be assessed (insufficient information), omit it and note
-why. The overall score may be computed from available dimensions only.
+- **HIGH** (≥ 0.70): objections addressed, pre-mortem failure mode has a known mitigation.
+- **MED** (0.40–0.69): objections partially addressed or pre-mortem reveals residual risk.
+- **LOW** (< 0.40): return to GENERATE or escalate to the user.
 
 ## Anti-Patterns
 
@@ -245,11 +225,8 @@ Actions:
 6. PREMORTEM (leading: do nothing): "6 months later: deliberation latency
    became a bottleneck as memory grew beyond 10K records. We needed caching but
    had no design. Mitigation: monitor Qdrant query times; revisit if P95 > 500ms."
-7. DECIDE: Do nothing (C). Overall HIGH (0.86). Next: add Qdrant latency
+7. DECIDE: Do nothing (C). HIGH (0.86). Next: add Qdrant latency
    monitoring to surface the threshold for reconsideration.
-     Feasibility: HIGH (0.95) — no build required
-     Cost: HIGH (0.85) — zero implementation cost
-     Risk: MED (0.75) — latency could become a bottleneck; mitigated by monitoring
 8. LOG: Store decision record with type=deliberation, confidence=0.86.
 
 Result: NO decision reached through structured analysis. Cost check and
@@ -293,12 +270,8 @@ Actions:
    a skill wasn't applied in production. Mitigation: add a path validation
    step to CI before merging the migration."
 7. DECIDE: Keep flat structure (A) with a migration plan triggered at 30 skills
-   (per scaling.md thresholds). Overall MED (0.74). Pre-mortem revealed
-   migration risk outweighs benefit at current scale.
-     Feasibility: HIGH (0.90) — status quo requires no action
-     Cost: LOW (0.55) — migration cost uncertain; path reference updates are broad
-     Risk: MED (0.72) — path failures could be silent; mitigated by CI validation
-   Follow-up: Cost LOW — research migration effort and path reference update scope.
+   (per delegation.md thresholds). MED (0.74). Pre-mortem revealed migration risk
+   outweighs benefit at current scale.
 8. LOG: Store with type=deliberation, confidence=0.74, domain=architecture.
 
 Result: Incremental approach chosen. Pre-mortem revealed migration risk;
