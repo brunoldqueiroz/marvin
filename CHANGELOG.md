@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.27.0] - 2026-03-12
+
+### Added
+
+- **014-T-01**: Remove Edit from read-only agent allowlists
+- **014-T-02**: Fix MCP monitor exit code and add async to PostToolUse hooks
+- **014-T-03**: Update skill categories to v2.0 enum
+- **014-T-05**: Add claude-progress.txt instruction and 4-category enum to rules
+- **014-T-08**: Consolidate failure patterns into shared _lib.sh variable
+- **014-T-04**: Trim CLAUDE.md to 92 lines with U-shaped attention engineering
+- **014-T-07**: Fix MCP server name extraction and update inventory
+- **014-T-09**: Trim agent descriptions, tester model to haiku, add deviation comments
+
+### Changed
+
+- **014**: Mark all tasks complete — spec 014 done
+
+### Fixed
+
+- Make all technical skills user-invocable and trim descriptions
+
+### Bump
+
+- Version 0.26.1 → 0.27.0
+
 ## [0.26.1] - 2026-03-12
 
 ### Changed

@@ -22,6 +22,35 @@
         "TOOL_STORE_DESCRIPTION": "Store knowledge (patterns, decisions, lessons) in Marvin's shared KB. The 'information' param should be prefixed with [domain/type], e.g. '[dbt/pattern] Use incremental models with merge...'. The 'metadata' param should be a dict with keys: domain, type, project, author, date, tags.",
         "TOOL_FIND_DESCRIPTION": "Search Marvin's shared KB for patterns, decisions, and lessons. Use natural language. Results include metadata with domain, type, project, and author."
       }
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e", "GITHUB_TOOLSETS",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}",
+        "GITHUB_TOOLSETS": "repos,issues,pull_requests,actions,code_security"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--headless"]
+    },
+    "docker": {
+      "command": "uvx",
+      "args": ["mcp-server-docker"]
+    },
+    "dbt": {
+      "command": "uvx",
+      "args": ["dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "${DBT_PROJECT_DIR}",
+        "DBT_PATH": "${DBT_PATH}"
+      }
     }
   }
 }
