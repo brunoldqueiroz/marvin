@@ -108,7 +108,7 @@ data is unavailable.
 |-------|------|------|------------|
 | SessionStart (startup) | `session-start-context.sh` | context | advisory |
 | SessionStart (startup) | `session-start-log.sh` | log | fail-open |
-| SessionStart (startup) | `session-start-summarize.sh` | persist | advisory |
+| SessionStart (startup) | `session-start-summarize.sh` | context | advisory |
 | SessionStart (compact) | `session-start-reinject.sh` | reinject | advisory |
 | SessionEnd | `session-end-log.sh` | log | fail-open |
 | PreCompact | `pre-compact-save.sh` | persist | fail-open |

@@ -66,8 +66,8 @@ if [ -d "$CLAUDE_PROJECT_DIR/.specify/specs" ]; then
   ACTIVE_TASKS=$(find "$CLAUDE_PROJECT_DIR/.specify/specs" -name "tasks.md" -mmin -60 2>/dev/null | head -1)
   if [ -n "$ACTIVE_TASKS" ]; then
     SPEC_ID=$(echo "$ACTIVE_TASKS" | sed 's|.*/specs/||;s|/tasks.md||')
-    TASKS_DONE=$(grep -c '^\[x\]' "$ACTIVE_TASKS" 2>/dev/null || echo "0")
-    TASKS_PENDING=$(grep -c '^\[ \]' "$ACTIVE_TASKS" 2>/dev/null || echo "0")
+    TASKS_DONE=$(grep -c '\[x\]' "$ACTIVE_TASKS" 2>/dev/null || echo "0")
+    TASKS_PENDING=$(grep -c '\[ \]' "$ACTIVE_TASKS" 2>/dev/null || echo "0")
     TASKS_TOTAL=$(( TASKS_DONE + TASKS_PENDING ))
     if [ "$TASKS_TOTAL" -gt 0 ]; then
       WORKING_ON="${SPEC_ID} (${TASKS_DONE}/${TASKS_TOTAL} tasks done)"

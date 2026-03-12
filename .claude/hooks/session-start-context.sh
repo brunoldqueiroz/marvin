@@ -1,6 +1,7 @@
 #!/bin/bash
 # session-start-context.sh — Inject project context on session start
 # Hook: SessionStart (matcher: startup)
+# Philosophy: advisory (degrades gracefully — returns empty context on failure)
 
 source "$(dirname "$0")/_lib.sh"
 

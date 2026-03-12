@@ -71,13 +71,16 @@ Worked on branch(es): ${BRANCH_TEXT}. Specs: ${SPEC_TEXT}.${OUTCOME_TEXT} Total 
 ACTION REQUIRED: Store this summary to Qdrant using qdrant-store with metadata: type=knowledge, domain=session-history, project=marvin, confidence=0.7"
 
 # Output additionalContext JSON (same pattern as session-start-context.sh)
+OUTPUT_OK=false
 if command -v jq &> /dev/null; then
-  jq -n --arg ctx "$SUMMARY" '{additionalContext: $ctx}'
+  jq -n --arg ctx "$SUMMARY" '{additionalContext: $ctx}' && OUTPUT_OK=true
 else
-  python3 -c "import json,sys; print(json.dumps({'additionalContext': sys.argv[1]}))" "$SUMMARY"
+  python3 -c "import json,sys; print(json.dumps({'additionalContext': sys.argv[1]}))" "$SUMMARY" && OUTPUT_OK=true
 fi
 
-# Write the marker so we don't re-summarize this batch on the next startup
-date -u +%Y-%m-%dT%H:%M:%SZ > "$MARKER" 2>/dev/null
+# Write the marker only if context was successfully output
+if [ "$OUTPUT_OK" = true ]; then
+  date -u +%Y-%m-%dT%H:%M:%SZ > "$MARKER" 2>/dev/null
+fi
 
 exit 0
