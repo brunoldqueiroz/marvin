@@ -32,3 +32,7 @@ log_metric() {
     tail -500 "$metrics_file" > "$metrics_file.tmp" && mv "$metrics_file.tmp" "$metrics_file"
   fi
 }
+
+# Shared failure patterns for subagent output detection.
+# Superset of gate + log patterns — use in grep -qi with \| separators.
+AGENT_FAILURE_PATTERNS='I could not\|I cannot\|I'\''m unable\|failed to\|error occurred\|no results found'
