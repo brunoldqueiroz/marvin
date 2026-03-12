@@ -204,7 +204,7 @@ metadata:
 | user-invocable | `false` for advisory skills auto-routed by description; `true` for user-triggered workflows |
 | description | "Use when:" + `Triggers:` quoted phrases + "Do NOT use for:" with cross-refs to sibling skills |
 | tools | Explicit per-tool list. Use `Bash(pattern*)` for scoped shell access. List each MCP tool individually |
-| metadata | `author`, `version` (semver), `category` (`advisory` or `workflow`) |
+| metadata | `author`, `version` (semver), `category` (`advisory`, `workflow`, `knowledge`, or `orchestration`) |
 | Side effects | Add `disable-model-invocation` for skills with side effects |
 | Routing | Cause of phase transition is semantic confusability, not raw count |
 | Scaling | Beyond 30 skills, adopt hierarchical namespacing to recover 37-40% routing accuracy |
@@ -546,7 +546,7 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 | Agent registry file | Dual source of truth; drifts from actual agents | `description` field IS the routing |
 | Skill with orchestration | Circular delegation; skills can't spawn agents | Knowledge-only skills |
 | Constraint without hook | < 20% compliance after 10 messages | Hook for deterministic enforcement |
-| Infinite retry | Context grows with each retry; compounds errors | Max 2 retries, then escalate to user |
+| Infinite retry without reset | Context grows with each retry; compounds errors | Max 2 retries, then `/clear` or fresh session; escalate to user |
 | Conversational relay | Copies tokens into context; information loss | Filesystem handoff via `.artifacts/` |
 | Overly broad tools allowlist | Agent can do unintended damage | Explicit allowlist per agent |
 | Judge model = evaluated model | Self-assessment bias | Always use cheaper judge (Haiku → Sonnet) |
@@ -557,7 +557,6 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 | Homogeneous agent teams | Correlated outputs = one effective reasoning channel regardless of count | Ensure diversity: different models, prompts, or strategies per agent |
 | Uncalibrated LLM-as-judge | Overconfident scoring; false early termination in eval loops | Ensemble judging; 0.80+ Spearman correlation target with human judgment |
 | Code style rules in CLAUDE.md | Expensive, slow, wastes context; linters are deterministic and free | Move to hooks (PostToolUse formatters/linters) |
-| Infinite retry without session reset | Failed attempts contaminate context; error compounds each iteration | Max 2 retries, then `/clear` or fresh session with enriched context |
 
 ---
 
