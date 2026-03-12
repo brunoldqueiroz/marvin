@@ -21,7 +21,7 @@ tools:
 metadata:
   author: bruno
   version: 1.0.0
-  category: advisory
+  category: workflow
 ---
 
 # Reflect

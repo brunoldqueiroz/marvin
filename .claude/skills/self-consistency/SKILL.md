@@ -23,7 +23,7 @@ tools:
 metadata:
   author: bruno
   version: 1.0.0
-  category: workflow
+  category: orchestration
 ---
 
 # Self-Consistency

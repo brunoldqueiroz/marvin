@@ -22,7 +22,7 @@ tools:
 metadata:
   author: bruno
   version: 1.0.0
-  category: advisory
+  category: knowledge
 ---
 
 # Memory Manager
