@@ -35,7 +35,7 @@ SESSION_LOGS_DIR="$CLAUDE_PROJECT_DIR/.claude/dev/session_logs"
 if [ -d "$SESSION_LOGS_DIR" ]; then
   LATEST_LOG=$(ls -t "$SESSION_LOGS_DIR"/*.log 2>/dev/null | head -1)
   if [ -n "$LATEST_LOG" ]; then
-    LAST_SESSION=$(head -20 "$LATEST_LOG")
+    LAST_SESSION=$(head -40 "$LATEST_LOG")
     if [ -n "$LAST_SESSION" ]; then
       CONTEXT="${CONTEXT}
 
