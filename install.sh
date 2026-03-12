@@ -69,8 +69,13 @@ DEST="$TARGET/.claude"
 # ── Source resolution ────────────────────────────────────────────────────────
 
 # Detect if we're running from a local Marvin clone
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-LOCAL_SOURCE="$SCRIPT_DIR/.claude"
+# When piped (curl | bash), BASH_SOURCE is empty — force download mode
+if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+    SCRIPT_DIR=""
+fi
+LOCAL_SOURCE="${SCRIPT_DIR:+$SCRIPT_DIR/.claude}"
 
 resolve_source() {
     if [[ "$LATEST" == true ]]; then
@@ -78,7 +83,7 @@ resolve_source() {
         return
     fi
 
-    if [[ -d "$LOCAL_SOURCE" ]]; then
+    if [[ -n "$LOCAL_SOURCE" && -d "$LOCAL_SOURCE" ]]; then
         info "Using local clone at $SCRIPT_DIR"
         SOURCE="$LOCAL_SOURCE"
         CLEANUP=""
