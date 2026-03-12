@@ -58,7 +58,7 @@ include:
 PREFER delegation prompts under 500 tokens.
 
 For multi-agent workflows, follow the structured handoff format in
-@.claude/rules/handoff.md.
+@.claude/rules/delegation.md.
 
 For non-trivial delegations, instruct agents to write output to
 `.artifacts/{agent-name}.md`. Read the artifact instead of relying on

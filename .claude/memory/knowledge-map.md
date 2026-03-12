@@ -6,7 +6,7 @@
 - `.claude/` — Claude Code configuration: agents, skills, rules, hooks, memory, settings
 - `.claude/agents/` — 5 specialist agents (implementer, reviewer, tester, researcher, security)
 - `.claude/skills/` — 20 skill files covering domain expertise and SDD workflows
-- `.claude/rules/` — 9 governance rules files (delegation, memory, specs, hooks, etc.)
+- `.claude/rules/` — 7 governance rules files (delegation, memory, specs, hooks, agents, skills, research)
 - `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
 - `.specify/` — SDD workspace: templates + 10 active specs (001–010); sub-specs supported
@@ -30,7 +30,7 @@
 - `docs-expert` — advisory — README and documentation authoring
 - `checklist-runner` — workflow — structured checklist execution
 - `memory-manager` — advisory — Qdrant memory store/retrieve patterns
-- `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions; dimensional confidence (feasibility/cost/risk)
+- `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions; scalar confidence scoring
 - `self-consistency` — workflow — parallel candidate generation + rubric scoring
 - `reflect` — advisory — periodic memory audit, pattern consolidation, error density analysis, adaptive calibration
 - `sdd-constitution` — workflow — SDD project constitution creation
@@ -51,12 +51,10 @@
 - `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns; dependency-aware task execution with DAG parsing, parallel dispatch, blocked task handling; plan checkpoints with deviation detection
 - `agents.md` — agent authoring: frontmatter fields, body structure, signals
 - `skills.md` — skill authoring: frontmatter fields, section order, body budget
-- `handoff.md` — structured handoff format between sequential agents (max 500 tokens)
+- `delegation.md` — consolidated: IDS protocol, structured handoff, skill scaling rules
 - `research.md` — parallel research delegation: decompose → N researchers → synthesize
-- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates; adaptive calibration rules; rework tracking fields (task_type, correction_count, last_corrected); error density query pattern; session confidence tracking (NEUTRAL → CAUTIOUS → DELIBERATE)
+- `memory.md` — memory triggers: when to log decisions, error patterns, knowledge-map updates; adaptive calibration rules; rework tracking fields (task_type, correction_count, last_corrected); error density query pattern
 - `hooks.md` — hook authoring constraints and lifecycle event reference
-- `scaling.md` — effort scaling heuristics for agent selection and task decomposition
-- `ids.md` — ID generation conventions for specs and other artifacts
 
 ## Key Dependencies
 
@@ -99,8 +97,8 @@
 - 2026-03-07 — Spec 005 (feedback learning): /reflect skill for periodic memory audit; rework tracking fields (task_type, correction_count, last_corrected); adaptive calibration rules in memory.md; error density query pattern
 - 2026-03-07 — Spec 006 (task dependency graph): dependency-aware task execution rules in specs.md; DAG validation in sdd-tasks; execution phases and dependency graph sections in tasks template
 - 2026-03-07 — Spec 007 (dynamic replanning): lightweight plan checkpoints in Task Execution; three signal checks (failure, contradiction, coherence); suggest-only plan adjustments with phase-derivation restart on approval
-- 2026-03-07 — Spec 008 (intra-session adaptation): ephemeral session confidence tracker in memory.md; three levels (NEUTRAL, CAUTIOUS, DELIBERATE); domain-scoped degradation; complements cross-session Adaptive Calibration
-- 2026-03-07 — Spec 009 (multidimensional confidence): dimensional confidence scoring in deliberation skill (feasibility 0.40, cost 0.30, risk 0.30); dimension-based calibration thresholds; targeted follow-up guidance; optional confidence_dimensions in Qdrant metadata
+- 2026-03-11 — Spec 008 (intra-session adaptation): **REMOVED** — session confidence tracker added overhead without proven value; adaptive calibration (spec 005) covers cross-session needs
+- 2026-03-11 — Spec 009 (multidimensional confidence): **REMOVED** — dimensional confidence (feasibility/cost/risk) reverted to scalar; simpler model is sufficient
 - 2026-03-07 — Spec 010 (TDD guidance): advisory TDD heuristic in sdd-tasks (complex logic, APIs, bug fixes, data transformations); [TEST-FIRST] 3-task pattern; test-first dispatch note in specs.md Task Execution
 
 ## Error Patterns

@@ -71,29 +71,10 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
 
     If any errors are found, present them to the user and abort. Fix the
     tasks before retrying. Info-level notes are displayed but do not block.
-4c. **TDD assessment**: For each implementer task, check if it matches one of
-    these heuristics:
-
-    - **Complex logic**: algorithmic code, state machines, parsers, validators
-    - **Behavioral contracts**: public APIs, interface implementations
-    - **Bug fixes**: regression tests should be written before the fix
-    - **Data transformations**: ETL logic, data pipeline steps
-
-    Tasks that do not match (config changes, documentation, rule edits, skill
-    or agent metadata files) skip this assessment entirely.
-
-    For each matching task, recommend replacing the single implementer task
-    with this 3-task `[TEST-FIRST]` sequence:
-
-    - `T-XX: [TEST-FIRST] Write test` — tester agent writes failing tests that
-      define expected behavior for the feature or fix
-    - `T-YY: Implement` — implementer agent writes code to make the failing
-      tests pass (depends on T-XX)
-    - `T-ZZ: Verify` — tester agent runs the full test suite to confirm no
-      regressions (depends on T-YY)
-
-    Recommendations are collected and presented during step 7 (confirmation)
-    so the user can accept or remove them before the file is finalized.
+4c. **TDD note**: For tasks involving complex logic, public APIs, bug fixes,
+    or data transformations, consider suggesting a test-first approach (write
+    test → implement → verify) during the confirmation step (step 7). This is
+    advisory — the user decides whether to adopt it.
 
 5. **Add acceptance criteria**: Derive from the spec's requirements and the
    constitution's quality standards.
@@ -124,6 +105,4 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
 - MUST validate the dependency graph (step 4b) before writing tasks.md —
   cycle, missing-reference, and self-reference errors block writing; isolated
   task warnings are reported but do not block
-- `[TEST-FIRST]` is advisory — recommendations are shown during the
-  confirmation step (step 7) so the user can accept or remove them; non-TDD
-  task patterns remain the default
+- TDD suggestions are advisory — the user decides during confirmation (step 7)

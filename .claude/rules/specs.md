@@ -65,27 +65,13 @@ trades token cost for wall-clock
 time — if cost is a concern, ask the user before dispatching the first
 parallel batch.
 
-**Test-first dispatch** — Tasks annotated with `[TEST-FIRST]` use a tester →
-implementer → tester sequence (write test, implement, verify). This is handled
-naturally by task dependencies — no special execution logic needed. The
-annotation is advisory; it is applied by `sdd-tasks` and can be removed by the
-user during task confirmation.
-
 **Re-evaluation loop** — After each batch completes, edit `tasks.md` to mark
 finished tasks `[x]`, then derive the next batch of ready tasks and repeat.
 
-**Plan checkpoint** — Before deriving the next batch, run three signal checks.
-_Failure_: any task in the batch marked `[-]` or returned SIGNAL:BLOCKED.
-_Contradiction_: reviewer requested structural changes, implementer modified
-files outside the task's `Files:` field, or implementer used an alternative
-approach. _Coherence_: a next-batch task references a file renamed/deleted in
-this batch or assumes a changed approach. If all pass, continue silently. If
-any fail, present a deviation report and use AskUserQuestion:
-`## Plan Checkpoint — Deviation Detected` / `**After**: {batch, e.g., "Phase 2 (T-05)"}` /
-`**Signal**: {failure|contradiction|coherence}` / `**Evidence**: {specifics}` /
-`**Affected tasks**: {IDs}` / `**Options**: (a) Continue as-is (b) Adjust plan — propose specific edits to plan.md and tasks.md (c) Abort`.
-If (b), propose edits to `plan.md` and `tasks.md`, apply after approval, then
-restart phase derivation from the updated `tasks.md`.
+**Plan checkpoint** — Before deriving the next batch, check if any task in
+the batch failed (`[-]`) or returned SIGNAL:BLOCKED. If all passed, continue
+silently. If any failed, report what happened and ask the user: (a) continue
+as-is, (b) adjust plan, or (c) abort.
 
 **Blocked task handling** — If a task's dependency is marked `[-]` (skipped)
 or failed, report which task is blocked and which dependency is unmet. Ask the
