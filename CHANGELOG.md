@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.23.0] - 2026-03-12
+
+### Added
+
+- Implement agent hardening spec 011 — red lines, stop rules, wave annotations
+- Implement verification gate and two-stage review spec 012
+
+### Bump
+
+- Version 0.22.1 → 0.23.0
+
 ## [0.22.1] - 2026-03-12
 
 ### Changed
