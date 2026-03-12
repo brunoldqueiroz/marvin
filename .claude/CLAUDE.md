@@ -1,4 +1,5 @@
 # MARVIN
+<!-- budget: <100 lines; last pruned: 2026-03-12 -->
 
 ## Rules
 
@@ -26,19 +27,8 @@ when evidence contradicts them.
 
 ## Skill Loading
 
-Before acting on any domain-specific task, check if a matching skill exists
-and load it. Skills contain best practices, anti-patterns, and review
-checklists that MUST inform your work.
-
-Match by domain keyword: Python → python-expert, Snowflake → snowflake-expert,
-Docker → docker-expert, Terraform → terraform-expert, AWS → aws-expert,
-dbt → dbt-expert, Spark → spark-expert, Airflow → airflow-expert,
-diagrams → diagram-expert, docs/README → docs-expert, git → git-expert,
-memory/decisions → memory-manager, deliberation/trade-offs → deliberation,
-verify/compare → self-consistency, reflect/audit → reflect.
-
-When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
-load all matching skills.
+Before acting on any domain-specific task, load the matching skill. See
+@.claude/rules/skills.md for the full domain → skill keyword map.
 
 ## Before Acting
 
@@ -62,22 +52,10 @@ minimal set of subtasks? (3) Independent → parallel; dependent → sequential.
 
 ## Handoff Protocol
 
-The task prompt is the only context an agent receives. Every delegation must
-include:
-
-1. **Objective** — single clear sentence
-2. **Key files** — paths to read or modify
-3. **Constraints** — MUST / MUST NOT / PREFER
-4. **Output format** — what to return or where to write
-
-PREFER delegation prompts under 500 tokens.
-
-For multi-agent workflows, follow the structured handoff format in
-@.claude/rules/delegation.md.
-
-For non-trivial delegations, instruct agents to write output to
-`.artifacts/{agent-name}.md`. Read the artifact instead of relying on
-conversational summaries. Clean up `.artifacts/` after workflow.
+See @.claude/rules/delegation.md for the full structured handoff format.
+Every delegation MUST include: objective, key files, constraints (MUST/MUST NOT/PREFER),
+and output format. PREFER prompts under 500 tokens. Instruct agents to write
+output to `.artifacts/{agent-name}.md`; read artifacts instead of relying on conversational summaries.
 
 ## Failure Recovery
 
@@ -94,29 +72,21 @@ Use `/sdd-*` skills for structured feature development. See
 
 Follow @.claude/rules/memory.md for when and how to use persistent memory.
 
-- **Before** non-trivial decisions: query `marvin-kb` via `qdrant-find`
-- **After** architectural decisions (2+ files): log via `qdrant-store`
-- **After** user corrections: extract error pattern and store
-- **On session start**: consult `.claude/memory/knowledge-map.md`
-- **For high-stakes decisions**: load the `deliberation` skill
-- **For comparing alternatives**: load the `self-consistency` skill
-- **Periodically**: run `/reflect` to consolidate patterns and prune stale records
-
 ## Session Orientation
 
-On session start, briefly acknowledge the project context provided by the
-SessionStart hook before responding to the user's first prompt:
-
-- Current branch and uncommitted file count
-- Last 2-3 commits (one line each)
-- Active spec if any was recently modified
-- Consult `.claude/memory/knowledge-map.md` for project structure awareness
-
-If context is not available, skip — do not invent it.
-Keep orientation to 3-5 lines max. Then proceed with the user's request.
+On session start, briefly acknowledge the project context (branch, uncommitted
+file count, last 2-3 commits, active spec). Consult
+`.claude/memory/knowledge-map.md` for project structure awareness. Skip if
+context is unavailable — do not invent it. Keep orientation to 3-5 lines max.
 
 ## Verify
 
-- Hooks: `bash -n .claude/hooks/*.sh` (syntax check)
-- Settings: `python3 -c "import json; json.load(open('.claude/settings.json'))"`
-- Agent YAML: `head -1 .claude/agents/*/AGENT.md` (verify frontmatter starts with ---)
+See @docs/development-standard.md §9 for verification commands (hooks, settings, agent YAML).
+
+## Critical Reminders
+
+- MUST delegate to specialist agents when one exists for the task.
+- MUST NOT relay known-bad subagent output — retry or escalate.
+- MUST NOT invent facts, file paths, function names, or API endpoints.
+- MUST enter plan mode for any non-trivial task.
+- MUST load matching skills before acting on domain-specific tasks.

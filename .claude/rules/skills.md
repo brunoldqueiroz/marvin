@@ -3,7 +3,34 @@ paths:
   - ".claude/skills/**/SKILL.md"
 ---
 
-# Skill Authoring Rules
+# Skills
+
+## Domain Routing
+
+Match by domain keyword to load the correct skill before acting:
+
+| Domain keyword | Skill |
+|----------------|-------|
+| Python | python-expert |
+| Snowflake | snowflake-expert |
+| Docker | docker-expert |
+| Terraform | terraform-expert |
+| AWS | aws-expert |
+| dbt | dbt-expert |
+| Spark | spark-expert |
+| Airflow | airflow-expert |
+| diagrams | diagram-expert |
+| docs/README | docs-expert |
+| git | git-expert |
+| memory/decisions | memory-manager |
+| deliberation/trade-offs | deliberation |
+| verify/compare | self-consistency |
+| reflect/audit | reflect |
+
+When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
+load all matching skills.
+
+## Skill Authoring Rules
 
 ## Frontmatter
 
