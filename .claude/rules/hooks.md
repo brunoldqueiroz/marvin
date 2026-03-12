@@ -92,9 +92,15 @@ a log, register two hooks — gate first so it can block before logging.
 Session persistence uses raw text files in `.claude/dev/session_logs/`:
 
 - `stop-persist.sh` writes `{timestamp}.log` on session stop
-- `session-start-context.sh` reads the latest `.log` on session start
+- `session-start-context.sh` reads the latest `.log` on session start (up to 40 lines)
+- `session-start-summarize.sh` bridges logs to Qdrant after every 5 sessions
 - Rotation: keep last 10 files, older ones are deleted automatically
 - MUST NOT use structured formats (Markdown, JSON) for session logs
+
+Log fields: `session`, `time`, `branch`, `mode`, `duration`, `outcome`,
+`commits`, `uncommitted`, `working-on` (active spec + progress),
+`recent-files`. All fields are optional — hooks degrade gracefully if
+data is unavailable.
 
 ## Current Hook Inventory
 
@@ -102,6 +108,7 @@ Session persistence uses raw text files in `.claude/dev/session_logs/`:
 |-------|------|------|------------|
 | SessionStart (startup) | `session-start-context.sh` | context | advisory |
 | SessionStart (startup) | `session-start-log.sh` | log | fail-open |
+| SessionStart (startup) | `session-start-summarize.sh` | persist | advisory |
 | SessionStart (compact) | `session-start-reinject.sh` | reinject | advisory |
 | SessionEnd | `session-end-log.sh` | log | fail-open |
 | PreCompact | `pre-compact-save.sh` | persist | fail-open |
