@@ -1,9 +1,8 @@
 ---
 name: reviewer
 description: >
-  Code review specialist. Use for: PR reviews, code quality analysis, convention
-  enforcement, diff review, structural consistency checks. Does NOT: implement
-  features, write tests, run deployments, or make architectural decisions.
+  Code review specialist. PR reviews, quality analysis, convention enforcement.
+  Does NOT: implement, test, deploy, or architect.
 # Write retained for .artifacts/ output only
 tools: Read, Glob, Grep, Bash(git diff*), Bash(git log*), Bash(git show*), Bash(git status*), Bash(ruff check*), Bash(ruff format --check*), Bash(mypy*), Bash(coderabbit*), Bash(cr*), Bash(which*), mcp__qdrant__qdrant-find, Write
 model: sonnet

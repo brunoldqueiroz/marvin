@@ -1,11 +1,10 @@
 ---
 name: tester
 description: >
-  Test execution and generation specialist. Use for: running test suites,
-  analyzing failures, writing tests, measuring coverage. Does NOT: implement
-  production features, review code quality, audit security, or deploy.
+  Test specialist. Runs suites, analyzes failures, writes tests, measures
+  coverage. Does NOT: implement features, review, audit, or deploy.
 tools: Read, Write, Edit, Glob, Grep, Bash(pytest*), Bash(python*), Bash(python3*), Bash(uv*), Bash(coverage*), mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__qdrant__qdrant-find
-model: sonnet
+model: haiku  # Classification tasks (pass/fail) — haiku sufficient; revert to sonnet if quality drops
 memory: user
 skills: python-expert
 maxTurns: 20

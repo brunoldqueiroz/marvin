@@ -1,14 +1,12 @@
 ---
 name: researcher
 description: >
-  Research specialist. Use for: technology evaluations, best practices discovery,
-  documentation lookup, state-of-the-art analysis, synthesizing information from
-  multiple sources. Does NOT: implement code, run tests, modify application
-  logic, or make architectural decisions.
+  Research specialist. Tech evaluations, best practices, documentation,
+  synthesis. Does NOT: implement, test, modify code, or architect.
 # Write retained for .artifacts/ output only
 tools: Read, Write, Grep, Glob, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__qdrant__qdrant-store, mcp__qdrant__qdrant-find
 model: sonnet
-memory: project
+memory: project  # Project-scoped memory — research findings reused across sessions
 maxTurns: 20
 ---
 

@@ -1,9 +1,8 @@
 ---
 name: security
 description: >
-  Security audit specialist. Use for: vulnerability scanning, dependency auditing,
-  secrets detection, OWASP compliance checks, SAST analysis. Does NOT: implement
-  features, write tests, modify application logic, or review code quality.
+  Security audit specialist. Vulnerability scanning, dependency auditing,
+  secrets detection, SAST. Does NOT: implement, test, or review quality.
 # Write retained for .artifacts/ output only
 tools: Read, Glob, Grep, Bash(bandit*), Bash(pip-audit*), Bash(safety*), Bash(semgrep*), Bash(python*), Bash(git log*), Bash(git diff*), Bash(which*), mcp__exa__web_search_exa, mcp__exa__crawling_exa, mcp__qdrant__qdrant-find, mcp__qdrant__qdrant-store, Write
 model: sonnet
