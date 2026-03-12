@@ -3,5 +3,5 @@ name = "cz_conventional_commits"
 tag_format = "v$version"
 version_scheme = "semver"
 version_provider = "commitizen"
-version = "0.25.0"
+version = "0.26.0"
 update_changelog_on_bump = false

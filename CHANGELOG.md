@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.26.0] - 2026-03-12
+
+### Added
+
+- **013-T-02**: Clean pre-compact state after reinject
+- **013-T-01**: Enrich stop-persist.sh with work summary, duration, outcome
+- **013-T-03**: Expand session-start-context.sh read limit to 40 lines
+- **013-T-04**: Create session-start-summarize.sh and register in settings
+- **013-T-05**: Update hooks.md with new hook and enriched log fields
+
+### Changed
+
+- Simplify README — keep only one-liner install
+- **013**: Add spec, plan, and tasks for session memory improvements
+
+### Fixed
+
+- Handle piped execution in install.sh source detection
+- **013-T-06**: Address review findings — grep anchors, marker guard, headers
+
+### Bump
+
+- Version 0.25.0 → 0.26.0
+
 ## [0.25.0] - 2026-03-12
 
 ### Added
