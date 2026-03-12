@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.22.1] - 2026-03-12
+
+### Changed
+
+- Remove specs 008 (session confidence) and 009 (dimensional confidence)
+- Simplify specs 007/010, consolidate 3 rules into delegation.md
+
+### Bump
+
+- Version 0.22.0 → 0.22.1
+
 ## [0.22.0] - 2026-03-10
 
 ### Added
