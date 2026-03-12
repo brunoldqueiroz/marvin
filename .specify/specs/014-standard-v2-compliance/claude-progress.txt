@@ -1,0 +1,11 @@
+T-01: Edit removed from reviewer, researcher, security agents
+T-02: MCP monitor exit 0 + async:true on PostToolUse hooks (PARTIAL: hooks.md inventory needs fail-open update)
+T-03: Categories updated — self-consistency→orchestration, memory-manager→knowledge, reflect→workflow
+T-05: claude-progress.txt instruction added to specs.md; 4-category enum added to skills.md
+T-06: Already complete — all 4 SDD skills had correct tools: frontmatter
+T-08: AGENT_FAILURE_PATTERNS consolidated into _lib.sh; gate + log hooks updated
+T-04: CLAUDE.md trimmed 123→92 lines; domain routing table moved to skills.md; Critical Reminders added
+T-07: MCP server extraction fixed (awk -F'__'); hooks.md inventory updated to fail-open
+T-09: All 5 agent descriptions ≤140 chars; tester model→haiku; deviation comments added
+T-10: Stage-1 review passed — 16/17 AC pass, 1 false positive (AC-8 grep miss); AC-12 within tolerance
+T-11: Verification suite 15/15 pass — Check 9 was false positive (agent grep issue, manually confirmed)
