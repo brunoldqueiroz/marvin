@@ -12,26 +12,24 @@ and observability through hooks, specialist agents, and structured reasoning.
 ## Install
 
 ```bash
-uv tool install git+https://github.com/brunoldqueiroz/marvin
-```
+# From a clone
+git clone https://github.com/brunoldqueiroz/marvin && cd marvin
+./install.sh
 
-Or via the one-line installer:
-
-```bash
+# Or one-liner (downloads from GitHub)
 curl -fsSL https://raw.githubusercontent.com/brunoldqueiroz/marvin/main/install.sh | bash
 ```
 
-Requires `python3 >= 3.10` and `uv` (or `pipx`).
+No dependencies required — just `bash` and `curl`.
 
 ## Usage
 
 ```bash
-marvin init              # Initialize Marvin in your project
-marvin init --latest     # Download latest from GitHub
-marvin init --force      # Overwrite existing .claude/
-marvin agents            # List available agents
-marvin skills            # List available skills
-marvin metrics           # View session metrics
+./install.sh                  # Install .claude/ in current directory
+./install.sh /path/to/project # Install in specific directory
+./install.sh --force          # Overwrite existing .claude/
+./install.sh --latest         # Download latest from GitHub
+./install.sh --ref v0.24.0    # Download specific version
 ```
 
 ## MCP Servers
@@ -58,4 +56,3 @@ Marvin operates on an **Orient → Think → Work → Persist** cycle:
 4. **Persist** — Write session log for continuity across sessions
 
 Session telemetry (metrics + logs) is stored in `.claude/dev/` (gitignored).
-Use `marvin metrics` to analyze from the command line.

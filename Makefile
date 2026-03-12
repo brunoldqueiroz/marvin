@@ -1,13 +1,13 @@
 .PHONY: changelog release-dry-run release release-patch release-minor release-major
 
-# Regenerate CHANGELOG.md, sync README.md version, amend the bump commit, and move the tag
+# Regenerate CHANGELOG.md, sync install.sh + README.md version, amend the bump commit, and move the tag
 define post-bump
 	@TAG=$$(git describe --tags --abbrev=0) && \
 		VER=$${TAG#v} && \
 		git-cliff -o CHANGELOG.md && \
+		sed -i "s/^VERSION=\"[0-9]*\.[0-9]*\.[0-9]*\"/VERSION=\"$$VER\"/" install.sh && \
 		sed -i "s/version-[0-9]*\.[0-9]*\.[0-9]*-blue/version-$$VER-blue/" README.md && \
-		sed -i "s/What's Included (v[0-9]*\.[0-9]*\.[0-9]*)/What's Included (v$$VER)/" README.md && \
-		git add CHANGELOG.md README.md && \
+		git add CHANGELOG.md install.sh README.md && \
 		git commit --amend --no-edit && \
 		git tag -d $$TAG && \
 		git tag $$TAG && \
