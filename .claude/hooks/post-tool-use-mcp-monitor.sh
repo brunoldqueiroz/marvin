@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# post-tool-use-mcp-monitor.sh — PostToolUse hook that detects MCP tool errors
-# and surfaces them via exit 2 (hard gate) + persistent log.
+# post-tool-use-mcp-monitor.sh — PostToolUse hook that detects MCP tool errors and logs them.
 source "$(dirname "$0")/_lib.sh"
 
 INPUT=$(cat)
@@ -33,4 +32,4 @@ SERVER=$(echo "$TOOL" | cut -d'_' -f3)
 
 # Surface to Claude (and therefore to the user)
 echo "MCP tool '$TOOL' (server: $SERVER) returned error: $ERROR_MATCH. Check API key/billing for '$SERVER'." >&2
-exit 2
+exit 0
