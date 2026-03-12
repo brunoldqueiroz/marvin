@@ -6,11 +6,8 @@
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-powered-blueviolet" alt="Claude Code"></a>
 </p>
 
-A Claude Code orchestration layer that thinks before acting, plans before
-executing, and delegates to specialist agents.
-
-Marvin adds session memory, agent delegation, and observability to Claude Code
-through hooks, a structured brain, and specialist agents.
+A Claude Code orchestration layer that adds session memory, agent delegation,
+and observability through hooks, specialist agents, and structured reasoning.
 
 ## Install
 
@@ -18,69 +15,29 @@ through hooks, a structured brain, and specialist agents.
 uv tool install git+https://github.com/brunoldqueiroz/marvin
 ```
 
-Or with pipx:
-
-```bash
-pipx install git+https://github.com/brunoldqueiroz/marvin
-```
-
-Or via the one-line installer (tries uv, falls back to pipx):
+Or via the one-line installer:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/brunoldqueiroz/marvin/main/install.sh | bash
 ```
 
-### Prerequisites
+Requires `python3 >= 3.10` and `uv` (or `pipx`).
 
-- `python3 >= 3.10`
-- `uv` or `pipx`
-
-### Upgrading
+## Usage
 
 ```bash
-uv tool upgrade marvin-cli
-# or
-pipx upgrade marvin-cli
-```
-
-## CLI Usage
-
-```bash
-# Initialize Marvin in your project (uses bundled data, no network)
-marvin init
-
-# Initialize in a specific directory
-marvin init /path/to/project
-
-# Download latest from GitHub main branch
-marvin init --latest
-
-# Download a specific version
-marvin init --ref v0.4.0
-
-# Overwrite existing .claude/ without prompting
-marvin init --force
-
-# List available agents and skills
-marvin agents
-marvin skills
-
-# View metrics insights for current project
-marvin metrics
-marvin metrics --json          # JSON output for scripting
-
-# Version and help
-marvin --version
-marvin --help
+marvin init              # Initialize Marvin in your project
+marvin init --latest     # Download latest from GitHub
+marvin init --force      # Overwrite existing .claude/
+marvin agents            # List available agents
+marvin skills            # List available skills
+marvin metrics           # View session metrics
 ```
 
 ## MCP Servers
 
 Marvin uses three MCP servers (configured in `.mcp.json`):
-
-- **Context7** — Up-to-date library documentation
-- **Exa** — Web search and research
-- **Qdrant** — Persistent knowledge base
+**Context7** (docs), **Exa** (search), **Qdrant** (knowledge base).
 
 Create a `.env` file with your API keys:
 
@@ -91,61 +48,14 @@ QDRANT_URL=...
 QDRANT_API_KEY=...
 ```
 
-## Project Structure
-
-```
-cli/
-  __init__.py                      # Package marker
-  marvin.py                        # CLI entry point (click + loguru)
-install.sh                         # One-line installer (uv/pipx)
-.claude/
-  CLAUDE.md                        # Brain — reasoning, routing, handoff, recovery
-  settings.json                    # Hooks + permissions
-  agents/researcher/AGENT.md       # Research specialist
-  skills/
-    */SKILL.md                     # 10 expert advisory skills
-  hooks/
-    _lib.sh                        # Shared utilities (log_metric, json_val)
-    session-start-context.sh       # SessionStart: inject git + previous session context
-    session-start-log.sh           # SessionStart: log session_start metric
-    session-start-reinject.sh      # SessionStart(compact): recover after compaction
-    session-end-log.sh             # SessionEnd: log session_end metric
-    pre-compact-save.sh            # PreCompact: snapshot before compaction
-    pre-tool-use-block-secrets.sh  # PreToolUse: block secret exposure
-    post-tool-use-log.sh           # PostToolUse: tool invocation tracking
-    post-tool-use-mcp-monitor.sh   # PostToolUse: MCP error detection
-    post-tool-failure-log.sh       # PostToolUseFailure: failure tracking
-    stop-persist.sh                # Stop: persist raw session log
-    subagent-start-log.sh          # SubagentStart: spawn tracking
-    subagent-stop-gate.sh          # SubagentStop: quality gate
-    subagent-stop-log.sh           # SubagentStop: log subagent metrics
-    user-prompt-log.sh             # UserPromptSubmit: prompt tracking
-    notification-log.sh            # Notification: idle/permission tracking
-  dev/                             # Gitignored — metrics.jsonl, session_logs/
-.mcp.json                          # MCP server configuration
-```
-
 ## How It Works
 
 Marvin operates on an **Orient → Think → Work → Persist** cycle:
 
-1. **Orient** — On session start, hooks inject session metadata (model, source),
-   git context, and the previous session summary
-2. **Think** — The brain reasons about the task: can I handle it directly? What
-   subtasks? Parallel or sequential? Plan mode for uncertain approaches
-3. **Work** — Route to the right topology, delegate with structured handoffs,
-   evaluate output against acceptance criteria, recover from failures
-4. **Persist** — On session stop, a hook writes a raw text log (git state,
-   commits, uncommitted changes) to `session_logs/` for the next session
+1. **Orient** — Hooks inject git context and previous session summary on start
+2. **Think** — Reason about the task, route to the right topology, plan if uncertain
+3. **Work** — Delegate with structured handoffs, evaluate output, recover from failures
+4. **Persist** — Write session log for continuity across sessions
 
-## Observability
-
-Two locations in `.claude/dev/` (gitignored) provide session-level telemetry:
-
-- **`session_logs/`** — Raw text logs per session (git state, commits,
-  uncommitted changes). Last 10 kept, older rotated automatically
-- **`metrics.jsonl`** — Unified event stream: session_start, session_end,
-  tool_use, tool_failure, subagent_start, subagent_stop, user_prompt,
-  notification
-
-Use `marvin metrics` to analyze the JSONL data from the command line.
+Session telemetry (metrics + logs) is stored in `.claude/dev/` (gitignored).
+Use `marvin metrics` to analyze from the command line.
