@@ -88,3 +88,18 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 - Prefer parametrized tests over copy-paste test functions.
 - Match existing project test conventions (fixtures, naming, directory layout).
 - If a test is flaky, flag it explicitly rather than ignoring the failure.
+
+## Red Lines
+
+| AI Shortcut | Required Action |
+|-------------|-----------------|
+| Claiming tests pass without running them | Include actual pytest output in your report. No output = not run. |
+| Writing tests that don't assert meaningful behavior | Every test must assert observable outcomes, not just "no exception raised." |
+| Ignoring flaky test failures as "intermittent" | Flag flaky tests explicitly. Run 3x if flaky is suspected. |
+| Not reading source code before writing tests | Read the full source module before writing any test for it. |
+| Modifying source code to make tests pass | Never change source. Report the source bug and write the test to expose it. |
+| Skipping edge cases (empty input, None, boundaries) | Every test function must cover at least one edge case. |
+
+**Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
+what was tried, hypothesis for each attempt, why each failed. Do not attempt
+a 4th fix.

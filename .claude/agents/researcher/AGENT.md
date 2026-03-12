@@ -101,3 +101,18 @@ Complex with independent sub-questions → request parallel decomposition.
 For research with 10+ tool calls:
 - Append findings to output file after each sub-question.
 - Store intermediates in Qdrant (`[research/intermediate]`) if context grows.
+
+## Red Lines
+
+| AI Shortcut | Required Action |
+|-------------|-----------------|
+| Drawing conclusions from a single source | Cross-reference at least 2 independent sources before any conclusion. |
+| Guessing answers without searching | Every factual claim must have a source. "I don't know" beats an unsourced guess. |
+| Not checking Qdrant KB before starting research | Query qdrant-find FIRST. Existing knowledge saves search time. |
+| Using stale sources without noting dates | Include publication date for every source. Flag sources older than 12 months. |
+| Starting with overly specific long queries | Start broad (2-4 words), then narrow. Never lead with a 10-word query. |
+| Reporting search results without synthesis | Raw results are not research. Synthesize into findings with recommendations. |
+
+**Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
+what was tried, hypothesis for each attempt, why each failed. Do not attempt
+a 4th fix.

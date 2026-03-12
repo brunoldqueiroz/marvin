@@ -11,7 +11,7 @@
 - `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
 - `.specify/` — SDD workspace: templates + 10 active specs (001–010); sub-specs supported
 - `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks); plan includes Dependency Graph and Sub-Specs sections; tasks template includes execution phases and dependency graph sections
-- `.specify/specs/` — 10 specs: 001-skill-architecture-improvements (done), 002-cognitive-memory (done), 003-self-consistency (done), 004-recursive-decomposition (done), 005-feedback-learning (done), 006-task-dependency-graph (done), 007-dynamic-replanning (done), 008-intra-session-adaptation (done), 009-multidimensional-confidence (done), 010-tdd-guidance (active); sub-spec nesting supported
+- `.specify/specs/` — 11 specs: 001–007 (done), 008–009 (removed), 010-tdd-guidance (done), 011-agent-hardening (active); sub-spec nesting supported
 - `docs/` — project documentation: `development-standard.md`
 - `.venv/` — Python 3.13 virtual environment managed by uv
 
@@ -36,19 +36,19 @@
 - `sdd-constitution` — workflow — SDD project constitution creation
 - `sdd-specify` — workflow — SDD spec authoring (`/sdd-specify`)
 - `sdd-plan` — workflow — SDD plan authoring (`/sdd-plan`)
-- `sdd-tasks` — workflow — SDD tasks authoring (`/sdd-tasks`); validates dependency graphs (cycles, missing refs, self-refs; isolated-task warnings); TDD assessment with [TEST-FIRST] task pattern
+- `sdd-tasks` — workflow — SDD tasks authoring (`/sdd-tasks`); validates dependency graphs (cycles, missing refs, self-refs; isolated-task warnings); computes Wave: N annotations via topological sort; TDD advisory notes
 
 ## Agents (5)
 
-- `implementer` — sonnet — writes code from specs; runs ruff/mypy/pytest until clean
-- `reviewer` — sonnet — code quality, convention enforcement, diff review
-- `tester` — sonnet — test execution, failure analysis, coverage measurement
-- `researcher` — sonnet — technology evaluation, multi-source synthesis (memory: project)
-- `security` — sonnet — SAST, dependency audit, secrets detection, OWASP checks
+- `implementer` — sonnet — writes code from specs; runs ruff/mypy/pytest until clean; Red Lines + 3-attempt stop rule; per-task commit convention
+- `reviewer` — sonnet — code quality, convention enforcement, diff review; Red Lines + 3-attempt stop rule
+- `tester` — sonnet — test execution, failure analysis, coverage measurement; Red Lines + 3-attempt stop rule
+- `researcher` — sonnet — technology evaluation, multi-source synthesis (memory: project); Red Lines + 3-attempt stop rule
+- `security` — sonnet — SAST, dependency audit, secrets detection, OWASP checks; Red Lines + 3-attempt stop rule
 
 ## Rules (9)
 
-- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns; dependency-aware task execution with DAG parsing, parallel dispatch, blocked task handling; plan checkpoints with deviation detection
+- `specs.md` — SDD pipeline: when to use, spec numbering, implementation flow; sub-spec and spike-first patterns; dependency-aware task execution with DAG parsing, parallel dispatch, blocked task handling; plan checkpoints; per-task commit convention
 - `agents.md` — agent authoring: frontmatter fields, body structure, signals
 - `skills.md` — skill authoring: frontmatter fields, section order, body budget
 - `delegation.md` — consolidated: IDS protocol, structured handoff, skill scaling rules
@@ -100,6 +100,7 @@
 - 2026-03-11 — Spec 008 (intra-session adaptation): **REMOVED** — session confidence tracker added overhead without proven value; adaptive calibration (spec 005) covers cross-session needs
 - 2026-03-11 — Spec 009 (multidimensional confidence): **REMOVED** — dimensional confidence (feasibility/cost/risk) reverted to scalar; simpler model is sufficient
 - 2026-03-07 — Spec 010 (TDD guidance): advisory TDD heuristic in sdd-tasks (complex logic, APIs, bug fixes, data transformations); [TEST-FIRST] 3-task pattern; test-first dispatch note in specs.md Task Execution
+- 2026-03-11 — Spec 011 (agent hardening): Red Lines anti-rationalization tables + uniform 3-attempt stop rule added to all 5 agents; Wave: N computation in sdd-tasks; per-task commit convention in implementer + specs.md
 
 ## Error Patterns
 

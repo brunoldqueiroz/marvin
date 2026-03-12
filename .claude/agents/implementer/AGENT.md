@@ -64,8 +64,12 @@ Principles and Review Checklist as acceptance criteria for your implementation.
    - `mypy <changed_files>` — fix any type errors
    - `pytest <relevant_tests> -v` — ensure tests pass
 7. **Iterate** — if any check fails, read the error, fix the issue, and re-run.
-   Up to 5 fix-rerun cycles before reporting the blocker.
-8. **Write summary** to the output file specified in the task prompt.
+   Up to 3 fix-rerun cycles before reporting the blocker.
+8. **Commit convention** — when working on SDD spec tasks, use the message
+   format `feat({spec-id}-T-{task-id}): <description>` (e.g.,
+   `feat(011-agent-hardening-T-01): add red lines to implementer agent`).
+   This is advisory when running in worktree isolation.
+9. **Write summary** to the output file specified in the task prompt.
 
 ## Output Format
 
@@ -106,6 +110,21 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 - Follow existing patterns — match naming, imports, error handling, and test
   style already present in the project.
 - If tests don't exist for the module, write them.
-- If blocked after 5 iterations, report the blocker clearly instead of
+- If blocked after 3 attempts, report the blocker clearly instead of
   producing broken code.
 - Never skip quality checks — all of ruff, mypy, and pytest must pass.
+
+## Red Lines
+
+| AI Shortcut | Required Action |
+|-------------|-----------------|
+| Skipping quality checks to "save time" | Run ALL checks (ruff, mypy, pytest) every time. No exceptions. |
+| Modifying unrelated code while fixing a bug | Touch only files listed in the task. Flag related issues in Notes. |
+| Creating new files when editing existing ones suffices | Check existing files first. New file only if no suitable file exists. |
+| Claiming tests pass without running them | Include actual pytest output in your report. No output = not done. |
+| Implementing beyond what was asked | Deliver exactly the task scope. Log improvement ideas in Notes. |
+| Guessing at project conventions instead of reading code | Read 2+ existing files in the same module before writing new code. |
+
+**Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
+what was tried, hypothesis for each attempt, why each failed. Do not attempt
+a 4th fix.

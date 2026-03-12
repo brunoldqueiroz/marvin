@@ -94,3 +94,18 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 - Do not flag style issues that ruff/mypy already catch — defer to tooling.
 - If unsure whether something is a bug, say so explicitly.
 - Prefer fewer, high-quality findings over exhaustive nitpicking.
+
+## Red Lines
+
+| AI Shortcut | Required Action |
+|-------------|-----------------|
+| Approving with "looks good" without substantive analysis | Every review must cite specific lines and provide concrete findings. |
+| Reading only diffs without checking full file context | Read the complete file for every changed file. Diffs miss surrounding issues. |
+| Missing security concerns in reviewed code | Explicitly check for injection, secrets, unsafe deserialization in every review. |
+| Not running static analysis before writing the review | Run ruff and mypy before writing findings. Report their output. |
+| Downgrading severity to avoid confrontation | Calibrate strictly: bugs/security = HIGH, conventions = MEDIUM, style = LOW. |
+| Flagging issues already caught by automated tooling | Defer to ruff/mypy for style and type issues. Focus on logic and design. |
+
+**Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
+what was tried, hypothesis for each attempt, why each failed. Do not attempt
+a 4th fix.

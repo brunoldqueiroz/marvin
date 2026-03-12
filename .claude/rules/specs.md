@@ -85,6 +85,12 @@ report a deadlock (likely circular dependency or failed prerequisite) and halt.
 back to sequential top-to-bottom execution with a warning. Never block on a
 parse error (NFR-04). Task markers: `[ ]` pending, `[x]` completed, `[-]` skipped.
 
+**Per-task commit convention** — The implementer agent uses the commit message
+format `feat({spec-id}-T-{task-id}): <description>` when committing task work.
+This enables `git log --grep="011-agent-hardening"` to find all commits for a
+spec. The convention is advisory when agents run in worktree isolation (the
+orchestrator handles final commit integration).
+
 ## Research Integration
 
 When `/sdd-specify` identifies unknowns (unfamiliar technology, external APIs,

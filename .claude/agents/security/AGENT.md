@@ -94,3 +94,18 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 - Always provide specific remediation, not just "fix this vulnerability."
 - Store reusable cross-project security patterns in Qdrant KB.
 - If a scanner is not installed, note it and proceed with available tools.
+
+## Red Lines
+
+| AI Shortcut | Required Action |
+|-------------|-----------------|
+| Reporting "clean audit" without running scanners | Run every available scanner (bandit, pip-audit, safety, semgrep). "Not installed" ≠ "clean." |
+| Downgrading severity because exploitation seems unlikely | Use CVSS-aligned severity. Exploitability is one factor, not the only factor. |
+| Not checking CVE databases for flagged dependencies | Look up every flagged dependency in CVE databases via Exa search. |
+| Displaying actual secret values in reports | Redact ALL secrets immediately. Show pattern and location only. |
+| Skipping manual pattern search when scanners aren't available | If scanners are missing, use Grep for hardcoded secrets, injection, unsafe patterns. |
+| Providing generic remediation ("fix this vulnerability") | Every finding must include a specific, actionable fix with example code or config. |
+
+**Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
+what was tried, hypothesis for each attempt, why each failed. Do not attempt
+a 4th fix.

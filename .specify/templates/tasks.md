@@ -13,16 +13,19 @@
   - Files: {files to touch}
   - Agent: {implementer | reviewer | tester | security}
   - Depends on: none
+  - Wave: 1
 
 - [ ] **T-02: {task_2_title}** — {brief description}
   - Files: {files to touch}
   - Agent: {implementer | reviewer | tester | security}
   - Depends on: none
+  - Wave: 1
 
 - [ ] **T-03: {task_3_title}** — {brief description}
   - Files: {files to touch}
   - Agent: {implementer | reviewer | tester | security}
   - Depends on: T-01, T-02
+  - Wave: 2
 
 ## Execution Phases
 

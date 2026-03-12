@@ -71,7 +71,17 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
 
     If any errors are found, present them to the user and abort. Fix the
     tasks before retrying. Info-level notes are displayed but do not block.
-4c. **TDD note**: For tasks involving complex logic, public APIs, bug fixes,
+4c. **Compute wave annotations**: After validation passes, assign `Wave: N`
+    to each task using topological sort of the dependency DAG:
+
+    - Wave 1 = tasks with `Depends on: none`
+    - Wave N = tasks whose dependencies are ALL in waves < N
+    - If cycle detection (step 4b) found a cycle, skip wave assignment entirely
+      (the error was already reported and blocks writing)
+    - Add `Wave: N` to each task entry and update the Execution Phases table
+      to show wave composition
+
+4d. **TDD note**: For tasks involving complex logic, public APIs, bug fixes,
     or data transformations, consider suggesting a test-first approach (write
     test → implement → verify) during the confirmation step (step 7). This is
     advisory — the user decides whether to adopt it.
@@ -106,3 +116,5 @@ a discrete, delegatable unit of work with clear ownership and dependencies.
   cycle, missing-reference, and self-reference errors block writing; isolated
   task warnings are reported but do not block
 - TDD suggestions are advisory — the user decides during confirmation (step 7)
+- MUST compute wave annotations (step 4c) after dependency validation passes
+  — every task entry must include a `Wave: N` field
