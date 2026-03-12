@@ -1,19 +1,14 @@
 ---
 name: airflow-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Apache Airflow expert advisor. Load proactively when writing DAGs, scheduling
-  workflows, or orchestrating data pipelines with Airflow. Use when: user
-  mentions Airflow, creates DAGs, configures operators, or asks about workflow
-  orchestration and scheduling.
-  Triggers: "write a dag", "airflow dag", "airflow operator", "taskflow api",
-  "deferrable operator", "airflow connection", "XCom push pull",
-  "schedule pipeline", "workflow orchestration", "data pipeline schedule".
-  Do NOT use for: pure Python scripts, typing, pytest, ruff, mypy, or
-  packaging (python-expert); Spark jobs, distributed processing, or Spark
-  DataFrames (spark-expert); cloud infrastructure or MWAA (aws-expert,
-  terraform-expert); dbt models (dbt-expert); or container builds
-  (docker-expert).
+  Apache Airflow expert for workflow orchestration.
+  Use when: user writes DAGs, configures operators, or asks about scheduling,
+  TaskFlow API, or pipeline orchestration.
+  Triggers: "airflow dag", "airflow operator", "taskflow api", "deferrable
+  operator", "XCom push pull", "schedule pipeline".
+  Do NOT use for: pure Python (python-expert), Spark jobs (spark-expert),
+  infrastructure (aws/terraform-expert), dbt (dbt-expert).
 tools:
   - Read
   - Glob

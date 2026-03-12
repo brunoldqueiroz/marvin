@@ -30,6 +30,10 @@ Match by domain keyword to load the correct skill before acting:
 When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
 load all matching skills.
 
+MUST invoke the Skill tool for matching advisory skills before acting on
+domain-specific tasks. The skill body contains principles, checklists, and
+anti-patterns that are NOT visible from the description alone.
+
 ## Skill Authoring Rules
 
 ## Frontmatter

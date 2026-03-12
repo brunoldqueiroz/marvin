@@ -1,17 +1,14 @@
 ---
 name: docs-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Documentation expert advisor. Load proactively when writing or improving
-  project documentation. Use when: user writes READMEs, changelogs, ADRs,
-  docstrings, or asks about technical writing and documentation structure.
-  Triggers: "write readme", "update readme", "write documentation", "changelog",
-  "ADR", "docstring", "technical writing", "API docs", "document this project",
-  "improve docs", "write docs".
-  Do NOT use for application code (python-expert), git workflows (git-expert),
-  infrastructure (aws-expert, terraform-expert), diagram generation or visual
-  architecture charts (diagram-expert), or non-documentation Markdown (config
-  files, CLAUDE.md, SKILL.md).
+  Documentation expert for technical writing.
+  Use when: user writes READMEs, changelogs, ADRs, docstrings, or asks about
+  documentation structure.
+  Triggers: "write readme", "write documentation", "changelog", "ADR",
+  "docstring", "technical writing", "API docs".
+  Do NOT use for: application code (python-expert), git workflows
+  (git-expert), diagrams (diagram-expert), config Markdown (CLAUDE.md).
 tools:
   - Read
   - Glob

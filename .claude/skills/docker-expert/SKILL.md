@@ -1,16 +1,14 @@
 ---
 name: docker-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Docker expert advisor. Load proactively when writing or editing Dockerfiles,
-  docker-compose.yml, or containerizing applications. Use when: user creates
-  containers, writes Dockerfiles, configures Docker Compose, asks about
-  multi-stage builds, container security, layer caching, or base image selection.
-  Triggers: "dockerfile", "docker compose", "containerize", "docker build",
-  "multi-stage build", "docker image", "container security", "dockerignore",
-  "create container", "deploy with docker".
-  Do NOT use for cloud services like ECS/EKS (aws-expert), IaC
-  (terraform-expert), or application code logic (python-expert).
+  Docker expert advisor for containerization.
+  Use when: user writes Dockerfiles, docker-compose.yml, asks about
+  multi-stage builds, layer caching, or container security.
+  Triggers: "dockerfile", "docker compose", "containerize", "multi-stage
+  build", "docker image", "container security".
+  Do NOT use for: cloud services ECS/EKS (aws-expert), IaC
+  (terraform-expert), application code (python-expert).
 tools:
   - Read
   - Glob

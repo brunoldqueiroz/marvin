@@ -1,18 +1,14 @@
 ---
 name: dbt-expert
-user-invocable: false
+user-invocable: true
 description: >
-  dbt (data build tool) expert advisor focused on the data transformation layer.
-  Use when: user works on dbt models, Jinja macros, ref/source resolution,
-  staging/intermediate/mart layer design, dbt testing, dbt documentation, or
-  dbt project configuration.
-  Triggers: "dbt model", "dbt run", "dbt test", "ref vs source",
-  "incremental model", "Jinja macro", "schema.yml", "staging model",
-  "dbt source freshness", "dbt-utils", "dbt project evaluator".
-  Do NOT use for: Snowflake warehouse administration, DDL, RBAC, Time Travel,
-  VARIANT data, clustering keys, query optimization, or warehouse sizing
-  (snowflake-expert); pure Python application code (python-expert);
-  infrastructure as code (terraform-expert, aws-expert).
+  dbt expert advisor for data transformation layer.
+  Use when: user works on dbt models, Jinja macros, ref/source, staging/mart
+  layers, dbt testing, or project config.
+  Triggers: "dbt model", "dbt run", "dbt test", "incremental model",
+  "Jinja macro", "schema.yml".
+  Do NOT use for: Snowflake admin (snowflake-expert), Python code
+  (python-expert), infrastructure (terraform/aws-expert).
 tools:
   - Read
   - Glob

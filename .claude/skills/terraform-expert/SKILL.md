@@ -1,19 +1,14 @@
 ---
 name: terraform-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Terraform/OpenTofu HCL and IaC patterns expert advisor. Use when: user writes
-  .tf files, asks about HCL syntax, module design, state management, plan/apply
-  workflows, provider configuration, state migration, or drift detection.
+  Terraform/OpenTofu HCL and IaC patterns expert.
+  Use when: user writes .tf files, asks about module design, state management,
+  plan/apply workflows, or provider config.
   Triggers: "terraform plan", "terraform state", "HCL module", "for_each vs
-  count", "terraform provider", "state migration", "tfvars", "remote backend",
-  "terraform import", "opentofu".
-  Do NOT use for: AWS service configuration, IAM policy design, S3 bucket
-  settings, Lambda setup, cost optimization, or Well-Architected Framework
-  (aws-expert handles those); Dockerfile syntax, container builds, or Docker
-  Compose (docker-expert); application code (python-expert). This skill covers
-  HCL authoring, IaC patterns, and Terraform state management, not the behavior
-  of the cloud services being provisioned.
+  count", "state migration", "remote backend".
+  Do NOT use for: AWS service behavior (aws-expert), Dockerfiles
+  (docker-expert), application code (python-expert).
 tools:
   - Read
   - Glob

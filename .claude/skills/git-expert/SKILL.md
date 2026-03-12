@@ -1,16 +1,14 @@
 ---
 name: git-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Git expert advisor. Load proactively when managing git workflows, resolving
-  conflicts, or setting up repository conventions. Use when: user asks about
-  branching, commits, rebasing, conflict resolution, git hooks, history cleanup,
-  or repository performance.
-  Triggers: "git workflow", "commit message", "git rebase", "merge conflict",
-  "git hook", "branch strategy", "git history", "force push", "git bisect",
-  "cherry-pick", "clean up commits".
-  Do NOT use for application code (python-expert), documentation files
-  (docs-expert), or CI/CD infrastructure (aws-expert, terraform-expert).
+  Git expert for version control workflows.
+  Use when: user asks about branching, rebasing, conflict resolution, git
+  hooks, history cleanup, or repository management.
+  Triggers: "git rebase", "merge conflict", "git hook", "branch strategy",
+  "git bisect", "cherry-pick", "clean up commits".
+  Do NOT use for: application code (python-expert), documentation
+  (docs-expert), CI/CD infrastructure (aws/terraform-expert).
 tools:
   - Read
   - Glob

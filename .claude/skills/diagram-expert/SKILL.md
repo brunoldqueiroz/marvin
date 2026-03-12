@@ -1,16 +1,14 @@
 ---
 name: diagram-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Diagram generation expert. Load proactively when user wants visual
-  representations of systems, processes, or data models. Use when: user asks
-  to create, draw, or generate any kind of diagram.
+  Diagram generation expert for visual representations.
+  Use when: user asks to create, draw, or generate any system, process, or
+  data model diagram.
   Triggers: "flowchart", "architecture diagram", "sequence diagram", "ERD",
-  "entity relationship", "create diagram", "system diagram", "data flow",
-  "generate diagram", "draw architecture".
-  Do NOT use for written documentation, READMEs, changelogs, or ADRs
-  (docs-expert), data charts or statistical plots (antvis/mcp-server-chart),
-  or infrastructure-as-code (terraform-expert).
+  "create diagram", "data flow".
+  Do NOT use for: written documentation (docs-expert), statistical charts,
+  infrastructure-as-code (terraform-expert).
 tools:
   - Read
   - Glob

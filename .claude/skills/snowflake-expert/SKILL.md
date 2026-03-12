@@ -1,18 +1,14 @@
 ---
 name: snowflake-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Snowflake platform expert advisor focused on warehouse administration and SQL
-  optimization. Use when: user asks about Snowflake warehouse config, RBAC,
-  Time Travel, streams/tasks, VARIANT/semi-structured data, clustering keys,
-  query performance, micro-partition pruning, or Snowflake cost management.
-  Triggers: "warehouse sizing", "RBAC setup", "Time Travel retention",
-  "VARIANT query", "clustering key", "SYSTEM$STREAM_HAS_DATA",
-  "micro-partition pruning", "resource monitor", "Snowflake task DAG".
-  Do NOT use for: dbt model structure, Jinja macros, ref vs source resolution,
-  staging/marts layer design, dbt testing, or dbt documentation (dbt-expert);
-  pure Python application code (python-expert); infrastructure as code
-  (terraform-expert, aws-expert).
+  Snowflake platform expert for warehouse admin and SQL optimization.
+  Use when: user asks about warehouse config, RBAC, Time Travel, streams/tasks,
+  VARIANT data, clustering, or query performance.
+  Triggers: "warehouse sizing", "RBAC setup", "Time Travel", "VARIANT query",
+  "clustering key", "micro-partition pruning".
+  Do NOT use for: dbt models (dbt-expert), Python code (python-expert),
+  infrastructure (terraform/aws-expert).
 tools:
   - Read
   - Glob

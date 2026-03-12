@@ -1,19 +1,14 @@
 ---
 name: aws-expert
-user-invocable: false
+user-invocable: true
 description: >
-  AWS service configuration and architecture expert advisor. Use when: user asks
-  about AWS service behavior, IAM policies, S3 bucket settings, Lambda setup,
-  VPC networking, EC2/RDS configuration, cost optimization, Well-Architected
-  Framework, AWS CLI operations, or multi-account governance.
-  Triggers: "IAM policy", "s3 bucket settings", "lambda cold start", "vpc
-  security group", "aws cost optimization", "well-architected", "cross-account
-  role", "ec2 instance type", "rds configuration", "aws cli profile".
-  Do NOT use for: HCL syntax, Terraform modules, state files, plan/apply
-  workflows, or provider configuration (terraform-expert handles those); Dockerfile
-  syntax, container builds, or Docker Compose (docker-expert); application code
-  (python-expert). This skill covers AWS service behavior and architecture, not
-  the IaC tooling used to provision it.
+  AWS service configuration and architecture expert.
+  Use when: user asks about IAM, S3, Lambda, VPC, EC2/RDS config, cost
+  optimization, or Well-Architected Framework.
+  Triggers: "IAM policy", "s3 bucket", "lambda cold start", "vpc security
+  group", "aws cost optimization", "cross-account role".
+  Do NOT use for: Terraform HCL (terraform-expert), Dockerfiles
+  (docker-expert), application code (python-expert).
 tools:
   - Read
   - Glob

@@ -1,17 +1,14 @@
 ---
 name: spark-expert
-user-invocable: false
+user-invocable: true
 description: >
-  Apache Spark/PySpark expert advisor. Load proactively when writing PySpark
-  jobs, processing big data, or working with Delta Lake. Use when: user mentions
-  Spark, PySpark, or distributed data processing, asks about DataFrame API,
-  shuffle optimization, partitioning, or memory management.
-  Triggers: "pyspark job", "spark submit", "broadcast join", "shuffle partition",
-  "executor OOM", "delta lake merge", "spark dataframe", "big data pipeline".
-  Do NOT use for: pure Python scripts, typing, pytest, ruff, mypy, packaging,
-  uv, or async/await (python-expert); DAG scheduling, Airflow operators, or
-  workflow orchestration (airflow-expert); cloud infrastructure (aws-expert,
-  terraform-expert); or dbt models (dbt-expert).
+  Apache Spark/PySpark expert advisor.
+  Use when: user writes PySpark jobs, processes big data, or works with Delta
+  Lake, DataFrame API, shuffle optimization, or partitioning.
+  Triggers: "pyspark job", "spark submit", "broadcast join", "shuffle
+  partition", "executor OOM", "delta lake merge".
+  Do NOT use for: pure Python (python-expert), Airflow DAGs
+  (airflow-expert), infrastructure (aws/terraform-expert), dbt (dbt-expert).
 tools:
   - Read
   - Glob
