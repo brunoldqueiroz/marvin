@@ -16,7 +16,11 @@ paths:
   4. `Do NOT use for` with cross-references to sibling skills
 - `tools` MUST list each tool explicitly — no wildcards. Bash access uses
   `Bash(<command>*)` syntax (e.g., `Bash(ruff*)`).
-- `metadata.category` MUST be `advisory` or `workflow`.
+- `metadata.category` MUST be one of:
+  - `advisory` — best practices and review guidance; auto-routed by description
+  - `workflow` — user-triggered multi-step process; activated via slash command
+  - `knowledge` — pure reference, no delegation; safe in agent `skills:` field
+  - `orchestration` — spawns agents or delegates tasks; NOT safe in agent `skills:` field (circular delegation risk)
 
 ## Body Structure (advisory skills)
 

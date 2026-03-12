@@ -66,7 +66,10 @@ time — if cost is a concern, ask the user before dispatching the first
 parallel batch.
 
 **Re-evaluation loop** — After each batch completes, edit `tasks.md` to mark
-finished tasks `[x]`, then derive the next batch of ready tasks and repeat.
+finished tasks `[x]`, then append `{task-id}: {one-line status}` to
+`{spec-dir}/claude-progress.txt`. This file survives context resets and
+prevents redundant work on session restart. Then derive the next batch of
+ready tasks and repeat.
 
 **Plan checkpoint** — Before deriving the next batch, check if any task in
 the batch failed (`[-]`) or returned SIGNAL:BLOCKED. If all passed, continue
