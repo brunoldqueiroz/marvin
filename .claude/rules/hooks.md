@@ -115,7 +115,7 @@ data is unavailable.
 | PreToolUse (Bash) | `pre-tool-use-block-secrets.sh` | gate | fail-closed |
 | PreToolUse (Read) | `pre-tool-use-block-partial-read.sh` | gate | fail-closed |
 | PostToolUse | `post-tool-use-log.sh` | log | fail-open |
-| PostToolUse (mcp__) | `post-tool-use-mcp-monitor.sh` | monitor | fail-closed |
+| PostToolUse (mcp__) | `post-tool-use-mcp-monitor.sh` | monitor | fail-open |
 | PostToolUseFailure | `post-tool-failure-log.sh` | log | fail-open |
 | Stop | `stop-persist.sh` | persist | fail-open |
 | SubagentStart | `subagent-start-log.sh` | log | fail-open |

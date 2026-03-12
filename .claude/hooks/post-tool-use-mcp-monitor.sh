@@ -24,7 +24,7 @@ fi
 
 # Log to unified metrics
 SESSION=$(echo "$INPUT" | json_val '.session_id')
-SERVER=$(echo "$TOOL" | cut -d'_' -f3)
+SERVER=$(echo "$TOOL" | awk -F'__' '{print $2}')
 {
   log_metric "$(printf '{"ts":"%s","event":"mcp_error","session":"%s","tool":"%s","server":"%s","error":"%s"}' \
     "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$SESSION" "$TOOL" "$SERVER" "$ERROR_MATCH")"
