@@ -49,6 +49,9 @@ Recent tools: ${S_TOOLS}"
 
   CONTEXT="${CONTEXT}
 ${STATE_TEXT}"
+
+  # Clean up to prevent stale state re-injection in future sessions
+  rm -f "$STATE_FILE"
 fi
 
 # Output JSON (jq preferred, python fallback)
