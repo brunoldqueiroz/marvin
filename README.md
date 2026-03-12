@@ -1,27 +1,16 @@
 # Marvin
 
-[![version](https://img.shields.io/badge/version-0.23.0-blue)](https://github.com/brunoldqueiroz/marvin/releases)
-[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-powered-blueviolet)](https://docs.anthropic.com/en/docs/claude-code)
+<p align="center">
+  <a href="https://github.com/brunoldqueiroz/marvin/releases"><img src="https://img.shields.io/badge/version-0.23.0-blue" alt="version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a>
+  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-powered-blueviolet" alt="Claude Code"></a>
+</p>
 
 A Claude Code orchestration layer that thinks before acting, plans before
 executing, and delegates to specialist agents.
 
 Marvin adds session memory, agent delegation, and observability to Claude Code
 through hooks, a structured brain, and specialist agents.
-
-## What's Included (v0.23.0)
-
-- **Brain** — Think → Route → Delegate → Evaluate → Recover cycle with
-  topology-based routing, structured handoff protocol, and failure recovery
-- **Researcher agent** — Proactive research specialist with Context7, Exa,
-  and Qdrant KB access
-- **10 skills** — Expert advisors: python, dbt, spark, airflow, aws, docker,
-  docs, git, snowflake, terraform
-- **Observability hooks** — Session context, tool usage, agent quality gate,
-  metrics logging to JSONL
-- **3 MCP servers** — Context7 (docs), Exa (search), Qdrant (knowledge base)
-- **CLI** — `marvin init`, `marvin agents`, `marvin skills`, `marvin metrics`
 
 ## Install
 
