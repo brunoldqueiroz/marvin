@@ -85,6 +85,12 @@ report a deadlock (likely circular dependency or failed prerequisite) and halt.
 back to sequential top-to-bottom execution with a warning. Never block on a
 parse error (NFR-04). Task markers: `[ ]` pending, `[x]` completed, `[-]` skipped.
 
+**Stage-1-only review** — For low-risk changes where ALL modified files are
+Markdown (.md), config (.yml, .yaml, .json, .toml, .cfg), or documentation,
+the orchestrator may dispatch the reviewer with `stage: 1` in the task prompt
+to skip the deep review phase (Stage 2). Any .py or code file in the changeset
+triggers a full two-stage review.
+
 **Per-task commit convention** — The implementer agent uses the commit message
 format `feat({spec-id}-T-{task-id}): <description>` when committing task work.
 This enables `git log --grep="011-agent-hardening"` to find all commits for a

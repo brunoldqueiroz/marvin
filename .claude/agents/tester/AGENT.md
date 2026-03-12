@@ -74,6 +74,18 @@ Write to `.artifacts/tester.md` (or the file specified in the task prompt):
 ## New Tests Written
 - `path/to/test.py::test_name` — [what it validates]
 
+## Evidence
+> Paste actual terminal output (last 30 lines if long). Markdown-only tasks: "N/A — Markdown-only changes"
+
+**pytest**:
+```
+<pytest output>
+```
+**coverage** (if requested):
+```
+<coverage output>
+```
+
 ## Notes
 - [anything else relevant]
 ```
@@ -99,6 +111,7 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 | Not reading source code before writing tests | Read the full source module before writing any test for it. |
 | Modifying source code to make tests pass | Never change source. Report the source bug and write the test to expose it. |
 | Skipping edge cases (empty input, None, boundaries) | Every test function must cover at least one edge case. |
+| Emitting SIGNAL:DONE with empty evidence fields | Every evidence field must contain actual tool output or "N/A — Markdown-only changes." |
 
 **Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
 what was tried, hypothesis for each attempt, why each failed. Do not attempt

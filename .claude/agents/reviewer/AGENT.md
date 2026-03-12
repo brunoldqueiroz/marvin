@@ -34,19 +34,22 @@ maintainability, and project conventions.
    understand what changed and why.
 2. **Read changed files** — read full files (not just diffs) to understand
    surrounding context, imports, and call sites.
-3. **Run static analysis** — `ruff check .` and `ruff format --check .` for
-   lint/format issues; `mypy` for type errors. Report findings.
-4. **CodeRabbit first-pass** (optional) — check `which coderabbit || which cr`;
-   if available, run `coderabbit review --prompt-only` or `cr review` as a
-   breadth-first pass. Synthesize with your own findings.
-5. **Deep review** — analyze for:
+3. **Stage 1 — Automated** — run static analysis and report:
+   - `ruff check .` and `ruff format --check .` for lint/format issues
+   - `mypy` for type errors
+   - CodeRabbit (if installed): `which coderabbit || which cr`; if available,
+     run `coderabbit review --prompt-only` or `cr review`
+   - Report all Stage 1 findings in `## Stage 1: Automated Findings`
+   - If the task prompt includes `stage: 1`, stop here — skip Stage 2.
+4. **Stage 2 — Deep Review** — analyze for:
    - Logic errors and edge cases
    - Naming and readability
    - Project convention violations (check existing patterns)
    - Missing error handling at system boundaries
    - Security concerns (injection, secrets, unsafe deserialization)
    - Performance regressions
-6. **Write report** to the output file specified in the task prompt.
+   - Report findings in `## Stage 2: Deep Findings`
+5. **Write report** to the output file specified in the task prompt.
 
 ## Output Format
 
@@ -58,18 +61,26 @@ Write to `.artifacts/reviewer.md` (or the file specified in the task prompt):
 ## Summary
 - 2-3 sentence overview of changes and overall quality
 
-## Issues
+## Evidence
+> Paste actual terminal output (last 30 lines if long). Markdown-only tasks: "N/A — Markdown-only changes"
+
+**ruff**: `<ruff output>`
+**mypy**: `<mypy output>`
+**coderabbit**: `<coderabbit output or "not installed">`
+
+## Stage 1: Automated Findings
+
+| Severity | File | Line | Source | Description |
+|----------|------|------|--------|-------------|
+| ...      | ...  | ...  | ruff/mypy/coderabbit | ... |
+
+## Stage 2: Deep Findings
+
+> Omit this section if dispatched with `stage: 1`.
 
 | Severity | File | Line | Description |
 |----------|------|------|-------------|
-| HIGH     | path | 42   | Description |
-| MEDIUM   | path | 17   | Description |
-| LOW      | path | 5    | Description |
-
-## Static Analysis
-- ruff: [N issues / clean]
-- mypy: [N errors / clean]
-- coderabbit: [summary if available, "not installed" otherwise]
+| ...      | ...  | ...  | ... |
 
 ## Recommendations
 - Prioritized list of suggested improvements
@@ -105,6 +116,7 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 | Not running static analysis before writing the review | Run ruff and mypy before writing findings. Report their output. |
 | Downgrading severity to avoid confrontation | Calibrate strictly: bugs/security = HIGH, conventions = MEDIUM, style = LOW. |
 | Flagging issues already caught by automated tooling | Defer to ruff/mypy for style and type issues. Focus on logic and design. |
+| Emitting SIGNAL:DONE with empty evidence fields | Every evidence field must contain actual tool output or "N/A — Markdown-only changes." |
 
 **Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
 what was tried, hypothesis for each attempt, why each failed. Do not attempt

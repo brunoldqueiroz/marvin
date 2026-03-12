@@ -91,10 +91,21 @@ Write to `.artifacts/implementer.md` (or the file specified in the task prompt):
 - Added: [list of new test functions]
 - Passed: [yes/no, with details if no]
 
-## Quality Checks
-- ruff: [clean / N issues fixed]
-- mypy: [clean / N errors fixed]
-- pytest: [N passed, N failed]
+## Evidence
+> Paste actual terminal output (last 30 lines if long). Markdown-only tasks: "N/A — Markdown-only changes"
+
+**ruff**:
+```
+<ruff check . output>
+```
+**mypy**:
+```
+<mypy output>
+```
+**pytest**:
+```
+<pytest output>
+```
 
 ## Notes
 - [edge cases, trade-offs, follow-up items]
@@ -124,6 +135,7 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 | Claiming tests pass without running them | Include actual pytest output in your report. No output = not done. |
 | Implementing beyond what was asked | Deliver exactly the task scope. Log improvement ideas in Notes. |
 | Guessing at project conventions instead of reading code | Read 2+ existing files in the same module before writing new code. |
+| Emitting SIGNAL:DONE with empty evidence fields | Every evidence field must contain actual tool output or "N/A — Markdown-only changes." |
 
 **Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
 what was tried, hypothesis for each attempt, why each failed. Do not attempt

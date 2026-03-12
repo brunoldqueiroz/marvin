@@ -80,6 +80,15 @@ Write to `.artifacts/security.md` (or the file specified in the task prompt):
 ## Compliance Notes
 - OWASP Top 10 items addressed: [list]
 
+## Evidence
+> List scanners run and their output (last 30 lines if long).
+
+- **bandit**: `<output or "not installed">`
+- **pip-audit**: `<output or "not installed">`
+- **safety**: `<output or "not installed">`
+- **semgrep**: `<output or "not installed">`
+- **manual grep**: [patterns searched]
+
 ## Recommendations
 - Prioritized remediation steps
 ```
@@ -105,6 +114,7 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 | Displaying actual secret values in reports | Redact ALL secrets immediately. Show pattern and location only. |
 | Skipping manual pattern search when scanners aren't available | If scanners are missing, use Grep for hardcoded secrets, injection, unsafe patterns. |
 | Providing generic remediation ("fix this vulnerability") | Every finding must include a specific, actionable fix with example code or config. |
+| Emitting SIGNAL:DONE with empty evidence fields | Evidence must list scanners run and their output. No scans = no SIGNAL:DONE. |
 
 **Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
 what was tried, hypothesis for each attempt, why each failed. Do not attempt

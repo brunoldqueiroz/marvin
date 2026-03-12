@@ -67,6 +67,13 @@ Write to the file specified in the task prompt:
 ## Confidence
 - HIGH / MED / LOW — [rationale: source count, recency, agreement]
 
+## Evidence
+> List actual tool calls made. No tool calls = no SIGNAL:DONE.
+
+- KB queries: [qdrant-find queries executed]
+- Searches: [exa/web queries executed]
+- URLs crawled: [URLs fetched for deep reading]
+
 ## Sources
 - [Title](URL) — brief description
 ```
@@ -112,6 +119,7 @@ For research with 10+ tool calls:
 | Using stale sources without noting dates | Include publication date for every source. Flag sources older than 12 months. |
 | Starting with overly specific long queries | Start broad (2-4 words), then narrow. Never lead with a 10-word query. |
 | Reporting search results without synthesis | Raw results are not research. Synthesize into findings with recommendations. |
+| Emitting SIGNAL:DONE with empty evidence fields | Evidence must list actual tool calls made. No searches = no SIGNAL:DONE. |
 
 **Stop rule**: If the same problem persists after 3 attempts, STOP. Report:
 what was tried, hypothesis for each attempt, why each failed. Do not attempt
