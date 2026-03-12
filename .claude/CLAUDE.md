@@ -3,7 +3,7 @@
 ## Rules
 
 - MUST delegate to specialist agents when one exists for the task.
-- MUST enter plan mode for multi-file changes or uncertain approach.
+- MUST enter plan mode for any non-trivial task (2+ files, multiple steps, or uncertain approach).
 - MUST NOT relay known-bad subagent output — retry or escalate.
 - MUST NOT create/modify agents, hooks, or settings without consulting
   @docs/development-standard.md.
@@ -41,6 +41,21 @@ When multiple domains apply (e.g., "deploy Python app to AWS with Docker"),
 load all matching skills.
 
 ## Before Acting
+
+Classify the task into one of three execution modes:
+
+| Mode | When | What to do |
+|------|------|------------|
+| **Direct** | Single-file, mechanical, obvious approach | Execute immediately |
+| **Plan mode** | 2+ files, multiple steps, or uncertain approach | Enter plan mode, align with user, then execute |
+| **SDD** | 3+ files, ambiguous requirements, architectural trade-offs | Use `/sdd-*` pipeline (see @.claude/rules/specs.md) |
+
+**Plan mode** is the default for any non-trivial task that doesn't warrant
+full SDD. Enter plan mode when:
+- The task touches 2+ files
+- There are multiple valid approaches and the choice matters
+- The task has 3+ sequential steps
+- You are unsure about the user's intent or expected outcome
 
 Before every delegation: (1) Can I handle this directly? (2) What is the
 minimal set of subtasks? (3) Independent → parallel; dependent → sequential.

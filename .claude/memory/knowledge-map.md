@@ -66,7 +66,7 @@
 
 - MUST delegate to specialist agents when one exists — Marvin is an orchestrator, not an implementer
 - MUST NOT create/modify agents, hooks, or settings without consulting `docs/development-standard.md`
-- MUST enter plan mode for multi-file changes or uncertain approach
+- MUST enter plan mode for any non-trivial task (2+ files, multiple steps, or uncertain approach)
 - SDD pipeline order: constitution → specify → plan → tasks → implement → review → test
 - Spec IDs are zero-padded 3-digit integers; slugs are kebab-case
 - Sub-spec nesting is max 2 levels deep (spec → sub-spec only; no further decomposition)
