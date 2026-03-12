@@ -5,7 +5,8 @@ description: >
   documentation lookup, state-of-the-art analysis, synthesizing information from
   multiple sources. Does NOT: implement code, run tests, modify application
   logic, or make architectural decisions.
-tools: Read, Write, Grep, Glob, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__qdrant__qdrant-store, mcp__qdrant__qdrant-find, Edit
+# Write retained for .artifacts/ output only
+tools: Read, Write, Grep, Glob, WebSearch, WebFetch, mcp__exa__web_search_exa, mcp__exa__web_search_advanced_exa, mcp__exa__company_research_exa, mcp__exa__crawling_exa, mcp__exa__people_search_exa, mcp__exa__deep_researcher_start, mcp__exa__deep_researcher_check, mcp__exa__get_code_context_exa, mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__qdrant__qdrant-store, mcp__qdrant__qdrant-find
 model: sonnet
 memory: project
 maxTurns: 20
