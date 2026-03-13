@@ -100,9 +100,13 @@ Observe (metrics.jsonl)
 
 | Property | Guideline |
 |----------|-----------|
-| Budget | < 60 lines |
+| Budget | < 100 lines |
 | Content | Non-inferable only. Ask per-line: "Would removing this cause mistakes?" |
-| Format | MUST/MUST NOT at the top. Flat structure, no deep nesting. |
+| Structure | Identity → Hard constraints → Rules → Before Acting → Cross-references → Critical Reminders |
+| Hard constraints | Wrap 2-3 absolute prohibitions in `<hard_constraints>` XML tags. Use MUST NOT only here. |
+| Rules | Strong directives without emphasis markers. Reserve MUST/NEVER for `<hard_constraints>`. |
+| Before Acting | Numbered sequence: (1) Skill check → (2) Classify mode → (3) Execute. Sequentiality prevents skipping. |
+| Critical Reminders | End-of-file section (high attention zone). Focus on behaviors that empirically fail most — never duplicate Rules. |
 | Imports | Use `@path` for on-demand detail (max 5 hops) |
 | Authorship | Human-written, pruned. Never LLM-generated. |
 | HTML comments | `<!-- -->` invisible to Claude in auto-injection; use for maintenance annotations only |
@@ -110,10 +114,13 @@ Observe (metrics.jsonl)
 
 **Anti-patterns:**
 - Kitchen-sink CLAUDE.md (> 100 lines) — middle rules get ignored
+- Uniform MUST emphasis (> 3 occurrences) — dilutes signal; model treats all rules equally when everything shouts
+- Duplicating rules between Rules section and Critical Reminders — wastes budget; use Critical Reminders only for failure-prone behaviors
 - Duplicating rules between CLAUDE.md and `.claude/rules/`
 - Using CLAUDE.md for domain knowledge (use skills instead)
 - Code style rules in CLAUDE.md (belong in linters + hooks)
 - Code snippets in CLAUDE.md (become stale; use file:line pointers instead)
+- Disconnected skill loading — skill routing instructions outside the main decision flow get skipped
 
 ### 3.2 AGENT.md
 
@@ -557,6 +564,9 @@ Use Keep-a-Changelog. Each entry lists the modified file:
 | Homogeneous agent teams | Correlated outputs = one effective reasoning channel regardless of count | Ensure diversity: different models, prompts, or strategies per agent |
 | Uncalibrated LLM-as-judge | Overconfident scoring; false early termination in eval loops | Ensemble judging; 0.80+ Spearman correlation target with human judgment |
 | Code style rules in CLAUDE.md | Expensive, slow, wastes context; linters are deterministic and free | Move to hooks (PostToolUse formatters/linters) |
+| Uniform MUST emphasis | When everything is MUST, nothing is — model treats all rules with equal (lower) priority | 2-3 MUST NOT in `<hard_constraints>` XML; rest as plain directives |
+| Disconnected decision flows | Skill loading in separate section from "Before Acting" gets skipped | Integrate all pre-action steps into a single numbered sequence |
+| Critical Reminders as Rules copy | Wastes end-of-file high-attention zone on redundant content | Use only for empirically failure-prone behaviors |
 
 ---
 

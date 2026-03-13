@@ -114,6 +114,7 @@ data is unavailable.
 | PreCompact | `pre-compact-save.sh` | persist | fail-open |
 | PreToolUse (Bash) | `pre-tool-use-block-secrets.sh` | gate | fail-closed |
 | PreToolUse (Read) | `pre-tool-use-block-partial-read.sh` | gate | fail-closed |
+| PreToolUse (Write, Edit) | `pre-tool-use-block-claude-config.sh` | gate | fail-closed |
 | PostToolUse | `post-tool-use-log.sh` | log | fail-open |
 | PostToolUse (mcp__) | `post-tool-use-mcp-monitor.sh` | monitor | fail-open |
 | PostToolUseFailure | `post-tool-failure-log.sh` | log | fail-open |
