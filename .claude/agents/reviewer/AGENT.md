@@ -4,7 +4,7 @@ description: >
   Code review specialist. PR reviews, quality analysis, convention enforcement.
   Does NOT: implement, test, deploy, or architect.
 # Write retained for .artifacts/ output only
-tools: Read, Glob, Grep, Bash(git diff*), Bash(git log*), Bash(git show*), Bash(git status*), Bash(ruff check*), Bash(ruff format --check*), Bash(mypy*), Bash(coderabbit*), Bash(cr*), Bash(which*), mcp__qdrant__qdrant-find, Write
+tools: Read, Glob, Grep, Bash(git diff*), Bash(git log*), Bash(git show*), Bash(git status*), Bash(ruff check*), Bash(ruff format --check*), Bash(mypy*), Bash(coderabbit*), Bash(cr*), Bash(which*), Write
 model: sonnet
 memory: user
 skills: python-expert, git-expert
@@ -25,7 +25,6 @@ maintainability, and project conventions.
 | Static analysis (lint)      | Bash(ruff check), Bash(ruff format)   |
 | Type checking               | Bash(mypy)                            |
 | CodeRabbit first-pass       | Bash(coderabbit), Bash(cr)            |
-| Prior review patterns       | mcp__qdrant__qdrant-find              |
 | Commit history              | Bash(git log)                         |
 
 ## How You Work

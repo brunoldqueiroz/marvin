@@ -7,8 +7,8 @@
 - `.claude/agents/` — 5 specialist agents (implementer, reviewer, tester, researcher, security)
 - `.claude/skills/` — 20 skill files covering domain expertise and SDD workflows
 - `.claude/rules/` — 7 governance rules files (delegation, memory, specs, hooks, agents, skills, research)
-- `.claude/hooks/` — 17 shell scripts wired into Claude lifecycle events
-- `.claude/memory/` — persistent cognitive memory (knowledge-map, decisions, error-patterns)
+- `.claude/hooks/` — 18 shell scripts wired into Claude lifecycle events
+- `.claude/memory/` — persistent cognitive memory: MEMORY.md index + typed subdirs (decisions, error-patterns, evaluations, deliberations, archive)
 - `.specify/` — SDD workspace: templates + 10 active specs (001–010); sub-specs supported
 - `.specify/templates/` — 5 SDD templates (constitution, research, spec, plan, tasks); plan includes Dependency Graph and Sub-Specs sections; tasks template includes execution phases and dependency graph sections
 - `.specify/specs/` — 12 specs: 001–007 (done), 008–009 (removed), 010-tdd-guidance (done), 011-agent-hardening (done), 012-verification-gate (active); sub-spec nesting supported
@@ -29,7 +29,7 @@
 - `diagram-expert` — advisory — D2 diagrams, architecture visualization
 - `docs-expert` — advisory — README and documentation authoring
 - `checklist-runner` — workflow — structured checklist execution
-- `memory-manager` — advisory — Qdrant memory store/retrieve patterns
+- `memory-manager` — advisory — file-based memory store/retrieve patterns
 - `deliberation` — workflow — structured System 2 deliberation for high-stakes decisions; scalar confidence scoring
 - `self-consistency` — workflow — parallel candidate generation + rubric scoring
 - `reflect` — advisory — periodic memory audit, pattern consolidation, error density analysis, adaptive calibration
@@ -60,7 +60,6 @@
 
 - `mcp__exa__*` — Exa web search: discovery, code context, deep research, company/people lookup
 - `mcp__context7__*` — Context7: library docs and code examples by library ID
-- `mcp__qdrant__*` — Qdrant vector DB: persistent cross-session memory store (`marvin-kb`)
 
 ## Architectural Invariants
 
@@ -72,8 +71,8 @@
 - Sub-spec nesting is max 2 levels deep (spec → sub-spec only; no further decomposition)
 - Agent output signals: `SIGNAL:DONE`, `SIGNAL:BLOCKED`, `SIGNAL:PARTIAL` — exactly one per response
 - Tool allowlists are explicit — no wildcards in agent `tools` field
-- Qdrant collection: `marvin-kb`; memory metadata MUST include type, project, domain, timestamp, confidence
-- Memory types: `decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`
+- Memory stored in `.claude/memory/` as Markdown with YAML frontmatter (3-tier: HOT/WARM/COLD)
+- Memory types: `decision`, `error-pattern`, `deliberation`, `evaluation`
 
 ## Active Conventions
 
@@ -89,10 +88,10 @@
 <!-- Populated automatically via memory.md triggers and manually as needed -->
 - 2026-03-07 — Spec 001 (skill architecture): separated advisory vs workflow skill categories,
   added required frontmatter fields (user-invocable, triggers, metadata.category)
-- 2026-03-07 — Spec 002 (cognitive memory): Qdrant as persistent memory backend;
-  knowledge-map.md as human-editable structural orientation file in `.claude/memory/`
+- 2026-03-07 — Spec 002 (cognitive memory): file-based persistent memory in `.claude/memory/`;
+  knowledge-map.md as human-editable structural orientation file; migrated from Qdrant 2026-03-15
 - 2026-03-07 — Spec 003 (self-consistency): parallel candidate generation + rubric
-  scoring workflow; `evaluation` memory type added to Qdrant schema
+  scoring workflow; `evaluation` memory type added
 - 2026-03-07 — Spec 004 (recursive decomposition): sub-spec suggestions in /sdd-plan with complexity heuristics; spike-first pattern; Mermaid dependency graphs in plans; [SUB-SPEC] task type in /sdd-tasks
 - 2026-03-07 — Spec 005 (feedback learning): /reflect skill for periodic memory audit; rework tracking fields (task_type, correction_count, last_corrected); adaptive calibration rules in memory.md; error density query pattern
 - 2026-03-07 — Spec 006 (task dependency graph): dependency-aware task execution rules in specs.md; DAG validation in sdd-tasks; execution phases and dependency graph sections in tasks template

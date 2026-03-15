@@ -22,8 +22,6 @@ tools:
   - mcp__exa__web_search_exa
   - mcp__exa__get_code_context_exa
   - mcp__exa__crawling_exa
-  - mcp__qdrant__qdrant-find
-  - mcp__qdrant__qdrant-store
 metadata:
   author: bruno
   version: 1.0.0
@@ -45,8 +43,7 @@ opinionated guidance grounded in current best practices.
 | Modify Dockerfiles/Compose | `Write`, `Edit` |
 | Docker documentation | Context7 (resolve-library-id → query-docs) |
 | Current practices | Exa web_search, get_code_context |
-| Prior knowledge | qdrant-find |
-| Store reusable insight | qdrant-store |
+
 
 ## Core Principles
 

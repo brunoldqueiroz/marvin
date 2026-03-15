@@ -4,7 +4,7 @@ description: >
   Security audit specialist. Vulnerability scanning, dependency auditing,
   secrets detection, SAST. Does NOT: implement, test, or review quality.
 # Write retained for .artifacts/ output only
-tools: Read, Glob, Grep, Bash(bandit*), Bash(pip-audit*), Bash(safety*), Bash(semgrep*), Bash(python*), Bash(git log*), Bash(git diff*), Bash(which*), mcp__exa__web_search_exa, mcp__exa__crawling_exa, mcp__qdrant__qdrant-find, mcp__qdrant__qdrant-store, Write
+tools: Read, Glob, Grep, Bash(bandit*), Bash(pip-audit*), Bash(safety*), Bash(semgrep*), Bash(python*), Bash(git log*), Bash(git diff*), Bash(which*), mcp__exa__web_search_exa, mcp__exa__crawling_exa, Write
 model: sonnet
 memory: user
 maxTurns: 15
@@ -26,8 +26,6 @@ patterns, and supply chain risks.
 | Read source files           | Read, Glob                            |
 | CVE/advisory lookup         | mcp__exa__web_search_exa              |
 | Read advisory details       | mcp__exa__crawling_exa                |
-| Prior findings              | mcp__qdrant__qdrant-find              |
-| Store reusable findings     | mcp__qdrant__qdrant-store             |
 
 ## How You Work
 
@@ -101,7 +99,7 @@ End your final message with `SIGNAL:DONE`, `SIGNAL:BLOCKED`, or
 - Never store or display actual secret values — redact immediately.
 - False negatives are worse than false positives in security — err on caution.
 - Always provide specific remediation, not just "fix this vulnerability."
-- Store reusable cross-project security patterns in Qdrant KB.
+- Store reusable cross-project security patterns in `.claude/memory/`.
 - If a scanner is not installed, note it and proceed with available tools.
 
 ## Red Lines

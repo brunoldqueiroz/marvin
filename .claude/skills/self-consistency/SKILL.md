@@ -15,14 +15,13 @@ description: >
   for memory persistence use memory-manager.
 tools:
   - Read
+  - Write
   - Glob
   - Grep
   - Agent
-  - mcp__qdrant__qdrant-store
-  - mcp__qdrant__qdrant-find
 metadata:
   author: bruno
-  version: 1.0.0
+  version: 2.0.0
   category: orchestration
 ---
 
@@ -30,15 +29,15 @@ metadata:
 
 Parallel candidate generation + rubric scoring workflow for high-stakes tasks.
 Produces a scored comparison table, a winner with confidence, and an evaluation
-record stored in Qdrant for cross-session reuse.
+record stored in `.claude/memory/evaluations/` for cross-session reuse.
 
 ## Tool Selection
 
 | Need | Tool |
 |------|------|
 | Generate 3 candidates in parallel | Agent (3 parallel calls) |
-| Query prior evaluations | mcp__qdrant__qdrant-find |
-| Store evaluation record | mcp__qdrant__qdrant-store |
+| Query prior evaluations | Grep + Read in `memory/evaluations/` |
+| Store evaluation record | Write to `memory/evaluations/{date}-{slug}.md` |
 | Read existing code/context | Read, Glob, Grep |
 
 ## Core Principles
@@ -57,18 +56,18 @@ record stored in Qdrant for cross-session reuse.
    correctness below 0.25.
 5. **Confidence from score spread**: compute spread as
    `(winner - runner_up) / runner_up × 100`. HIGH when >20%, MED when 10–20%,
-   LOW when <10%. Map to float for Qdrant: LOW → 0.40–0.55, MED → 0.65–0.80,
+   LOW when <10%. Map to float: LOW → 0.40–0.55, MED → 0.65–0.80,
    HIGH → 0.85–1.00. LOW confidence → escalate to user.
-6. **Query Qdrant before generating** — if a HIGH-confidence prior evaluation
-   exists for a sufficiently similar task, reuse the approach and skip candidate
-   generation entirely.
-7. **Every evaluation is logged** — store all candidates, scores, winner, and
-   rubric in `marvin-kb` with `type: evaluation`. No undocumented evaluations.
+6. **Query memory before generating** — Grep `memory/evaluations/` for similar
+   tasks. If a HIGH-confidence prior evaluation exists, reuse the approach and
+   skip candidate generation entirely.
+7. **Every evaluation is logged** — Write all candidates, scores, winner, and
+   rubric to `memory/evaluations/{date}-{slug}.md`. No undocumented evaluations.
 8. **Activation heuristics**: trigger on 3+ file changes, complex functions
    (>30 lines, multiple branches), MED/LOW deliberation confidence, or explicit
    user request ("compare", "alternatives", "verify", "/verify").
 9. **Skip heuristics**: single-file changes with clear requirements,
-   documentation/config/formatting, HIGH-confidence prior evaluation in Qdrant,
+   documentation/config/formatting, HIGH-confidence prior evaluation in memory,
    user requests speed ("just do it", "quick fix").
 10. **Transparency is non-negotiable** — show the full comparison table and
     rationale. Never hide the evaluation or only report the winner.
@@ -110,26 +109,36 @@ record stored in Qdrant for cross-session reuse.
 5. **Close-call handling** — if top two totals are within 10% of each other,
    flag as "close call" and include the runner-up rationale in the output.
 
-6. **Pre-task Qdrant query pattern**:
+6. **Pre-task query pattern**:
    ```
-   qdrant-find: "[task description] [domain] [project]"
-   filter: type=evaluation, project=[current]
+   Grep memory/evaluations/ for "[task description]" or "[domain]"
+   Read matching files for confidence and winner
    ```
    If result has confidence ≥ 0.85, skip generation and reuse.
 
-7. **Evaluation record template** for Qdrant storage:
-   ```
+7. **Evaluation record template** for file storage:
+   ```yaml
+   ---
+   type: evaluation
+   domain: [domain tag]
+   project: [project name]
+   confidence: [0.0–1.0]
+   priority: P1
+   created: [ISO date]
+   updated: [ISO date]
+   tags: [relevant, tags]
+   files_affected: [list or "TBD"]
+   ---
+
    Task: [one-sentence description]
    Winner: [candidate name + stance]
    Runners-up: [summaries + scores]
    Rubric: [domain rubric used + weights]
    Confidence: [HIGH|MED|LOW] ([spread %])
-   Rationale: [why winner beats alternatives]
-   Domain: [domain tag]
-   Project: [project name]
-   Files Affected: [list or "TBD"]
+
+   **Why:** [why winner beats alternatives]
+   **How to apply:** [when to reuse this evaluation]
    ```
-   Metadata: `type=evaluation, confidence=[0.0–1.0], domain, project, timestamp, session_id`
 
 8. **Integration with deliberation** — at the GENERATE step, optionally invoke
    self-consistency to produce and score alternatives. The deliberation skill
@@ -161,7 +170,7 @@ record stored in Qdrant for cross-session reuse.
    scored table.
 5. **Not logging evaluations** — future sessions will re-derive the same
    comparison without the benefit of prior scoring. Every evaluation must be
-   stored in Qdrant.
+   stored in `memory/evaluations/`.
 6. **Ignoring close calls** — when top two scores are within 10%, suppressing
    the runner-up hides meaningful uncertainty. Flag it explicitly.
 7. **Forcing a decision at LOW confidence** — if the winner's margin is <10%,
@@ -173,8 +182,8 @@ record stored in Qdrant for cross-session reuse.
 9. **Using the default rubric for domain-specific tasks** — applying
    correctness 0.35 to security-critical code under-weights vulnerabilities.
    Always check domain rubric overrides before scoring.
-10. **Skipping the Qdrant pre-task query** — the evaluation may already exist
-    at HIGH confidence. Always query before generating to avoid redundant work.
+10. **Skipping the pre-task memory query** — the evaluation may already exist
+    at HIGH confidence. Always Grep `memory/evaluations/` before generating.
 
 ## Examples
 
@@ -183,7 +192,7 @@ record stored in Qdrant for cross-session reuse.
 User asks how to organize a new HTTP API module that other agents will call.
 
 Actions:
-1. Query Qdrant: "API module structure architecture marvin" — no prior match.
+1. Grep `memory/evaluations/` for "API module structure" — no prior match.
 2. Identify domain: architecture. Apply default rubric.
 3. Spawn 3 parallel Agent calls with stances: simplicity, performance, extensibility.
    - A: Flat functions in one module file.
@@ -192,84 +201,64 @@ Actions:
 4. Score all three simultaneously against rubric. A scores 4.10, C scores 3.95,
    B scores 3.65. Spread A vs C = 3.7% — close call.
 5. Winner: A (simplicity stance). Confidence: LOW (spread <10%). Flag close call
-   between A and C. Escalate to user: "A and C are nearly equivalent — do you
-   prioritize simplicity now or extensibility for future providers?"
-6. Log evaluation to Qdrant with type=evaluation, confidence=0.45.
+   between A and C. Escalate to user.
+6. Write evaluation to `memory/evaluations/2026-03-15-api-module-structure.md`.
 
 Result: User makes an informed choice. Evaluation record prevents re-deriving
 the same comparison in a future session.
 
 ### Scenario 2: Code generation — "Implement a retry mechanism for HTTP calls"
 
-User requests a retry utility for unreliable external HTTP endpoints.
-
 Actions:
-1. Query Qdrant: "retry HTTP implementation python marvin" — no high-confidence match.
+1. Grep `memory/evaluations/` for "retry HTTP" — no high-confidence match.
 2. Domain: python. Apply default rubric.
-3. Spawn 3 parallel Agent calls:
-   - A (simple): fixed delay, max N retries, `time.sleep`.
-   - B (perf): exponential backoff with jitter, no blocking.
-   - C (ext): circuit breaker pattern with state machine.
-4. Score simultaneously. B scores 4.20, A scores 3.80, C scores 3.40.
-   Spread B vs A = 10.5% — MED confidence. B wins; flag A as runner-up.
-5. Output: comparison table, winner B (exponential backoff), confidence MED,
-   note "A (simple) is a viable alternative if backoff complexity is undesired."
-6. Log to Qdrant with confidence=0.72.
+3. Spawn 3 parallel Agent calls. B (exponential backoff) scores 4.20 vs
+   A (simple) 3.80 vs C (circuit breaker) 3.40. Spread = 10.5% — MED.
+4. Write to `memory/evaluations/2026-03-15-http-retry.md` with confidence 0.72.
 
-Result: User gets the best implementation with full transparency. MED confidence
-surfaces the trade-off without blocking delivery.
+Result: Best implementation with full transparency. MED confidence surfaces trade-off.
 
 ### Scenario 3: Prior evaluation exists — skip generation
 
-User asks how to implement caching for Qdrant query results.
-
 Actions:
-1. Query Qdrant: "caching Qdrant query results marvin" — finds evaluation record
-   with confidence=0.88 (HIGH). Winner: in-process LRU cache. Redis rejected due
-   to operational overhead.
-2. Skip candidate generation. Report: "A prior HIGH-confidence evaluation exists
-   for this task. Winner: in-process LRU cache. Rationale: [stored rationale]."
-3. No new evaluation logged (no new candidates generated).
+1. Grep `memory/evaluations/` for "caching query results" — finds file with
+   confidence 0.88 (HIGH). Winner: in-process LRU cache.
+2. Skip candidate generation. Report prior evaluation with stored rationale.
 
-Result: Redundant work avoided. Prior reasoning (including rejected Redis option)
-surfaced without regeneration.
+Result: Redundant work avoided. Prior reasoning surfaced without regeneration.
 
 ## Troubleshooting
 
 **Candidates are too similar despite different stances**
-Cause: The task is too narrowly specified — only one meaningful solution exists,
-or the problem is simpler than the activation threshold.
+Cause: Task is too narrow — only one meaningful solution exists.
 Solution: If genuine diversity cannot be forced, the task likely does not warrant
 self-consistency. Apply skip heuristic and proceed with a single implementation.
 
-**Scoring results in a tie or near-tie across all candidates**
-Cause: Rubric weights are poorly calibrated for this domain, or candidates are
+**Scoring results in a tie**
+Cause: Rubric weights poorly calibrated for this domain, or candidates are
 genuinely equivalent.
-Solution: Check domain rubric overrides. If the tie persists, this is a valid
-LOW-confidence result — escalate to the user and present both options with their
-distinct trade-offs.
+Solution: Check domain rubric overrides. If tie persists, this is a valid
+LOW-confidence result — escalate to the user.
 
-**Qdrant unavailable**
-Cause: MCP server not running or connection refused.
-Solution: Skip pre-task query and result logging. Self-consistency proceeds
-without memory (NFR-03). Log a warning in the response. Do not block generation.
+**Memory directory empty**
+Cause: First evaluation in the project.
+Solution: Skip pre-task query. Proceed normally. Log will create the first file.
 
-**Confidence is always LOW across all evaluations**
-Cause: Either the rubric weights do not differentiate candidates well, or the
-stances are not producing genuinely diverse solutions.
-Solution: Review stance prompts to ensure they pull in meaningfully different
-directions. Consider whether the default rubric needs a domain override. If LOW
-persists after adjustment, escalate the task to the user with candidate summaries.
+**Confidence is always LOW**
+Cause: Rubric weights don't differentiate candidates, or stances don't
+produce genuinely diverse solutions.
+Solution: Review stance prompts. Consider domain rubric override. If LOW
+persists, escalate with candidate summaries.
 
 ## Review Checklist
 
 - [ ] Activated only for tasks meeting the heuristics (3+ files, >30 lines complex, MED/LOW prior confidence, or explicit user request)
 - [ ] Skipped for single-file, docs/config, HIGH-confidence prior, or "just do it" requests
-- [ ] Qdrant queried before generating — prior HIGH-confidence evaluation reused if found
+- [ ] Memory queried before generating — prior HIGH-confidence evaluation reused if found
 - [ ] Exactly 3 candidates generated with genuinely distinct stances (simplicity, performance, extensibility)
 - [ ] All 3 candidates generated in parallel via Agent calls
 - [ ] Rubric domain override applied when task domain is identified
 - [ ] All candidates scored simultaneously (not sequentially) against weighted rubric
 - [ ] Comparison table shown in output with per-criterion scores and weighted totals
 - [ ] Confidence level is explicit (HIGH/MED/LOW) derived from score spread
-- [ ] Evaluation record logged to Qdrant (marvin-kb, type=evaluation) with full metadata
+- [ ] Evaluation record written to `memory/evaluations/` with full frontmatter

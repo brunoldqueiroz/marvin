@@ -196,8 +196,6 @@ tools:
   - mcp__exa__web_search_exa
   - mcp__exa__get_code_context_exa
   - mcp__exa__crawling_exa
-  - mcp__qdrant__qdrant-find
-  - mcp__qdrant__qdrant-store
 metadata:
   author: <owner>
   version: <semver>
@@ -396,7 +394,7 @@ Audit context by bucket to identify waste and gaps.
 | Bucket | Definition | Marvin primitives |
 |--------|-----------|-------------------|
 | **Write** | Save information outside the context window | `.artifacts/` handoff, checkpoint files, `claude-progress.txt` |
-| **Select** | Pull relevant information into context | Skills (on-demand), `@path` imports, Qdrant `qdrant-find` |
+| **Select** | Pull relevant information into context | Skills (on-demand), `@path` imports, `.claude/memory/` Read/Grep |
 | **Compress** | Reduce tokens while preserving semantics | PreCompact hooks, observation masking, auto-compact |
 | **Isolate** | Split context across agents/sessions | Subagent delegation, worktree isolation, `context: fork` |
 

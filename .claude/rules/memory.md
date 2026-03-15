@@ -18,7 +18,7 @@ Store an error pattern when:
 - A task produces a wrong result that required backtracking
 - Include `task_type` (implementation | architecture | testing | review |
   planning), `correction_count` (starts at 1), and `last_corrected` (ISO
-  timestamp) in error-pattern metadata
+  timestamp) in error-pattern frontmatter
 - On re-occurrence of an existing pattern: increment `correction_count` and
   update `last_corrected` instead of creating a duplicate
 
@@ -48,7 +48,7 @@ Consider self-consistency (`/verify`) when:
 - User explicitly requests comparison ("compare", "alternatives", "verify")
 
 After self-consistency evaluation:
-- Log the evaluation record to Qdrant with `type: evaluation`
+- Write the evaluation record to `memory/evaluations/{date}-{slug}.md`
 - Include all candidates, scores, rubric used, winner, and confidence
 
 ## Reflection Triggers
@@ -64,7 +64,7 @@ audits stored records, prunes stale patterns, and consolidates weak signals.
 ## Adaptive Calibration
 
 Before acting on a non-trivial task, query error patterns for the relevant
-domain (`type: error-pattern`, filtered by `domain` and `project`):
+domain (Grep in `memory/error-patterns/` filtered by `domain` frontmatter):
 
 - **3+ high-confidence (>0.65) error patterns**: high-error domain. Bias toward
   loading `deliberation` and/or `self-consistency` skills. Slow down.
@@ -76,17 +76,85 @@ domain (`type: error-pattern`, filtered by `domain` and `project`):
 Calibration is advisory — override when context warrants it. Update calibration
 data by running `/reflect` periodically.
 
+## Memory Storage
+
+All memory lives in `.claude/memory/` as Markdown files with YAML frontmatter.
+
+### Directory Layout
+
+```
+.claude/memory/
+├── MEMORY.md                 # HOT: curated index ≤200 lines
+├── knowledge-map.md          # HOT: structural orientation
+├── decisions/                # WARM: architectural decisions
+│   └── {date}-{slug}.md
+├── error-patterns/           # WARM: learned error classes
+│   └── {domain}-{slug}.md
+├── evaluations/              # WARM: self-consistency results
+│   └── {date}-{slug}.md
+├── deliberations/            # WARM: structured deliberation records
+│   └── {date}-{slug}.md
+└── archive/                  # COLD: expired/merged entries
+    └── {date}-{slug}.md
+```
+
+### Topic File Format
+
+```yaml
+---
+type: decision | error-pattern | evaluation | deliberation
+domain: python | architecture | testing | claude-code | ...
+project: marvin
+confidence: 0.5        # 0.0–1.0, escalate with confirmations
+priority: P0 | P1 | P2 # P0=permanent, P1=90d TTL, P2=30d TTL
+created: 2026-03-15
+updated: 2026-03-15
+tags: [tag1, tag2]
+files_affected: [file1.py, file2.py]
+task_type: implementation | architecture | testing | review | planning
+correction_count: 1     # error-patterns only
+last_corrected: 2026-03-15  # error-patterns only
+---
+
+Synthesized content (2-3 sentences max).
+
+**Why:** rationale
+**How to apply:** trigger conditions
+```
+
+### Write Protocol
+
+1. Grep in the relevant `memory/{type}/` directory for similar topics
+2. If match found: decide ADD / UPDATE / DELETE
+3. Deleted entries → move to `archive/` (never hard-delete)
+4. Write/update topic file with full frontmatter
+5. Update `MEMORY.md` index if entry is P0 or P1
+
+### Read Protocol (progressive disclosure)
+
+1. `MEMORY.md` injected automatically via SessionStart hook (always in context)
+2. Analyze index → identify relevant topic files
+3. Read topic files on demand
+4. For deep dives: Read `archive/` if needed
+5. When delegating to subagent: include relevant context in the prompt
+
+### Maintenance Protocol (via /reflect)
+
+1. Check `MEMORY.md` > 150 lines → consolidate
+2. Scan frontmatter: P1 entries > 90 days without update → candidate for archive
+3. P2 entries > 30 days without update → candidate for archive
+4. Topic files > 2000 tokens → split or consolidate
+5. Near-duplicates → merge (keep higher confidence)
+
 ## General Rules
 
-- Use `qdrant-store` to write memories, `qdrant-find` to retrieve them.
-- Collection name: `marvin-kb` (configured in Qdrant MCP server).
-- Content field: synthesized 2-3 sentence summary (embedding quality depends on conciseness).
-- Always include metadata: `type`, `project`, `domain`, `timestamp`, `confidence`
-  (0.0–1.0), `session_id`, `files_affected`, `outcome`.
-- Valid types: `decision`, `error-pattern`, `knowledge`, `deliberation`, `evaluation`.
+- Use `Write` to store memories, `Read/Glob/Grep` to retrieve them.
+- Memory directory: `.claude/memory/` with typed subdirectories.
+- Valid types: `decision`, `error-pattern`, `evaluation`, `deliberation`.
 - **Retrieve before storing** — avoid duplicate records; escalate confidence instead.
-- **Graceful degradation**: if Qdrant is unavailable, continue without memory queries.
+- **Graceful degradation**: if memory files are unavailable, continue without
+  memory queries. Do not block the primary task.
 - MUST NOT block on memory operations for simple, single-file, or mechanical tasks.
 - Only log decisions that affect 2+ files or introduce new patterns — avoid pollution.
 - Store **why**, not just **what** — rationale is more valuable than the decision itself.
-- Project-scope all queries by default: filter by `project` metadata.
+- Project-scope all queries by default: filter by `project` frontmatter.

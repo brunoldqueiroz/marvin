@@ -3,7 +3,7 @@ name: implementer
 description: >
   Implementation specialist. Writes code from specs, iterates until checks
   pass. Does NOT: review, audit security, architect, or deploy.
-tools: Read, Write, Edit, Glob, Grep, Bash(python*), Bash(python3*), Bash(uv*), Bash(pytest*), Bash(ruff*), Bash(mypy*), Bash(make*), mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__exa__get_code_context_exa, mcp__qdrant__qdrant-find
+tools: Read, Write, Edit, Glob, Grep, Bash(python*), Bash(python3*), Bash(uv*), Bash(pytest*), Bash(ruff*), Bash(mypy*), Bash(make*), mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__exa__get_code_context_exa
 model: sonnet
 memory: user
 skills: python-expert
@@ -28,7 +28,6 @@ that passes all quality checks on the first try.
 | Install dependencies      | Bash(uv pip install), Bash(uv sync)      |
 | Library docs              | Context7 (resolve-library-id → query)    |
 | Code examples             | mcp__exa__get_code_context_exa           |
-| Prior patterns            | mcp__qdrant__qdrant-find                 |
 
 ## Code Skills
 

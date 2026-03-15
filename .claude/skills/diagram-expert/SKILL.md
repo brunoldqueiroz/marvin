@@ -22,8 +22,6 @@ tools:
   - mcp__context7__query-docs
   - mcp__exa__web_search_exa
   - mcp__exa__get_code_context_exa
-  - mcp__qdrant__qdrant-find
-  - mcp__qdrant__qdrant-store
 metadata:
   author: bruno
   version: 1.0.0
@@ -46,8 +44,7 @@ syntax, render output, and deliver production-ready diagrams.
 | Create/modify D2 files | `Write`, `Edit` |
 | D2 documentation lookup | Context7 (resolve-library-id -> query-docs) |
 | Current D2 practices | Exa web_search, get_code_context |
-| Prior diagram knowledge | qdrant-find |
-| Store reusable patterns | qdrant-store |
+
 
 ## Core Principles
 

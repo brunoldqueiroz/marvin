@@ -13,28 +13,28 @@ description: >
   (self-consistency), or one-file fixes.
 tools:
   - Read
+  - Write
   - Glob
   - Grep
-  - mcp__qdrant__qdrant-store
-  - mcp__qdrant__qdrant-find
 metadata:
   author: bruno
-  version: 1.2.0
+  version: 2.0.0
   category: workflow
 ---
 
 # Deliberation
 
 Structured "System 2" slow-thinking workflow for high-stakes decisions.
-Produces a decision record stored in Qdrant for cross-session continuity.
+Produces a decision record stored in `.claude/memory/deliberations/` for
+cross-session continuity.
 
 ## Tool Selection
 
 | Need | Tool |
 |------|------|
 | Read existing code/config | Read, Glob, Grep |
-| Query past decisions | mcp__qdrant__qdrant-find |
-| Store deliberation result | mcp__qdrant__qdrant-store |
+| Query past decisions | Grep + Read in `memory/decisions/` and `memory/deliberations/` |
+| Store deliberation result | Write to `memory/deliberations/{date}-{slug}.md` |
 
 ## Core Principles
 
@@ -52,13 +52,14 @@ Produces a decision record stored in Qdrant for cross-session continuity.
 5. **Pre-mortem uses Klein's technique** — project 6 months forward and assume
    the decision failed. Identify the specific, concrete failure mode. Vague
    pre-mortems ("it might not work out") do not count.
-6. **Every deliberation produces a decision record** — stored in Qdrant via
-   the memory-manager pattern with `type: deliberation`. No undocumented decisions.
+6. **Every deliberation produces a decision record** — stored in
+   `memory/deliberations/{date}-{slug}.md`. No undocumented decisions.
 7. **Confidence scoring is explicit** — Confidence is a single scalar score
    (0.0–1.0) with a label: HIGH (≥0.70), MED (0.40–0.69), LOW (<0.40).
    Confidence below 0.60 after deliberation means reframe the question.
 8. **Query past decisions before generating alternatives** — don't re-derive
-   what has already been decided. Retrieve first; generate only if no match.
+   what has already been decided. Grep `memory/decisions/` and
+   `memory/deliberations/` first; generate only if no match.
 9. **Two alternatives minimum** — if only one approach comes to mind,
    the frame is too narrow. Consider "do nothing" as a valid option.
 
@@ -69,7 +70,7 @@ Produces a decision record stored in Qdrant for cross-session continuity.
 ```
 1. FRAME      — State the decision in one sentence. Subject + verb + constraint.
                 Bad: "caching". Good: "Should we add Redis caching to the
-                memory query path to reduce Qdrant round-trips?"
+                memory query path to reduce retrieval latency?"
 
 2. GENERATE   — List 2–3 viable approaches. Each must be genuinely viable —
                 no strawmen. Include "do nothing" when appropriate.
@@ -97,8 +98,8 @@ Produces a decision record stored in Qdrant for cross-session continuity.
                   [HIGH|MED|LOW] ([score])
                   Include a clear next action.
 
-7. LOG        — Store as a decision record in Qdrant (type: deliberation).
-                Use the memory-manager decision record template.
+7. LOG        — Store as a decision record in memory/deliberations/.
+                Use the deliberation record template.
                 Include: all alternatives, all objections, rationale, confidence.
 ```
 
@@ -116,7 +117,7 @@ Skip deliberation for:
 - Documentation fixes, variable renames, log messages, test fixtures
 - Single-file changes with low reversal cost
 - Features behind a feature flag (reversible by definition)
-- Decisions already logged in Qdrant with HIGH confidence
+- Decisions already logged in `memory/deliberations/` with HIGH confidence
 
 ### 4. Output Format
 
@@ -145,26 +146,38 @@ decisions are worse than acknowledged uncertainty.
 
 ### 8. Pre-Decision Query Pattern
 
-Before generating alternatives, query Qdrant:
+Before generating alternatives, Grep memory:
 ```
-qdrant-find: "[topic] [domain] [project]"
-filter: type=deliberation OR type=decision, project=[current project]
+Grep memory/deliberations/ for "[topic]"
+Grep memory/decisions/ for "[topic]"
 ```
 If a HIGH-confidence match is found, skip deliberation and apply the
 existing decision. Log a note that the prior decision was reused.
 
 ### 9. Decision Record Template
 
-```
+```yaml
+---
+type: deliberation
+domain: [domain tag]
+project: [project name]
+confidence: [0.0–1.0]
+priority: P1
+created: [ISO date]
+updated: [ISO date]
+tags: [relevant, tags]
+files_affected: [list or "TBD"]
+---
+
 Context: [situation that prompted the decision]
 Decision: [chosen approach]
 Alternatives: [rejected options with objections]
 Rationale: [why the winner beats the alternatives]
 Pre-mortem failure mode: [what could go wrong]
 Confidence: [HIGH|MED|LOW] ([score])
-Domain: [domain tag]
-Project: [project name]
-Files Affected: [list or "TBD"]
+
+**Why:** [core reasoning]
+**How to apply:** [when to reference this deliberation]
 ```
 
 ### 10. Confidence Calibration
@@ -202,107 +215,71 @@ Files Affected: [list or "TBD"]
    when confidence is below 0.60 produces decisions that look committed but
    are actually guesses. Reframe or escalate instead.
 10. **Deliberating without querying past decisions first** — the decision may
-    already exist in Qdrant with a full rationale. Always query before generating.
+    already exist in `memory/deliberations/` with full rationale. Always
+    Grep before generating.
 
 ## Examples
 
 ### Scenario 1: "Should we add a caching layer to the memory system?"
 
-User asks about adding Redis caching for Qdrant query results.
+User asks about adding Redis caching for memory query results.
 
 Actions:
-1. Query Qdrant: "caching memory Qdrant marvin" — no prior decision found.
-2. FRAME: "Should we add a Redis caching layer between the agent and Qdrant to
-   reduce retrieval latency for repeated queries?"
+1. Grep `memory/deliberations/` and `memory/decisions/` for "caching memory" — no match.
+2. FRAME: "Should we add a Redis caching layer to reduce retrieval latency?"
 3. GENERATE: (A) Add Redis cache, (B) In-process LRU cache, (C) Do nothing.
-4. ATTACK: (A) "Qdrant already uses approximate nearest-neighbor — adding Redis
-   caches exact key lookups, not semantic similarity. Wrong tool for the job."
-   (B) "In-process cache is per-session only; cross-session memory is the entire
-   point of using Qdrant." (C) "Current latency is acceptable; this is premature
-   optimization."
-5. COST CHECK: (A) ~4h implementation + Redis infra + cache invalidation logic +
-   ongoing ops. (B) ~2h + memory footprint per session. (C) 0h.
-6. PREMORTEM (leading: do nothing): "6 months later: deliberation latency
-   became a bottleneck as memory grew beyond 10K records. We needed caching but
-   had no design. Mitigation: monitor Qdrant query times; revisit if P95 > 500ms."
-7. DECIDE: Do nothing (C). HIGH (0.86). Next: add Qdrant latency
-   monitoring to surface the threshold for reconsideration.
-8. LOG: Store decision record with type=deliberation, confidence=0.86.
+4. ATTACK: (A) "Wrong tool — caches exact keys, not semantic similarity."
+   (B) "Per-session only; cross-session is the entire point." (C) "Current
+   latency is acceptable; premature optimization."
+5. COST CHECK: (A) ~4h + Redis infra + cache invalidation. (B) ~2h + memory
+   footprint. (C) 0h.
+6. PREMORTEM (leading: do nothing): "6 months later: query latency became
+   bottleneck as memory grew. Mitigation: monitor query times; revisit if P95 > 500ms."
+7. DECIDE: Do nothing (C). HIGH (0.86).
+8. LOG: Write to `memory/deliberations/2026-03-15-memory-caching.md`.
 
-Result: NO decision reached through structured analysis. Cost check and
-devil's advocate eliminated both active caching options.
+Result: NO caching — analysis eliminated both active options.
 
-### Scenario 2: "Choosing between Qdrant and ChromaDB for vector storage"
-
-User asks which vector database to use for persistent memory.
+### Scenario 2: Prior decision exists — skip deliberation
 
 Actions:
-1. Query Qdrant: "vector database storage decision marvin" — finds existing
-   HIGH-confidence decision: "Qdrant chosen over ChromaDB for marvin-kb
-   due to MCP integration and metadata filtering support."
-2. Skip deliberation — prior decision found with HIGH confidence.
-3. Report: "This was already decided. Qdrant was selected over ChromaDB for
-   the MCP integration and structured metadata filtering. No re-deliberation needed."
+1. Grep `memory/deliberations/` for "vector database" — finds file with
+   confidence 0.88 (HIGH).
+2. Skip deliberation — report prior decision with stored rationale.
 
-Result: Deliberation skipped. Prior decision retrieved and applied. Saves
-redundant analysis; prior rationale (rejected alternatives) still accessible.
+Result: Prior decision retrieved and applied. No redundant analysis.
 
 ### Scenario 3: "Restructuring the skill directory layout"
 
-User proposes reorganizing `.claude/skills/` into subdirectories by category.
-
 Actions:
-1. Query Qdrant: "skill directory structure marvin" — no prior decision.
-2. FRAME: "Should we reorganize `.claude/skills/` into category subdirectories
-   (advisory/, workflow/, etc.) to improve navigation as the library grows?"
-3. GENERATE: (A) Flat structure (status quo), (B) Category subdirectories,
-   (C) Two-stage routing with a registry file (no filesystem change).
-4. ATTACK: (A) "Flat structure will become unnavigable past 30 skills —
-   already at 17, growing quickly." (B) "Subdirectory change breaks all
-   existing skill path references in agents, hooks, and CLAUDE.md. Migration
-   cost is non-trivial." (C) "Registry adds indirection without solving
-   discoverability for humans browsing the filesystem."
-5. COST CHECK: (A) 0h. (B) ~3h migration + update all references across 10+
-   files + risk of broken routing during transition. (C) ~2h + ongoing registry
-   maintenance burden.
-6. PREMORTEM (leading: B): "6 months later: a hook still referenced the old
-   flat path and silently failed to load a skill. The bug was invisible until
-   a skill wasn't applied in production. Mitigation: add a path validation
-   step to CI before merging the migration."
-7. DECIDE: Keep flat structure (A) with a migration plan triggered at 30 skills
-   (per delegation.md thresholds). MED (0.74). Pre-mortem revealed migration risk
-   outweighs benefit at current scale.
-8. LOG: Store with type=deliberation, confidence=0.74, domain=architecture.
+1. Grep memory — no prior decision.
+2. FRAME: "Should we reorganize `.claude/skills/` into category subdirectories?"
+3-7. Full deliberation process.
+8. DECIDE: Keep flat structure with migration plan at 30 skills. MED (0.74).
+9. LOG: Write to `memory/deliberations/2026-03-15-skill-directory-layout.md`.
 
-Result: Incremental approach chosen. Pre-mortem revealed migration risk;
-cost check confirmed low urgency at current scale.
+Result: Incremental approach chosen. Pre-mortem revealed migration risk.
 
 ## Troubleshooting
 
 **Can't generate genuine alternatives**
 Cause: The frame is too narrow or presupposes a solution.
-Solution: Broaden the frame to the underlying goal, not the proposed
-implementation. Add "do nothing" as an explicit alternative. Ask: "what
-problem does this solve, and are there other ways to solve it?"
+Solution: Broaden the frame to the underlying goal. Add "do nothing" as an
+explicit alternative.
 
-**Devil's advocate finds a fatal flaw in the leading option**
-Cause: The pre-mortem or ATTACK step exposes a critical defect.
+**Devil's advocate finds a fatal flaw**
+Cause: The ATTACK step exposes a critical defect.
 Solution: This is the process working correctly. Eliminate the flawed option
-and return to GENERATE. The correct response is to find a better option, not
-to soften the objection.
+and return to GENERATE.
 
 **Deliberation is taking too long**
-Cause: The decision frame is too broad — it contains multiple sub-decisions.
-Solution: Time-box at 5 minutes. If analysis is still incomplete, the frame
-needs to be split. Identify the two smallest independent sub-decisions and
-deliberate each separately.
+Cause: The decision frame is too broad.
+Solution: Time-box at 5 minutes. Split into sub-decisions if needed.
 
-**Confidence remains LOW after completing all 7 steps**
-Cause: Insufficient information, genuine ambiguity, or the question is
-outside current expertise.
+**Confidence remains LOW after all 7 steps**
+Cause: Insufficient information or genuine ambiguity.
 Solution: Do not force a decision. Escalate to the user with a summary of
-what was learned from the deliberation. Include the best available option
-and its known risks so the user can make an informed call.
+what was learned.
 
 ## Review Checklist
 
@@ -312,7 +289,7 @@ and its known risks so the user can make an informed call.
 - [ ] Cost check covered all four dimensions: time, complexity, compute, maintenance
 - [ ] Pre-mortem identifies at least one specific, concrete failure mode
 - [ ] Confidence level is explicit (HIGH / MED / LOW) with numeric score
-- [ ] Past decisions were queried in Qdrant before generating alternatives
-- [ ] Decision record stored in Qdrant with type=deliberation and full metadata
+- [ ] Past decisions were queried in memory before generating alternatives
+- [ ] Decision record written to `memory/deliberations/` with full frontmatter
 - [ ] Deliberation was proportional to stakes (Type 1 decision, not a trivial fix)
 - [ ] Decision is actionable — a clear next step or next action is identified

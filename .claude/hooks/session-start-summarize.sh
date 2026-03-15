@@ -1,5 +1,5 @@
 #!/bin/bash
-# session-start-summarize.sh — Summarize session history for Qdrant persistence
+# session-start-summarize.sh — Summarize session history for context injection
 # Hook: SessionStart (matcher: startup)
 # Philosophy: advisory (degrades gracefully — returns empty if conditions not met)
 
@@ -66,9 +66,7 @@ elif [ -n "$OUTCOMES" ]; then
 fi
 
 SUMMARY="SESSION HISTORY SUMMARY (last ${LOG_COUNT} sessions):
-Worked on branch(es): ${BRANCH_TEXT}. Specs: ${SPEC_TEXT}.${OUTCOME_TEXT} Total sessions: ${LOG_COUNT}.
-
-ACTION REQUIRED: Store this summary to Qdrant using qdrant-store with metadata: type=knowledge, domain=session-history, project=marvin, confidence=0.7"
+Worked on branch(es): ${BRANCH_TEXT}. Specs: ${SPEC_TEXT}.${OUTCOME_TEXT} Total sessions: ${LOG_COUNT}."
 
 # Output additionalContext JSON (same pattern as session-start-context.sh)
 OUTPUT_OK=false

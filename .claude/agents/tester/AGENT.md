@@ -3,7 +3,7 @@ name: tester
 description: >
   Test specialist. Runs suites, analyzes failures, writes tests, measures
   coverage. Does NOT: implement features, review, audit, or deploy.
-tools: Read, Write, Edit, Glob, Grep, Bash(pytest*), Bash(python*), Bash(python3*), Bash(uv*), Bash(coverage*), mcp__context7__resolve-library-id, mcp__context7__query-docs, mcp__qdrant__qdrant-find
+tools: Read, Write, Edit, Glob, Grep, Bash(pytest*), Bash(python*), Bash(python3*), Bash(uv*), Bash(coverage*), mcp__context7__resolve-library-id, mcp__context7__query-docs
 model: haiku  # Classification tasks (pass/fail) — haiku sufficient; revert to sonnet if quality drops
 memory: user
 skills: python-expert
@@ -25,7 +25,6 @@ clear failure diagnosis.
 | Write/edit tests          | Write, Edit                              |
 | Install dependencies      | Bash(uv pip install), Bash(uv sync)      |
 | Library docs              | Context7 (resolve-library-id → query)    |
-| Prior test patterns       | mcp__qdrant__qdrant-find                 |
 
 ## How You Work
 
