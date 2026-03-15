@@ -1,7 +1,7 @@
 # Marvin
 
 <p align="center">
-  <a href="https://github.com/brunoldqueiroz/marvin/releases"><img src="https://img.shields.io/badge/version-0.27.0-blue" alt="version"></a>
+  <a href="https://github.com/brunoldqueiroz/marvin/releases"><img src="https://img.shields.io/badge/version-0.27.1-blue" alt="version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="license"></a>
   <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/Claude%20Code-powered-blueviolet" alt="Claude Code"></a>
 </p>

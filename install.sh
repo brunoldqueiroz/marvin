@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-VERSION="0.27.0"
+VERSION="0.27.1"
 GITHUB_REPO="brunoldqueiroz/marvin"
 EXCLUDE_DIRS="dev"
 EXCLUDE_FILES="settings.local.json"
